@@ -11,23 +11,24 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import skylands.util.Texts;
 import skylands.util.WorldProtection;
 
+import static skylands.util.ServerUtils.protectionWarning;
+
 @Mixin(ChestBoatEntity.class)
-public abstract class ChestBoatMixin extends BoatEntity {
+public class ChestBoatMixin extends BoatEntity {
 
-	public ChestBoatMixin(EntityType<? extends BoatEntity> entityType, World world) {
-		super(entityType, world);
-	}
+    public ChestBoatMixin(EntityType<? extends BoatEntity> entityType, World world) {
+        super(entityType, world);
+    }
 
-	@Inject(method = "interact", at = @At("HEAD"), cancellable = true)
-	void interact(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-		if(!player.world.isClient) {
-			if(!WorldProtection.canModify(player.world, player)) {
-				player.sendMessage(Texts.prefixed("message.skylands.world_protection.boat_open"), true);
-				cir.setReturnValue(ActionResult.FAIL);
-			}
-		}
-	}
+    @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
+    void interact(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        if (!player.world.isClient) {
+            if (!WorldProtection.canModify(player.world, player)) {
+                protectionWarning(player, "boat_open");
+                cir.setReturnValue(ActionResult.FAIL);
+            }
+        }
+    }
 }

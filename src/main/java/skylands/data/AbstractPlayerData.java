@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public interface AbstractPlayerData extends ComponentV3 {
 
-	ArrayList<String> getIslands();
-	void setIslands(ArrayList<String> islands);
+    ArrayList<String> getIslands();
+
+    void setIslands(ArrayList<String> islands);
 }

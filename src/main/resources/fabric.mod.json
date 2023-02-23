@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "skylands",
   "version": "${version}",
-  "name": "Skylands",
+  "name": "Skylands (custom)",
   "description": "Simple Skyblock Islands generator and manager.",
   "authors": [
     "PinkGoosik"
@@ -17,10 +17,11 @@
   },
   "license": "MIT",
   "icon": "assets/skylands/icon.png",
+  "accessWidener": "skylands.accesswidener",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "skylands.SkylandsMod"
+      "skylands.SkylandsMain"
     ],
     "cardinal-components": [
       "skylands.data.Components"
@@ -37,8 +38,8 @@
   },
   "depends": {
     "fabricloader": "*",
-    "fabric": "*",
-    "minecraft": ">=1.19",
+    "fabric-api": ">=0.66.0",
+    "minecraft": "1.19.3",
     "java": ">=17"
   }
 }
