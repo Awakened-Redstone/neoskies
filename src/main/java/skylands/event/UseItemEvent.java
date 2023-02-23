@@ -9,8 +9,8 @@ import net.minecraft.world.World;
 @SuppressWarnings("unused")
 public class UseItemEvent {
 
-	public static TypedActionResult<ItemStack> onUse(PlayerEntity player, World world, Hand hand) {
-		ItemStack stack = player.getStackInHand(hand);
-		return TypedActionResult.pass(stack);
-	}
+    public static TypedActionResult<ItemStack> onUse(PlayerEntity player, World world, Hand hand) {
+        ItemStack stack = player.getStackInHand(hand);
+        return TypedActionResult.pass(stack);
+    }
 }

@@ -12,19 +12,20 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import skylands.util.Texts;
 import skylands.util.WorldProtection;
 
-@Mixin(HopperBlock.class)
-public abstract class HopperBlockMixin {
+import static skylands.util.ServerUtils.protectionWarning;
 
-	@Inject(method = "onUse", at = @At("HEAD"), cancellable = true)
-	void onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-		if(!world.isClient) {
-			if(!WorldProtection.canModify(world, player)) {
-				player.sendMessage(Texts.prefixed("message.skylands.world_protection.hopper_open"), true);
-				cir.setReturnValue(ActionResult.FAIL);
-			}
-		}
-	}
+@Mixin(HopperBlock.class)
+public class HopperBlockMixin {
+
+    @Inject(method = "onUse", at = @At("HEAD"), cancellable = true)
+    void onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
+        if (!world.isClient) {
+            if (!WorldProtection.canModify(world, pos, player)) {
+                protectionWarning(player, "hopper_open");
+                cir.setReturnValue(ActionResult.FAIL);
+            }
+        }
+    }
 }

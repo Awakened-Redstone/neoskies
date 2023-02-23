@@ -10,23 +10,24 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import skylands.util.Texts;
 import skylands.util.WorldProtection;
+
+import static skylands.util.ServerUtils.protectionWarning;
 
 @Mixin(BoatEntity.class)
 public abstract class BoatMixin extends Entity {
 
-	public BoatMixin(EntityType<?> type, World world) {
-		super(type, world);
-	}
+    public BoatMixin(EntityType<?> type, World world) {
+        super(type, world);
+    }
 
-	@Inject(method = "damage", at = @At("HEAD"), cancellable = true)
-	void damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-		if(!world.isClient && source.getAttacker() instanceof PlayerEntity attacker) {
-			if(!WorldProtection.canModify(world, attacker)) {
-				attacker.sendMessage(Texts.prefixed("message.skylands.world_protection.entity_hurt"), true);
-				cir.setReturnValue(false);
-			}
-		}
-	}
+    @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
+    void damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (!world.isClient && source.getAttacker() instanceof PlayerEntity attacker) {
+            if (!WorldProtection.canModify(world, attacker)) {
+                protectionWarning(attacker, "entity_hurt");
+                cir.setReturnValue(false);
+            }
+        }
+    }
 }

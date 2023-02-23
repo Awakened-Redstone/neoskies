@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 @SuppressWarnings("unused")
 public class UseEntityEvent {
 
-	public static ActionResult onUse(PlayerEntity player, World world, Hand hand, Entity entity) {
+    public static ActionResult onUse(PlayerEntity player, World world, Hand hand, Entity entity) {
 //		if(world.getRegistryKey().getValue().getNamespace().equals(Mod.MOD_ID)) {
 //			var island = Skylands.instance.islandStuck.get(UUID.fromString(world.getRegistryKey().getValue().getPath()));
 //			if(island.isPresent() && !island.get().isMember(player)) {
@@ -17,6 +17,6 @@ public class UseEntityEvent {
 //				return ActionResult.FAIL;
 //			}
 //		}
-		return ActionResult.PASS;
-	}
+        return ActionResult.PASS;
+    }
 }

@@ -12,33 +12,34 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import skylands.util.Texts;
 import skylands.util.WorldProtection;
+
+import static skylands.util.ServerUtils.protectionWarning;
 
 @Mixin(ItemFrameEntity.class)
 public abstract class ItemFrameEntityMixin extends AbstractDecorationEntity {
 
-	protected ItemFrameEntityMixin(EntityType<? extends AbstractDecorationEntity> entityType, World world) {
-		super(entityType, world);
-	}
+    protected ItemFrameEntityMixin(EntityType<? extends AbstractDecorationEntity> entityType, World world) {
+        super(entityType, world);
+    }
 
-	@Inject(method = "damage", at = @At("HEAD"), cancellable = true)
-	void damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-		if(!world.isClient && source.getAttacker() instanceof PlayerEntity attacker) {
-			if(!WorldProtection.canModify(world, attacker)) {
-				attacker.sendMessage(Texts.prefixed("message.skylands.world_protection.entity_hurt"), true);
-				cir.setReturnValue(false);
-			}
-		}
-	}
+    @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
+    void damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (!world.isClient && source.getAttacker() instanceof PlayerEntity attacker) {
+            if (!WorldProtection.canModify(world, attacker)) {
+                protectionWarning(attacker, "entity_hurt");
+                cir.setReturnValue(false);
+            }
+        }
+    }
 
-	@Inject(method = "interact", at = @At("HEAD"), cancellable = true)
-	void interact(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
-		if(!player.world.isClient) {
-			if(!WorldProtection.canModify(world, player)) {
-				player.sendMessage(Texts.prefixed("message.skylands.world_protection.item_frame_use"), true);
-				cir.setReturnValue(ActionResult.FAIL);
-			}
-		}
-	}
+    @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
+    void interact(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        if (!player.world.isClient) {
+            if (!WorldProtection.canModify(world, this.getBlockPos(), player)) {
+                protectionWarning(player, "item_frame_use");
+                cir.setReturnValue(ActionResult.FAIL);
+            }
+        }
+    }
 }

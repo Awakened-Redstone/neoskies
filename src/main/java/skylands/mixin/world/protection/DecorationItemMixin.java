@@ -10,25 +10,26 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import skylands.util.Texts;
 import skylands.util.WorldProtection;
 
+import static skylands.util.ServerUtils.protectionWarning;
+
 @Mixin(DecorationItem.class)
-public abstract class DecorationItemMixin extends Item {
+public class DecorationItemMixin extends Item {
 
-	public DecorationItemMixin(Settings settings) {
-		super(settings);
-	}
+    public DecorationItemMixin(Settings settings) {
+        super(settings);
+    }
 
-	@Inject(method = "useOnBlock", at = @At("HEAD"), cancellable = true)
-	void useOnBlock(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
-		World world = context.getWorld();
-		PlayerEntity player = context.getPlayer();
-		if(!world.isClient && player != null) {
-			if(!WorldProtection.canModify(world, player)) {
-				player.sendMessage(Texts.prefixed("message.skylands.world_protection.item_place"), true);
-				cir.setReturnValue(ActionResult.FAIL);
-			}
-		}
-	}
+    @Inject(method = "useOnBlock", at = @At("HEAD"), cancellable = true)
+    void useOnBlock(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {
+        World world = context.getWorld();
+        PlayerEntity player = context.getPlayer();
+        if (!world.isClient && player != null) {
+            if (!WorldProtection.canModify(world, context.getBlockPos(), player)) {
+                protectionWarning(player, "item_place");
+                cir.setReturnValue(ActionResult.FAIL);
+            }
+        }
+    }
 }

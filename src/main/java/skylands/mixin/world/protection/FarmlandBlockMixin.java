@@ -10,19 +10,20 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import skylands.util.Texts;
 import skylands.util.WorldProtection;
 
-@Mixin(FarmlandBlock.class)
-public abstract class FarmlandBlockMixin {
+import static skylands.util.ServerUtils.protectionWarning;
 
-	@Inject(method = "onLandedUpon", at = @At("HEAD"), cancellable = true)
-	void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance, CallbackInfo ci) {
-		if(!world.isClient && entity instanceof PlayerEntity player) {
-			if(!WorldProtection.canModify(world, player)) {
-				player.sendMessage(Texts.prefixed("message.skylands.world_protection.farmland_spoil"), true);
-				ci.cancel();
-			}
-		}
-	}
+@Mixin(FarmlandBlock.class)
+public class FarmlandBlockMixin {
+
+    @Inject(method = "onLandedUpon", at = @At("HEAD"), cancellable = true)
+    void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance, CallbackInfo ci) {
+        if (!world.isClient && entity instanceof PlayerEntity player) {
+            if (!WorldProtection.canModify(world, pos, player)) {
+                protectionWarning(player, "farmland_spoil");
+                ci.cancel();
+            }
+        }
+    }
 }
