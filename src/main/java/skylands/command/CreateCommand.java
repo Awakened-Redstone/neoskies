@@ -34,7 +34,7 @@ public class CreateCommand {
             player.sendMessage(Texts.prefixed("message.skylands.island_create.fail"));
         } else {
             Island island = islands.create(player);
-            island.onFirstLoad();
+            island.onFirstLoad(player);
             player.sendMessage(Texts.prefixed("message.skylands.island_create.success"));
         }
     }

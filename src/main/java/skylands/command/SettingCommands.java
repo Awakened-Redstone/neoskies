@@ -9,12 +9,11 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import skylands.SkylandsMain;
+import skylands.api.SkylandsAPI;
 import skylands.gui.IslandSettingsGui;
 import skylands.logic.Island;
 import skylands.logic.Skylands;
 import skylands.util.Texts;
-import skylands.util.Worlds;
 
 import java.util.Optional;
 
@@ -27,36 +26,47 @@ import static skylands.command.utils.CommandUtils.register;
 public class SettingCommands {
 
     static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
-        register(dispatcher, node().then(literal("settings").requires(Permissions.require("skylands.island.settings", true))
-                .executes(context -> settingsGui(context.getSource()))
-                .then(literal("lock").requires(Permissions.require("skylands.island.lock", true)).executes(context -> {
-                    var player = context.getSource().getPlayer();
-                    if (player != null) {
-                        SettingCommands.toggleVisits(player);
-                    }
-                    return 1;
-                })).then(literal("position")
-                        .then(literal("spawn").requires(Permissions.require("skylands.island.settings.position.spawn", true))
-                                .then(argument("position", blockPos()).executes(context -> {
+        register(dispatcher, node()
+                .then(literal("settings")
+                        .requires(Permissions.require("skylands.island.settings", true))
+                        .executes(context -> settingsGui(context.getSource()))
+                        .then(literal("lock")
+                                .requires(Permissions.require("skylands.island.lock", true))
+                                .executes(context -> {
                                     var player = context.getSource().getPlayer();
-                                    var pos = BlockPosArgumentType.getBlockPos(context, "position");
                                     if (player != null) {
-                                        setSpawnPos(player, pos);
+                                        SettingCommands.toggleVisits(player);
                                     }
                                     return 1;
-                                }))
-                        ).then(literal("visit").requires(Permissions.require("skylands.island.settings.position.visit", true))
-                                .then(argument("position", blockPos()).executes(context -> {
-                                    var player = context.getSource().getPlayer();
-                                    var pos = BlockPosArgumentType.getBlockPos(context, "position");
-                                    if (player != null) {
-                                        setVisitsPos(player, pos);
-                                    }
-                                    return 1;
-                                }))
+                                })
+                        ).then(literal("position")
+                                .then(literal("spawn")
+                                        .requires(Permissions.require("skylands.island.settings.position.spawn", true))
+                                        .then(argument("position", blockPos())
+                                                .executes(context -> {
+                                                    var player = context.getSource().getPlayer();
+                                                    var pos = BlockPosArgumentType.getBlockPos(context, "position");
+                                                    if (player != null) {
+                                                        setSpawnPos(player, pos);
+                                                    }
+                                                    return 1;
+                                                })
+                                        )
+                                ).then(literal("visit")
+                                        .requires(Permissions.require("skylands.island.settings.position.visit", true))
+                                        .then(argument("position", blockPos())
+                                                .executes(context -> {
+                                                    var player = context.getSource().getPlayer();
+                                                    var pos = BlockPosArgumentType.getBlockPos(context, "position");
+                                                    if (player != null) {
+                                                        setVisitsPos(player, pos);
+                                                    }
+                                                    return 1;
+                                                })
+                                        )
+                                )
                         )
-                )
-        ));
+                ));
     }
 
     static void toggleVisits(ServerPlayerEntity player) {
@@ -91,23 +101,20 @@ public class SettingCommands {
     }
 
     private static int settingsGui(ServerCommandSource source) {
-        try {
-            if (!source.isExecutedByPlayer()) {
-                source.sendError(Texts.prefixed("message.skylands.error.player_only"));
-                return 0;
-            }
-
-            ServerPlayerEntity player = source.getPlayer();
-
-            Optional<Island> optionalIsland = Worlds.getIsland(player);
-            optionalIsland.ifPresentOrElse(island -> {
-                player.playSound(SoundEvents.ENTITY_HORSE_SADDLE, SoundCategory.MASTER, 0.4f, 1);
-                new IslandSettingsGui(island, null).openGui(player);
-            }, () -> source.sendError(Texts.prefixed("message.skylands.error.missing_island")));
-
-        } catch (Exception e) {
-            SkylandsMain.LOGGER.error("Failed to run command!", e);
+        if (!source.isExecutedByPlayer()) {
+            source.sendError(Texts.prefixed("message.skylands.error.player_only"));
+            return 0;
         }
+
+        ServerPlayerEntity player = source.getPlayer();
+
+        Optional<Island> optionalIsland = SkylandsAPI.getIsland(player);
+        optionalIsland.ifPresentOrElse(island -> {
+            //noinspection DataFlowIssue
+            player.playSound(SoundEvents.ENTITY_HORSE_SADDLE, SoundCategory.MASTER, 0.4f, 1);
+            new IslandSettingsGui(island, null).openGui(player);
+        }, () -> source.sendError(Texts.prefixed("message.skylands.error.missing_island")));
+
         return 1;
     }
 }

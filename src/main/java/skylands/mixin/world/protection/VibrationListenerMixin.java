@@ -29,7 +29,7 @@ public class VibrationListenerMixin {
         if (!world.isClient) {
             Optional<Vec3d> optional = positionSource.getPos(world);
             if (optional.isEmpty()) return;
-            BlockPos pos = new BlockPos(optional.get());
+            BlockPos pos = BlockPos.ofFloored(optional.get());
             if ((emitter.sourceEntity() instanceof PlayerEntity player && !WorldProtection.canModify(world, pos, player)) || !WorldProtection.isWithinIsland(world, pos)) {
                 cir.setReturnValue(false);
             }

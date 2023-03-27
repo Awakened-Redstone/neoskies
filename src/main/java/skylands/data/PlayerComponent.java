@@ -1,11 +1,12 @@
 package skylands.data;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.ArrayList;
 
-public class PlayerComponent implements AbstractPlayerData {
+public class PlayerComponent implements ComponentV3 {
 
     public PlayerEntity player;
 
@@ -15,12 +16,10 @@ public class PlayerComponent implements AbstractPlayerData {
         this.player = player;
     }
 
-    @Override
     public ArrayList<String> getIslands() {
         return islands;
     }
 
-    @Override
     public void setIslands(ArrayList<String> islands) {
         this.islands = islands;
     }

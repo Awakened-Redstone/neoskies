@@ -21,11 +21,12 @@ import static skylands.util.ServerUtils.protectionWarning;
 @Mixin(BucketItem.class)
 public class BucketItemMixin {
 
+    @SuppressWarnings("InvalidInjectorMethodSignature")
     @Inject(method = "use", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/item/BucketItem;raycast(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/world/RaycastContext$FluidHandling;)Lnet/minecraft/util/hit/BlockHitResult;", shift = At.Shift.AFTER), cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT)
     void use(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir, ItemStack itemStack, BlockHitResult blockHitResult) {
         if (!world.isClient) {
             if (blockHitResult.getType() == HitResult.Type.MISS) return;
-            BlockPos blockPos = new BlockPos(blockHitResult.getPos());
+            BlockPos blockPos = BlockPos.ofFloored(blockHitResult.getPos());
             if (!WorldProtection.canModify(world, blockPos, user)) {
                 protectionWarning(user, "bucket_use");
                 cir.setReturnValue(TypedActionResult.fail(user.getStackInHand(hand)));

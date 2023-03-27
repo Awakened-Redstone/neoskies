@@ -6,7 +6,7 @@ import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import skylands.SkylandsMain;
-import skylands.data.Components;
+import skylands.data.SkylandComponents;
 import skylands.util.Texts;
 
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
@@ -31,7 +31,7 @@ public class HomeCommand {
                                     var player = context.getSource().getPlayer();
 
                                     if (player != null) {
-                                        var islands = Components.PLAYER_DATA.get(player).getIslands();
+                                        var islands = SkylandComponents.PLAYER_DATA.get(player).getIslands();
 
                                         String remains = builder.getRemaining();
 
@@ -75,15 +75,15 @@ public class HomeCommand {
                 if (island.isMember(visitor)) {
                     visitor.sendMessage(Texts.prefixed("message.skylands.visit_home.success", map -> map.put("%owner%", islandOwner)));
                     island.visitAsMember(visitor);
-                    Components.PLAYER_DATA.get(visitor).addIsland(islandOwner);
+                    SkylandComponents.PLAYER_DATA.get(visitor).addIsland(islandOwner);
                 } else {
                     visitor.sendMessage(Texts.prefixed("message.skylands.visit_home.not_member"));
-                    Components.PLAYER_DATA.get(visitor).removeIsland(islandOwner);
+                    SkylandComponents.PLAYER_DATA.get(visitor).removeIsland(islandOwner);
                 }
             }
         }, () -> {
             visitor.sendMessage(Texts.prefixed("message.skylands.visit_home.no_island"));
-            Components.PLAYER_DATA.get(visitor).removeIsland(islandOwner);
+            SkylandComponents.PLAYER_DATA.get(visitor).removeIsland(islandOwner);
         });
     }
 }

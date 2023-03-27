@@ -1,20 +1,16 @@
 package skylands.mixin.world.protection;
 
-import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import skylands.logic.Skylands;
-import skylands.util.Texts;
 import skylands.util.WorldProtection;
 
 import static skylands.util.ServerUtils.protectionWarning;
@@ -28,17 +24,13 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     void damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        LivingEntity self = LivingEntity.class.cast(this);
-
         if (!world.isClient && world.getServer() != null) {
-            if (self instanceof PlayerEntity player) {
+            if ((LivingEntity) (Object) this instanceof PlayerEntity player) {
+                //Keep it as a failsafe, better than adding extra code to ticking :P
                 if (!WorldProtection.canModify(world, player)) {
                     protectionWarning(player, "damage_take");
-                    if (source.equals(DamageSource.OUT_OF_WORLD)) {
-                        player.sendMessage(Texts.prefixed("message.skylands.hub_visit"));
-                        FabricDimensions.teleport(player, world.getServer().getOverworld(), new TeleportTarget(Skylands.instance.hub.pos, new Vec3d(0, 0, 0), 0, 0));
-//						var pos = island.get().spawnPos;
-//						player.teleport(pos.getX(), pos.getY(), pos.getZ());
+                    if (source.equals(world.getDamageSources().outOfWorld())) {
+                        Skylands.instance.hub.visit(player);
                     }
                     cir.setReturnValue(false);
                 }

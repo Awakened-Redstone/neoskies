@@ -5,6 +5,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import skylands.SkylandsMain;
+import skylands.api.SkylandsAPI;
 import skylands.api.island.IslandSettingsList;
 import skylands.api.island.PermissionLevel;
 import skylands.logic.Island;
@@ -19,7 +20,7 @@ public class WorldProtection {
             if (Permissions.check(player, "skylands.admin.protection.bypass", 4)) return true;
             else SkylandsMain.PROTECTION_BYPASS.remove(player);
         }
-        Optional<Island> island = Worlds.getIsland(world);
+        Optional<Island> island = SkylandsAPI.getIsland(world);
         if (island.isPresent() && !island.get().isMember(player)) {
             return false;
         }
@@ -36,7 +37,7 @@ public class WorldProtection {
             if (Permissions.check(player, "skylands.admin.protection.bypass", 4)) return true;
             else SkylandsMain.PROTECTION_BYPASS.remove(player);
         }
-        Optional<Island> island = Worlds.getIsland(world);
+        Optional<Island> island = SkylandsAPI.getIsland(world);
         if (island.isPresent()) {
             if (!island.get().isWithinBorder(pos)) return false;
             else if (island.get().isMember(player)) return true;
@@ -55,7 +56,7 @@ public class WorldProtection {
             else SkylandsMain.PROTECTION_BYPASS.remove(player);
         }
 
-        Optional<Island> island = Worlds.getIsland(world);
+        Optional<Island> island = SkylandsAPI.getIsland(world);
         if (island.isPresent()) {
             if (!island.get().isWithinBorder(pos)) return false;
             if (island.get().isInteractionAllowed(setting.getIdentifier(), getPlayerPermissionLevel(world, player))) {
@@ -71,7 +72,7 @@ public class WorldProtection {
     }
 
     public static PermissionLevel getPlayerPermissionLevel(World world, PlayerEntity player) {
-        Optional<Island> island = Worlds.getIsland(world);
+        Optional<Island> island = SkylandsAPI.getIsland(world);
         if (island.isPresent() && island.get().isMember(player)) {
             if (island.get().owner.uuid == player.getUuid()) return PermissionLevel.OWNER;
             else return PermissionLevel.MEMBER;
@@ -85,9 +86,9 @@ public class WorldProtection {
     }
 
     public static boolean isWithinIsland(World world, BlockPos pos) {
-        Optional<Island> island = Worlds.getIsland(world);
+        Optional<Island> island = SkylandsAPI.getIsland(world);
 
-        if (Worlds.isHub(world)) return true;
+        if (SkylandsAPI.isHub(world)) return true;
 
         if (island.isPresent() && (!island.get().isWithinBorder(pos))) {
             return false;

@@ -1,11 +1,15 @@
 {
   "schemaVersion": 1,
-  "id": "skylands",
+  "id": "skylands-custom",
+  "provides": [
+    "skylands"
+  ],
   "version": "${version}",
   "name": "Skylands (custom)",
-  "description": "Simple Skyblock Islands generator and manager.",
+  "description": "Simple Skyblock Islands generator and manager.\nModified version of Skylands",
   "authors": [
-    "PinkGoosik"
+    "PinkGoosik",
+    "Awakened Redstone"
   ],
   "contributors": [
     "KujouMolean"
@@ -15,7 +19,7 @@
     "sources": "https://github.com/tyap-lyap/skylands",
     "issues": "https://github.com/tyap-lyap/skylands/issues"
   },
-  "license": "MIT",
+  "license": "LGPL-3.0",
   "icon": "assets/skylands/icon.png",
   "accessWidener": "skylands.accesswidener",
   "environment": "*",
@@ -24,7 +28,7 @@
       "skylands.SkylandsMain"
     ],
     "cardinal-components": [
-      "skylands.data.Components"
+      "skylands.data.SkylandComponents"
     ]
   },
   "mixins": [
@@ -38,8 +42,8 @@
   },
   "depends": {
     "fabricloader": "*",
-    "fabric-api": ">=0.66.0",
-    "minecraft": "1.19.3",
+    "fabric-api": ">=0.76.0",
+    "minecraft": "1.19.4",
     "java": ">=17"
   }
 }

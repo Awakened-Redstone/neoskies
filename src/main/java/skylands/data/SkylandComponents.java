@@ -9,7 +9,7 @@ import dev.onyxstudios.cca.api.v3.world.WorldComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.world.WorldComponentInitializer;
 import skylands.SkylandsMain;
 
-public class Components implements WorldComponentInitializer, EntityComponentInitializer {
+public class SkylandComponents implements WorldComponentInitializer, EntityComponentInitializer {
     public static final ComponentKey<WorldComponent> WORLD_DATA = ComponentRegistryV3.INSTANCE.getOrCreate(SkylandsMain.id("world_data"), WorldComponent.class);
     public static final ComponentKey<PlayerComponent> PLAYER_DATA = ComponentRegistryV3.INSTANCE.getOrCreate(SkylandsMain.id("player_data"), PlayerComponent.class);
 

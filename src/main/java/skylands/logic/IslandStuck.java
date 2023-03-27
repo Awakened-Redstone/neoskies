@@ -2,7 +2,6 @@ package skylands.logic;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import skylands.SkylandsMain;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -16,6 +15,7 @@ public class IslandStuck {
             if (island.owner.uuid.equals(player.getUuid())) return island;
         }
         var island = new Island(player);
+        island.freshCreated = true;
         this.stuck.add(island);
         return island;
     }
@@ -82,22 +82,6 @@ public class IslandStuck {
             Island island = Island.fromNbt(islandNbt);
             if (!this.hasIsland(island.owner.uuid)) {
                 this.stuck.add(island);
-                SkylandsMain.LOGGER.info("Loading " + island.owner.name + "'s Island...");
-                try {
-                    island.getWorld();
-                } catch (NullPointerException ignored) {}
-                if (island.hasNether) {
-                    SkylandsMain.LOGGER.info("Loading " + island.owner.name + "'s Nether...");
-                    try {
-                        island.getNether();
-                    } catch (NullPointerException ignored) {}
-                }
-                if (island.hasEnd) {
-                    SkylandsMain.LOGGER.info("Loading " + island.owner.name + "'s End...");
-                    try {
-                        island.getEnd();
-                    } catch (NullPointerException ignored) {}
-                }
             }
         }
     }

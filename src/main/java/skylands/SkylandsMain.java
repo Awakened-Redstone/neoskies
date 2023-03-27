@@ -20,9 +20,10 @@ public class SkylandsMain implements ModInitializer {
     public static final ConfigManager<MainConfig> MAIN_CONFIG = ConfigManager.register(SkylandsMain.id("skylands"), MainConfig.class, true);
     public static final Set<PlayerEntity> PROTECTION_BYPASS = new HashSet<>();
 
-    //TODO: Support permissions
     //TODO: Add GUIs
     //TODO: Fix end island
+    //TODO: Better config system
+    //TODO: Simple (and optimised) datapack based island templates
     @Override
     public void onInitialize() {
         SkylandsEvents.init();

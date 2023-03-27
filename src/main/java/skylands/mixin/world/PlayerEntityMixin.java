@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import skylands.api.SkylandsAPI;
 import skylands.logic.Island;
 import skylands.mixin.block.accessor.WorldBorderAccessor;
 import skylands.util.Worlds;
@@ -36,12 +37,12 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     // TODO: Add other visual ways to show the limit
     @Inject(method = "increaseTravelMotionStats", at = @At("HEAD"))
     private void increaseTravelMotionStats(double dx, double dy, double dz, CallbackInfo ci) {
-        if (((Object) this) instanceof ServerPlayerEntity serverPlayer && Worlds.getIsland(world).isPresent() && !lastPos.equals(getPos())) {
+        if (((Object) this) instanceof ServerPlayerEntity serverPlayer && SkylandsAPI.getIsland(world).isPresent() && !lastPos.equals(getPos())) {
             lastPos = getPos();
             double x = Math.abs(getX());
             double z = Math.abs(getZ());
             int range = 64;
-            Island island = Worlds.getIsland(world).get();
+            Island island = SkylandsAPI.getIsland(world).get();
             if (x > island.radius + range + 8 || z > island.radius + range + 8) {
                 Worlds.teleportToIsland(serverPlayer, false);
                 return;
@@ -59,7 +60,6 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         }
     }
 
-    @SuppressWarnings("SpellCheckingInspection")
     private double calculateBorderSize(int islandRadius, int range) {
         int scale = islandRadius + range - 2;
         double in = islandRadius + range + 128;
@@ -76,6 +76,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         } else return in;
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static double scaleDown(double start, double end, double delta) {
         double t = (delta - start) / (end - start);
         return -1 * t * (t - 2);

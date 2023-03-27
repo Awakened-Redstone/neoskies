@@ -54,4 +54,8 @@ public class Skylands {
         this.invites.tick(server);
     }
 
+    public static MinecraftServer getServer() {
+        return getInstance().server;
+    }
+
 }

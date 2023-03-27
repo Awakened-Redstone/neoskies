@@ -17,11 +17,12 @@ import skylands.util.WorldProtection;
 @Mixin(BoatItem.class)
 public class BoatItemMixin {
 
+    @SuppressWarnings("InvalidInjectorMethodSignature")
     @Inject(method = "use", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/item/BoatItem;raycast(Lnet/minecraft/world/World;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/world/RaycastContext$FluidHandling;)Lnet/minecraft/util/hit/BlockHitResult;", shift = At.Shift.AFTER), cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT)
     void useOnBlock(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir, ItemStack itemStack, HitResult hitResult) {
         if (hitResult.getType() == HitResult.Type.MISS) return;
         if (!world.isClient) {
-            BlockPos blockPos = new BlockPos(hitResult.getPos());
+            BlockPos blockPos = BlockPos.ofFloored(hitResult.getPos());
             if (!WorldProtection.isWithinIsland(world, blockPos)) {
                 cir.setReturnValue(TypedActionResult.fail(itemStack));
             }

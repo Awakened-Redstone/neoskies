@@ -19,10 +19,11 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import skylands.SkylandsMain;
+import skylands.api.SkylandsAPI;
 import skylands.gui.IslandSettingsGui;
 import skylands.logic.Island;
+import skylands.logic.Skylands;
 import skylands.util.Texts;
-import skylands.util.Worlds;
 
 import java.util.Optional;
 import java.util.Set;
@@ -59,13 +60,13 @@ public class MenuCommand {
             boolean dirty = false;
         };
         final Consumer<SlotHolder> consumer = slotHolder -> {
-            Optional<Island> islandOptional = Worlds.getIsland(player);
+            Optional<Island> islandOptional = SkylandsAPI.getIsland(player);
             Utils.fillGui(slotHolder, new CBGuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE).setName(Text.empty()).build());
             if (Permissions.check(player, "skylands.teleport.hub", true)) {
                 slotHolder.setSlot(10, new CBGuiElementBuilder(Items.BEACON).setName(Texts.of("item_name.skylands.hub"))
                         .setCallback((index, type, action, gui) -> {
                             //gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.3f, 1);
-                            HubCommands.visit(player, player.server);
+                            Skylands.instance.hub.visit(player);
                             gui.close();
                         })
                         .build());

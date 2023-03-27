@@ -40,7 +40,7 @@ public abstract class ArmorStandMixin extends LivingEntity {
     @Inject(method = "interactAt", at = @At("HEAD"), cancellable = true)
     void interactAt(PlayerEntity player, Vec3d hitPos, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         if (!player.world.isClient) {
-            if (!WorldProtection.canModify(player.world, new BlockPos(hitPos), player)) {
+            if (!WorldProtection.canModify(player.world, BlockPos.ofFloored(hitPos), player)) {
                 protectionWarning(player, "armor_stand_use");
                 cir.setReturnValue(ActionResult.FAIL);
             }

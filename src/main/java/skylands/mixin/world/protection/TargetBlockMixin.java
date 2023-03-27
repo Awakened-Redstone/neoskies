@@ -20,7 +20,6 @@ public class TargetBlockMixin {
 
     @Inject(method = "onProjectileHit", at = @At("HEAD"), cancellable = true)
     private void useOnBlock(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile, CallbackInfo ci) {
-        TargetBlock block = (TargetBlock) ((Object) this);
         if (!world.isClient) {
             if (projectile.getOwner() instanceof PlayerEntity player) {
                 if (!WorldProtection.canModify(world, hit.getBlockPos(), player)) {
@@ -29,7 +28,7 @@ public class TargetBlockMixin {
                 }
             }
 
-            if (!WorldProtection.isWithinIsland(world, new BlockPos(hit.getPos()))) {
+            if (!WorldProtection.isWithinIsland(world, BlockPos.ofFloored(hit.getPos()))) {
                 ci.cancel();
             }
         }

@@ -1,6 +1,5 @@
 package skylands.logic;
 
-import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -16,12 +15,12 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.RandomSeed;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import skylands.SkylandsMain;
+import skylands.api.events.IslandEvents;
 import skylands.api.island.IslandSettings;
 import skylands.api.island.PermissionLevel;
 import skylands.api.island.SettingsManager;
@@ -48,6 +47,7 @@ public class Island {
     public ArrayList<Member> members = new ArrayList<>();
     public ArrayList<Member> bans = new ArrayList<>();
     public int radius = SkylandsMain.MAIN_CONFIG.getConfig().defaultIslandRadius;
+    boolean freshCreated = false;
 
     public boolean locked = false;
     public Vec3d spawnPos = SkylandsMain.MAIN_CONFIG.getConfig().defaultIslandLocation;
@@ -76,6 +76,7 @@ public class Island {
         island.created = Instant.parse(nbt.getString("created"));
         island.locked = nbt.getBoolean("locked");
         island.radius = nbt.getInt("radius");
+        island.freshCreated = nbt.getBoolean("freshCreated");
 
         NbtCompound spawnPosNbt = nbt.getCompound("spawnPos");
         double spawnPosX = spawnPosNbt.getDouble("x");
@@ -126,6 +127,7 @@ public class Island {
         nbt.putString("created", this.created.toString());
         nbt.putBoolean("locked", this.locked);
         nbt.putInt("radius", radius);
+        nbt.putBoolean("freshCreated", this.freshCreated);
 
         NbtCompound spawnPosNbt = new NbtCompound();
         spawnPosNbt.putDouble("x", this.spawnPos.getX());
@@ -203,6 +205,7 @@ public class Island {
         return false;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isWithinBorder(BlockPos pos) {
         if (radius < 0) return true;
         int minY = getWorld().getBottomY();
@@ -238,7 +241,7 @@ public class Island {
                 .setGenerator(generator)
                 .setDifficulty(Difficulty.NORMAL)
                 .setShouldTickTime(true)
-                .setSeed(RandomSeed.getSeed());
+                .setSeed(0L);
     }
 
     public RuntimeWorldHandle getNetherHandler() {
@@ -304,27 +307,40 @@ public class Island {
         return handler.asWorld();
     }
 
-    public void visitAsMember(PlayerEntity player) {
+    public void visit(PlayerEntity player, Vec3d pos) {
         ServerWorld world = this.getWorld();
-        FabricDimensions.teleport(player, world, new TeleportTarget(this.spawnPos, new Vec3d(0, 0, 0), 0, 0));
+        player.teleport(world, pos.getX(), pos.getY(), pos.getZ(), Set.of(), 0, 0);
+
+        if(!isMember(player)) {
+            Players.get(this.owner.name).ifPresent(owner -> {
+                if(!player.getUuid().equals(owner.getUuid())) {
+                    owner.sendMessage(Texts.prefixed("message.skylands.island_visit.visit", map -> map.put("%visitor%", player.getName().getString())));
+                }
+            });
+        }
+
+        IslandEvents.ON_ISLAND_VISIT.invoker().invoke(player, world, this);
+
+        if (this.freshCreated) {
+            this.onFirstLoad(player);
+            this.freshCreated = false;
+        }
+    }
+
+    public void visitAsMember(PlayerEntity player) {
+        this.visit(player, this.spawnPos);
     }
 
     public void visitAsVisitor(PlayerEntity player) {
-        ServerWorld world = this.getWorld();
-        FabricDimensions.teleport(player, world, new TeleportTarget(this.visitsPos, new Vec3d(0, 0, 0), 0, 0));
-
-        Players.get(this.owner.name).ifPresent(owner -> {
-            if (!player.getUuid().equals(owner.getUuid())) {
-                owner.sendMessage(Texts.prefixed("message.skylands.island_visit.visit", map -> map.put("%visitor%", player.getName().getString())));
-            }
-        });
+        this.visit(player, this.visitsPos);
     }
 
-    public void onFirstLoad() {
+    public void onFirstLoad(PlayerEntity player) {
         ServerWorld world = this.getWorld();
         StructureTemplate structure = server.getStructureTemplateManager().getTemplateOrBlank(SkylandsMain.id("start_island"));
         StructurePlacementData data = new StructurePlacementData().setMirror(BlockMirror.NONE).setIgnoreEntities(true);
         structure.place(world, new BlockPos(-7, 65, -7), new BlockPos(0, 0, 0), data, world.getRandom(), Block.NOTIFY_ALL);
+        IslandEvents.ON_ISLAND_FIRST_LOAD.invoker().invoke(player, world, this);
     }
 
     void onFirstNetherLoad(ServerWorld world) {
@@ -335,6 +351,7 @@ public class Island {
         StructureTemplate structure = server.getStructureTemplateManager().getTemplateOrBlank(SkylandsMain.id("nether_island"));
         StructurePlacementData data = new StructurePlacementData().setMirror(BlockMirror.NONE).setIgnoreEntities(true);
         structure.place(world, new BlockPos(-7, 65, -7), new BlockPos(0, 0, 0), data, world.getRandom(), Block.NOTIFY_ALL);
+        IslandEvents.ON_NETHER_FIRST_LOAD.invoker().onLoad(world, this);
 
         this.hasNether = true;
     }
@@ -347,6 +364,7 @@ public class Island {
         StructureTemplate structure = server.getStructureTemplateManager().getTemplateOrBlank(SkylandsMain.id("end_island"));
         StructurePlacementData data = new StructurePlacementData().setMirror(BlockMirror.NONE).setIgnoreEntities(true);
         structure.place(world, new BlockPos(-7, 65, -7), new BlockPos(0, 0, 0), data, world.getRandom(), Block.NOTIFY_ALL);
+        IslandEvents.ON_END_FIRST_LOAD.invoker().onLoad(world, this);
 
         this.hasEnd = true;
     }

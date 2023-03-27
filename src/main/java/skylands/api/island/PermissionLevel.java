@@ -12,7 +12,7 @@ public enum PermissionLevel {
 
     @Contract(pure = true)
     PermissionLevel(int level) {
-        this.level = MathHelper.clamp((byte) level, Byte.MIN_VALUE, Byte.MAX_VALUE);
+        this.level = (byte) MathHelper.clamp((byte) level, Byte.MIN_VALUE, Byte.MAX_VALUE);
     }
 
     public byte getLevel() {

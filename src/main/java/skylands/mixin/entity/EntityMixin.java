@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import skylands.api.SkylandsAPI;
 import skylands.logic.Island;
 import skylands.util.Worlds;
 
@@ -23,14 +24,14 @@ public class EntityMixin {
 
     @ModifyVariable(method = "tickPortal", at = @At("STORE"), ordinal = 0)
     public RegistryKey<World> tickPortal_modifyRegistryKey(RegistryKey<World> instance) {
-        if (Worlds.isIsland(world) && Worlds.isOverworld(world.getRegistryKey())) {
-            Optional<Island> island = Worlds.getIsland(world);
+        if (SkylandsAPI.isIsland(world) && SkylandsAPI.isOverworld(world.getRegistryKey())) {
+            Optional<Island> island = SkylandsAPI.getIsland(world);
             if (island.isPresent()) {
                 return island.get().getNether().getRegistryKey();
             }
         }
-        if (Worlds.isIsland(world) && Worlds.isNether(world.getRegistryKey())) {
-            Optional<Island> island = Worlds.getIsland(world);
+        if (SkylandsAPI.isIsland(world) && SkylandsAPI.isNether(world.getRegistryKey())) {
+            Optional<Island> island = SkylandsAPI.getIsland(world);
             if (island.isPresent()) {
                 return island.get().getWorld().getRegistryKey();
             }
