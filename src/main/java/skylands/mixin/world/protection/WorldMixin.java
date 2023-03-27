@@ -15,7 +15,7 @@ public class WorldMixin {
 
     @Inject(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;II)Z", at = @At("HEAD"), cancellable = true)
     private void setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth, CallbackInfoReturnable<Boolean> cir) {
-        if (!SkylandsMain.MAIN_CONFIG.getConfig().disableBlocksOutsideIslands) return;
+        if (!SkylandsMain.MAIN_CONFIG.disableBlocksOutsideIslands()) return;
         if (!WorldProtection.isWithinIsland((World) (Object) this, pos)) cir.setReturnValue(false);
     }
 }

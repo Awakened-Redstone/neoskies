@@ -24,7 +24,7 @@ public class EndPortalBlockMixin {
             locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
     public void resourceKey(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo ci) {
         if (SkylandsAPI.isIsland(world)) {
-            if (!SkylandsMain.MAIN_CONFIG.getConfig().enableEndIsland) {
+            if (!SkylandsMain.MAIN_CONFIG.enableEndIsland()) {
                 ci.cancel();
                 return;
             }

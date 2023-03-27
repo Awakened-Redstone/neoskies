@@ -58,7 +58,7 @@ public class HomeCommand {
 
     static void run(ServerPlayerEntity player) {
         skylands.logic.Skylands.instance.islands.get(player).ifPresentOrElse(island -> {
-            if (player.getWorld().getRegistryKey().getValue().equals(SkylandsMain.id(player.getUuid().toString())) && !SkylandsMain.MAIN_CONFIG.getConfig().allowVisitCurrentIsland) {
+            if (player.getWorld().getRegistryKey().getValue().equals(SkylandsMain.id(player.getUuid().toString())) && !SkylandsMain.MAIN_CONFIG.allowVisitCurrentIsland()) {
                 player.sendMessage(Texts.prefixed("message.skylands.home.fail"));
             } else {
                 player.sendMessage(Texts.prefixed("message.skylands.home.success"));
@@ -69,7 +69,7 @@ public class HomeCommand {
 
     static void run(ServerPlayerEntity visitor, String islandOwner) {
         skylands.logic.Skylands.instance.islands.get(islandOwner).ifPresentOrElse(island -> {
-            if (visitor.getWorld().getRegistryKey().getValue().equals(SkylandsMain.id(island.owner.uuid.toString())) && !SkylandsMain.MAIN_CONFIG.getConfig().allowVisitCurrentIsland) {
+            if (visitor.getWorld().getRegistryKey().getValue().equals(SkylandsMain.id(island.owner.uuid.toString())) && !SkylandsMain.MAIN_CONFIG.allowVisitCurrentIsland()) {
                 visitor.sendMessage(Texts.prefixed("message.skylands.visit_home.fail", map -> map.put("%owner%", islandOwner)));
             } else {
                 if (island.isMember(visitor)) {

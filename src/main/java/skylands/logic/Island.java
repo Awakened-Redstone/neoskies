@@ -46,12 +46,12 @@ public class Island {
     public Member owner;
     public ArrayList<Member> members = new ArrayList<>();
     public ArrayList<Member> bans = new ArrayList<>();
-    public int radius = SkylandsMain.MAIN_CONFIG.getConfig().defaultIslandRadius;
+    public int radius = SkylandsMain.MAIN_CONFIG.defaultIslandRadius();
     boolean freshCreated = false;
 
     public boolean locked = false;
-    public Vec3d spawnPos = SkylandsMain.MAIN_CONFIG.getConfig().defaultIslandLocation;
-    public Vec3d visitsPos = SkylandsMain.MAIN_CONFIG.getConfig().defaultIslandLocation;
+    public Vec3d spawnPos = SkylandsMain.MAIN_CONFIG.defaultIslandLocation();
+    public Vec3d visitsPos = SkylandsMain.MAIN_CONFIG.defaultIslandLocation();
     public boolean hasNether = false;
     public boolean hasEnd = false;
 

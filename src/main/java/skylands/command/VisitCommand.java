@@ -37,7 +37,7 @@ public class VisitCommand {
                 visitor.sendMessage(Texts.prefixed("message.skylands.island_visit.ban", map -> map.put("%owner%", ownerName)));
             } else {
                 if (!island.locked) {
-                    if (visitor.getWorld().getRegistryKey().getValue().equals(SkylandsMain.id(island.owner.uuid.toString())) && !SkylandsMain.MAIN_CONFIG.getConfig().allowVisitCurrentIsland) {
+                    if (visitor.getWorld().getRegistryKey().getValue().equals(SkylandsMain.id(island.owner.uuid.toString())) && !SkylandsMain.MAIN_CONFIG.allowVisitCurrentIsland()) {
                         visitor.sendMessage(Texts.prefixed("message.skylands.island_visit.fail", map -> map.put("%owner%", ownerName)));
                     } else {
                         visitor.sendMessage(Texts.prefixed("message.skylands.island_visit.success", map -> map.put("%owner%", ownerName)));

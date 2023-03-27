@@ -1,7 +1,6 @@
 package skylands.command;
 
-import com.awakenedredstone.cbserverconfig.api.config.ConfigManager;
-import com.awakenedredstone.cbserverconfig.gui.ConfigGui;
+import com.awakenedredstone.cbserverconfig.ui.ConfigScreen;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -65,8 +64,7 @@ public class SkylandsCommands {
                                 return 0;
                             }
 
-                            ConfigGui configGui = new ConfigGui(ConfigManager.getConfig(SkylandsMain.id("skylands")), null);
-                            configGui.buildGui(source.getPlayer()).open();
+                            new ConfigScreen(source.getPlayer(), SkylandsMain.MAIN_CONFIG, null, null);
 
                             return 1;
                         })

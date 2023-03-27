@@ -36,7 +36,7 @@ public class Worlds {
             }
         } else if (SkylandsAPI.isHub(player.world)) {
             Hub hub = Skylands.getInstance().hub;
-            if (!SkylandsMain.MAIN_CONFIG.getConfig().safeVoidFallDamage) player.fallDistance = 0;
+            if (!SkylandsMain.MAIN_CONFIG.safeVoidFallDamage()) player.fallDistance = 0;
             FabricDimensions.teleport(player, player.getWorld(), new TeleportTarget(hub.pos, new Vec3d(0, 0, 0), 0, 0));
         }
     }

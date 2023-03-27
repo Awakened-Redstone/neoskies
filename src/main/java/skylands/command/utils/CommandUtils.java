@@ -12,17 +12,17 @@ import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 public class CommandUtils {
 
     public static LiteralArgumentBuilder<ServerCommandSource> node() {
-        return literal(SkylandsMain.MAIN_CONFIG.getConfig().command);
+        return literal(SkylandsMain.MAIN_CONFIG.command());
     }
 
     public static LiteralArgumentBuilder<ServerCommandSource> adminNode() {
-        return literal(SkylandsMain.MAIN_CONFIG.getConfig().adminCommand);
+        return literal(SkylandsMain.MAIN_CONFIG.adminCommand());
     }
 
     public static LiteralCommandNode<ServerCommandSource> register(CommandDispatcher<ServerCommandSource> dispatcher, final LiteralArgumentBuilder<ServerCommandSource> command) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(command);
 
-        for (String alias : SkylandsMain.MAIN_CONFIG.getConfig().commandAliases) {
+        for (String alias : SkylandsMain.MAIN_CONFIG.commandAliases()) {
             dispatcher.register(CommandManager.literal(alias).redirect(node));
         }
 
@@ -32,7 +32,7 @@ public class CommandUtils {
     public static LiteralCommandNode<ServerCommandSource> registerAdmin(CommandDispatcher<ServerCommandSource> dispatcher, final LiteralArgumentBuilder<ServerCommandSource> command) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(command);
 
-        for (String alias : SkylandsMain.MAIN_CONFIG.getConfig().adminCommandAliases) {
+        for (String alias : SkylandsMain.MAIN_CONFIG.adminCommandAliases()) {
             dispatcher.register(CommandManager.literal(alias).redirect(node));
         }
 

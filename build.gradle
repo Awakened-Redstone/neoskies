@@ -11,14 +11,17 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-    mavenLocal()
+    //mavenLocal()
 	maven {
 		url "https://api.modrinth.com/maven"
 		content { includeGroup "maven.modrinth" }
 	}
 	maven { url "https://maven.nucleoid.xyz" }
+	maven { url "https://maven.awakenedredstone.com" }
 	maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 	maven { url "https://ladysnake.jfrog.io/artifactory/mods" }
+
+    maven { url "https://maven.wispforest.io" } //Temporary
 }
 
 dependencies {
@@ -42,7 +45,8 @@ dependencies {
     modImplementation include("eu.pb4:common-protection-api:${project.cpa}")
     modImplementation include("eu.pb4:common-economy-api:${project.cea}")
 
-    modImplementation("com.awakenedredstone:cbserverconfig:${project.cbsc}")
+    modImplementation "com.awakenedredstone:cbserverconfig:${project.cbsc}"
+    annotationProcessor(modCompileOnly "io.wispforest:owo-lib:0.10.3+1.19.4") //Temporary
 }
 
 processResources {

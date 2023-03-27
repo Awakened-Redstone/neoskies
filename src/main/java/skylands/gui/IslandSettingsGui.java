@@ -1,6 +1,5 @@
 package skylands.gui;
 
-import com.awakenedredstone.cbserverconfig.gui.Icons;
 import com.awakenedredstone.cbserverconfig.polymer.CBGuiElement;
 import com.awakenedredstone.cbserverconfig.polymer.CBGuiElementBuilder;
 import com.awakenedredstone.cbserverconfig.polymer.CBSimpleGuiBuilder;
@@ -36,8 +35,8 @@ public class IslandSettingsGui {
 
     private final CBGuiElement filler = new CBGuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE).setName(Text.empty()).build();
     //TODO: Update to use translations
-    private final CBGuiElement nextPage = CBGuiElementBuilder.from(Icons.INCREASE).setName(Texts.of("Next page")).setCallback((index, type, action, gui) -> offsetPage(1, gui)).build();
-    private final CBGuiElement prevPage = CBGuiElementBuilder.from(Icons.DECREASE).setName(Texts.of("Previous page")).setCallback((index, type, action, gui) -> offsetPage(-1, gui)).build();
+    private final CBGuiElement nextPage = new CBGuiElementBuilder(Items.LIME_STAINED_GLASS_PANE).setName(Texts.of("Next page")).setCallback((index, type, action, gui) -> offsetPage(1, gui)).build();
+    private final CBGuiElement prevPage = new CBGuiElementBuilder(Items.RED_STAINED_GLASS_PANE).setName(Texts.of("Previous page")).setCallback((index, type, action, gui) -> offsetPage(-1, gui)).build();
 
 
     public IslandSettingsGui(Island island, @Nullable GuiInterface parent) {

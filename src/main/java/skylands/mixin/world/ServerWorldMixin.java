@@ -52,7 +52,7 @@ public abstract class ServerWorldMixin extends World implements StructureWorldAc
 
     @Inject(method = "spawnEntity", at = @At("HEAD"), cancellable = true)
     private void spawnEntity(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (!SkylandsMain.MAIN_CONFIG.getConfig().disableEntitiesOutsideIslands) return;
+        if (!SkylandsMain.MAIN_CONFIG.disableEntitiesOutsideIslands()) return;
         if (entity instanceof ItemEntity || entity instanceof ProjectileEntity) return;
         World world = entity.getWorld();
         BlockPos blockPos = entity.getBlockPos();

@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 public class ServerUtils {
 
     public static void protectionWarning(PlayerEntity player, String key) {
-        if (SkylandsMain.getConfig().showProtectionMessages) actionbarPrefixed(player, "message.skylands.world_protection." + key);
+        if (SkylandsMain.MAIN_CONFIG.showProtectionMessages()) actionbarPrefixed(player, "message.skylands.world_protection." + key);
     }
 
     public static void actionbarPrefixed(PlayerEntity player, String message, Consumer<Map<String, String>> builder) {

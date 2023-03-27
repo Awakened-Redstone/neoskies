@@ -1,15 +1,14 @@
 package skylands.config;
 
-import com.awakenedredstone.cbserverconfig.annotation.Name;
-import com.awakenedredstone.cbserverconfig.api.config.Config;
-import com.google.gson.annotations.JsonAdapter;
+import io.wispforest.owo.config.annotation.Config;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Name("Skylands")
-public class MainConfig extends Config {
+@SuppressWarnings("unused")
+@Config(name = "skylands", wrapperName = "MainConfigs")
+public class MainConfig {
     public String command = "sl";
     public List<String> commandAliases = new ArrayList<>();
     public String adminCommand = "force-sl";
@@ -18,9 +17,8 @@ public class MainConfig extends Config {
     public int defaultIslandRadius = -1;
     //public int deletionCooldown = -1;
     //public int islandLimit = -1;
-    //public int resetPlayerWithIsland = -1;
-    @JsonAdapter(ConfigJsonAdapters.Vec3dAdapter.class)
-    public Vec3d defaultIslandLocation = new Vec3d(0.5D, 75D, 0.5D);
+    //public boolean resetPlayerWithIsland = false;
+    public Vec3d defaultIslandLocation = new Vec3d(0.5d, 75d, 0.5d);
     public boolean disableBlocksOutsideIslands = false;
     public boolean disableEntitiesOutsideIslands = false;
     public boolean enableEndIsland = false;

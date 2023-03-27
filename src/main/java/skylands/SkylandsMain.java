@@ -1,13 +1,15 @@
 package skylands;
 
-import com.awakenedredstone.cbserverconfig.api.config.ConfigManager;
+import blue.endless.jankson.JsonArray;
+import blue.endless.jankson.JsonPrimitive;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import skylands.command.SkylandsCommands;
-import skylands.config.MainConfig;
+import skylands.config.MainConfigs;
 import skylands.data.reloadable.SongsData;
 import skylands.event.SkylandsEvents;
 
@@ -17,7 +19,7 @@ import java.util.Set;
 public class SkylandsMain implements ModInitializer {
     public static final String MOD_ID = "skylands";
     public static final Logger LOGGER = LoggerFactory.getLogger("Skylands");
-    public static final ConfigManager<MainConfig> MAIN_CONFIG = ConfigManager.register(SkylandsMain.id("skylands"), MainConfig.class, true);
+    public static final MainConfigs MAIN_CONFIG;
     public static final Set<PlayerEntity> PROTECTION_BYPASS = new HashSet<>();
 
     //TODO: Add GUIs
@@ -31,11 +33,27 @@ public class SkylandsMain implements ModInitializer {
         SongsData.init();
     }
 
-    public static MainConfig getConfig() {
-        return MAIN_CONFIG.getConfig();
-    }
-
     public static Identifier id(String path) {
         return new Identifier(MOD_ID, path);
+    }
+
+    static {
+        MAIN_CONFIG = MainConfigs.createAndLoad(builder -> {
+            builder.registerSerializer(Vec3d.class, (vec3d, marshaller) -> {
+                JsonArray array = new JsonArray();
+                array.add(new JsonPrimitive(vec3d.getX()));
+                array.add(new JsonPrimitive(vec3d.getY()));
+                array.add(new JsonPrimitive(vec3d.getZ()));
+                return array;
+            });
+
+            builder.registerDeserializer(JsonArray.class, Vec3d.class, (json, m) ->
+                    new Vec3d(
+                            json.getDouble(0, 0),
+                            json.getDouble(1, 0),
+                            json.getDouble(2, 0)
+                    )
+            );
+        });
     }
 }

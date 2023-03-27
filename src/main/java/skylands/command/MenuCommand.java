@@ -1,9 +1,8 @@
 package skylands.command;
 
-import com.awakenedredstone.cbserverconfig.api.config.ConfigManager;
-import com.awakenedredstone.cbserverconfig.gui.ConfigGui;
 import com.awakenedredstone.cbserverconfig.polymer.CBGuiElementBuilder;
 import com.awakenedredstone.cbserverconfig.polymer.CBSimpleGuiBuilder;
+import com.awakenedredstone.cbserverconfig.ui.ConfigScreen;
 import com.awakenedredstone.cbserverconfig.util.Utils;
 import com.mojang.brigadier.CommandDispatcher;
 import eu.pb4.sgui.api.SlotHolder;
@@ -37,7 +36,7 @@ public class MenuCommand {
     static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node().then(literal("menu").executes(context -> MenuCommand.execute(context.getSource()))));
 
-        for (String alias : SkylandsMain.MAIN_CONFIG.getConfig().commandAliases) {
+        for (String alias : SkylandsMain.MAIN_CONFIG.commandAliases()) {
             dispatcher.register(CommandManager.literal(alias).executes(context -> MenuCommand.execute(context.getSource())));
         }
     }
@@ -114,7 +113,7 @@ public class MenuCommand {
                 slotHolder.setSlot(slotHolder.getSize() - 1, new CBGuiElementBuilder(Items.COMMAND_BLOCK_MINECART).setName(Texts.of("item_name.skylands.mod_settings"))
                         .setCallback((index, type, action, gui) -> {
                             gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
-                            new ConfigGui(ConfigManager.getConfig(SkylandsMain.id("skylands")), gui).buildGui(source.getPlayer()).open();
+                            new ConfigScreen(source.getPlayer(), SkylandsMain.MAIN_CONFIG, null, null);
                         })
                         .build());
             }

@@ -67,9 +67,9 @@ public class SkylandsEvents {
         });
 
         PlayerEvents.TICK.register(player -> {
-            if (SkylandsMain.MAIN_CONFIG.getConfig().safeVoid) {
-                if (player.getY() < player.world.getBottomY() - SkylandsMain.MAIN_CONFIG.getConfig().safeVoidBlocksBelow) {
-                    player.server.execute(() -> Worlds.teleportToIsland(player, SkylandsMain.MAIN_CONFIG.getConfig().safeVoidFallDamage));
+            if (SkylandsMain.MAIN_CONFIG.safeVoid()) {
+                if (player.getY() < player.world.getBottomY() - SkylandsMain.MAIN_CONFIG.safeVoidBlocksBelow()) {
+                    player.server.execute(() -> Worlds.teleportToIsland(player, SkylandsMain.MAIN_CONFIG.safeVoidFallDamage()));
                 }
             }
         });
