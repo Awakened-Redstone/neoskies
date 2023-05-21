@@ -20,8 +20,7 @@ import java.util.Optional;
 @Mixin(EndPortalBlock.class)
 public class EndPortalBlockMixin {
 
-    @Inject(method = "onEntityCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;moveToWorld(Lnet/minecraft/server/world/ServerWorld;)Lnet/minecraft/entity/Entity;"),
-            locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
+    @Inject(method = "onEntityCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;moveToWorld(Lnet/minecraft/server/world/ServerWorld;)Lnet/minecraft/entity/Entity;"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
     public void resourceKey(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo ci) {
         if (SkylandsAPI.isIsland(world)) {
             if (!SkylandsMain.MAIN_CONFIG.enableEndIsland()) {
@@ -32,7 +31,7 @@ public class EndPortalBlockMixin {
             if (island.isPresent()) {
                 ServerWorld targetWorld;
                 if (SkylandsAPI.isEnd(world.getRegistryKey())) {
-                    targetWorld = island.get().getWorld();
+                    targetWorld = island.get().getOverworld();
                 } else {
                     targetWorld = island.get().getEnd();
                 }

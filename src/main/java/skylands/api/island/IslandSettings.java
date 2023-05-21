@@ -1,9 +1,9 @@
 package skylands.api.island;
 
 public class IslandSettings {
-    public PermissionLevel level;
+    public PermissionLevel permissionLevel;
 
-    public IslandSettings(PermissionLevel level) {
-        this.level = level;
+    public IslandSettings(PermissionLevel permissionLevel) {
+        this.permissionLevel = permissionLevel;
     }
 }

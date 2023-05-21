@@ -16,14 +16,14 @@ public class WorldComponent implements ComponentV3 {
     @Override
     public void readFromNbt(@NotNull NbtCompound nbt) {
         if (world.getRegistryKey().equals(World.OVERWORLD)) {
-            Skylands.instance.readFromNbt(nbt);
+            Skylands.getInstance().readFromNbt(nbt);
         }
     }
 
     @Override
     public void writeToNbt(@NotNull NbtCompound nbt) {
         if (world.getRegistryKey().equals(World.OVERWORLD)) {
-            Skylands.instance.writeToNbt(nbt);
+            Skylands.getInstance().writeToNbt(nbt);
         }
     }
 }

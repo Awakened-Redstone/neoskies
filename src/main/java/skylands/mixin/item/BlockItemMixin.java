@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import skylands.logic.SkylandsIslandSettings;
+import skylands.logic.registry.SkylandsIslandSettings;
 import skylands.util.WorldProtection;
 
 import static skylands.util.ServerUtils.protectionWarning;

@@ -7,10 +7,8 @@ import net.minecraft.nbt.NbtCompound;
 import java.util.ArrayList;
 
 public class PlayerComponent implements ComponentV3 {
-
-    public PlayerEntity player;
-
-    ArrayList<String> islands = new ArrayList<>();
+    public final PlayerEntity player;
+    private ArrayList<String> islands = new ArrayList<>();
 
     public PlayerComponent(PlayerEntity player) {
         this.player = player;

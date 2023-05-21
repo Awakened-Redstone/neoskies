@@ -2,6 +2,7 @@ package skylands;
 
 import blue.endless.jankson.JsonArray;
 import blue.endless.jankson.JsonPrimitive;
+import io.wispforest.owo.registration.reflect.FieldRegistrationHandler;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
@@ -12,6 +13,8 @@ import skylands.command.SkylandsCommands;
 import skylands.config.MainConfigs;
 import skylands.data.reloadable.SongsData;
 import skylands.event.SkylandsEvents;
+import skylands.logic.registry.SkylandsIslandSettings;
+import skylands.logic.registry.SkylandsPermissionLevels;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,6 +31,8 @@ public class SkylandsMain implements ModInitializer {
     //TODO: Simple (and optimised) datapack based island templates
     @Override
     public void onInitialize() {
+        FieldRegistrationHandler.register(SkylandsIslandSettings.class, MOD_ID, false);
+        FieldRegistrationHandler.register(SkylandsPermissionLevels.class, MOD_ID, false);
         SkylandsEvents.init();
         SkylandsCommands.init();
         SongsData.init();

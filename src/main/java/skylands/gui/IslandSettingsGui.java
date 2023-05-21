@@ -61,7 +61,7 @@ public class IslandSettingsGui {
             if (page > 0) gui.setSlot(gui.getSize() - 9, prevPage);
 
             CBGuiElementBuilder close = new CBGuiElementBuilder(Items.BARRIER)
-                    .setName(Texts.of("<red>Close"))
+                    .setName(Texts.of("gui.skylands.close"))
                     .setCallback((index, type, action, gui1) -> {
                         gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
                         if (parent != null) {

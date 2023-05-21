@@ -24,7 +24,7 @@ public abstract class MinecartMixin extends Entity {
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     void damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (!world.isClient && source.getAttacker() instanceof PlayerEntity attacker) {
-            if (!WorldProtection.canModify(world, attacker)) {
+            if (!WorldProtection.canModify(world, getBlockPos(), attacker)) {
                 protectionWarning(attacker, "entity_hurt");
                 cir.setReturnValue(false);
             }

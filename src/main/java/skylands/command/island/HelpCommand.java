@@ -1,4 +1,4 @@
-package skylands.command;
+package skylands.command.island;
 
 import com.mojang.brigadier.CommandDispatcher;
 import eu.pb4.placeholders.api.TextParserUtils;
@@ -13,15 +13,19 @@ import static skylands.command.utils.CommandUtils.register;
 
 public class HelpCommand {
 
-    static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
-        register(dispatcher, node().then(literal("help").requires(Permissions.require("skylands.command.help", true))
+    public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
+        register(dispatcher, node()
+            .then(literal("help")
+                .requires(Permissions.require("skylands.command.help", true))
                 .executes(context -> {
-            ServerPlayerEntity player = context.getSource().getPlayer();
-            if (player != null) {
-                HelpCommand.run(player);
-            }
-            return 1;
-        })));
+                    ServerPlayerEntity player = context.getSource().getPlayer();
+                    if (player != null) {
+                        HelpCommand.run(player);
+                    }
+                    return 1;
+                })
+            )
+        );
     }
 
     static void run(ServerPlayerEntity player) {

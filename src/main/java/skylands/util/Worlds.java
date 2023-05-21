@@ -15,7 +15,7 @@ import skylands.logic.Skylands;
 import java.util.Optional;
 
 public class Worlds {
-    public static void teleportToIsland(ServerPlayerEntity player, boolean fallDamage) {
+    public static void returnToIslandSpawn(ServerPlayerEntity player, boolean fallDamage) {
         if (player.hasPassengers()) {
             player.removeAllPassengers();
         }
@@ -28,13 +28,13 @@ public class Worlds {
                 Island island = islandOptional.get();
                 if (island.isMember(player)) {
                     if (!fallDamage) player.fallDistance = 0;
-                    FabricDimensions.teleport(player, island.getWorld(), new TeleportTarget(island.spawnPos, new Vec3d(0, 0, 0), 0, 0));
+                    FabricDimensions.teleport(player, island.getOverworld(), new TeleportTarget(island.spawnPos, new Vec3d(0, 0, 0), 0, 0));
                 } else {
                     if (!fallDamage) player.fallDistance = 0;
-                    FabricDimensions.teleport(player, island.getWorld(), new TeleportTarget(island.visitsPos, new Vec3d(0, 0, 0), 0, 0));
+                    FabricDimensions.teleport(player, island.getOverworld(), new TeleportTarget(island.visitsPos, new Vec3d(0, 0, 0), 0, 0));
                 }
             }
-        } else if (SkylandsAPI.isHub(player.world)) {
+        } else {
             Hub hub = Skylands.getInstance().hub;
             if (!SkylandsMain.MAIN_CONFIG.safeVoidFallDamage()) player.fallDistance = 0;
             FabricDimensions.teleport(player, player.getWorld(), new TeleportTarget(hub.pos, new Vec3d(0, 0, 0), 0, 0));

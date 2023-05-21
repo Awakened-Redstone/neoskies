@@ -7,7 +7,7 @@ import skylands.logic.Skylands;
 import java.util.Optional;
 
 public class Players {
-    static MinecraftServer server = Skylands.instance.server;
+    static MinecraftServer server = Skylands.getServer();
 
     public static Optional<PlayerEntity> get(String name) {
         for (var player : server.getPlayerManager().getPlayerList()) {

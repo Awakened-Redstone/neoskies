@@ -1,29 +1,28 @@
 package skylands.api.island;
 
-import net.minecraft.util.math.MathHelper;
-import org.jetbrains.annotations.Contract;
+import lombok.Getter;
+import net.minecraft.util.Identifier;
+import skylands.logic.SkylandsRegistries;
 
-public enum PermissionLevel {
-    OWNER(99),
-    MEMBER(5),
-    VISITOR(0);
+public abstract class PermissionLevel {
+    @Getter(lazy = true)
+    private final Identifier id = getIdentifierFromRegistry();
+    @Getter
+    private final int level;
 
-    private final byte level;
-
-    @Contract(pure = true)
-    PermissionLevel(int level) {
-        this.level = (byte) MathHelper.clamp((byte) level, Byte.MIN_VALUE, Byte.MAX_VALUE);
+    public PermissionLevel(int level) {
+        this.level = level;
     }
 
-    public byte getLevel() {
-        return level;
+    private Identifier getIdentifierFromRegistry() {
+        return SkylandsRegistries.PERMISSION_LEVELS.getId(this);
     }
 
-    public static PermissionLevel fromValue(int value) {
-        for (PermissionLevel permissionLevel : PermissionLevel.values()) {
-            if (permissionLevel.level == value) return permissionLevel;
-        }
+    public static PermissionLevel fromValue(Identifier id) {
+        return SkylandsRegistries.PERMISSION_LEVELS.get(id);
+    }
 
-        return null;
+    public static PermissionLevel fromValue(String id) {
+        return SkylandsRegistries.PERMISSION_LEVELS.get(new Identifier(id));
     }
 }

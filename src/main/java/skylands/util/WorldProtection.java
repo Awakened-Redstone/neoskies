@@ -6,10 +6,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import skylands.SkylandsMain;
 import skylands.api.SkylandsAPI;
-import skylands.api.island.IslandSettingsList;
 import skylands.api.island.PermissionLevel;
 import skylands.logic.Island;
 import skylands.logic.Skylands;
+import skylands.logic.registry.SkylandsPermissionLevels;
+import skylands.logic.settings.IslandSettings;
 
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class WorldProtection {
         }
 
         if (world.getRegistryKey().equals(World.OVERWORLD)) {
-            return !Skylands.instance.hub.hasProtection;
+            return !Skylands.getInstance().hub.hasProtection;
         }
 
         return true;
@@ -44,13 +45,13 @@ public class WorldProtection {
         }
 
         if (world.getRegistryKey().equals(World.OVERWORLD)) {
-            return !Skylands.instance.hub.hasProtection;
+            return !Skylands.getInstance().hub.hasProtection;
         }
 
         return false;
     }
 
-    public static <T extends IslandSettingsList> boolean canModify(World world, BlockPos pos, PlayerEntity player, T setting) {
+    public static <T extends IslandSettings> boolean canModify(World world, BlockPos pos, PlayerEntity player, T setting) {
         if (SkylandsMain.PROTECTION_BYPASS.contains(player)) {
             if (Permissions.check(player, "skylands.admin.protection.bypass", 4)) return true;
             else SkylandsMain.PROTECTION_BYPASS.remove(player);
@@ -64,7 +65,7 @@ public class WorldProtection {
             }
         }
 
-        if (world.getRegistryKey().equals(World.OVERWORLD) && Skylands.instance.hub.hasProtection) {
+        if (world.getRegistryKey().equals(World.OVERWORLD) && Skylands.getInstance().hub.hasProtection) {
             return false;
         }
 
@@ -74,15 +75,11 @@ public class WorldProtection {
     public static PermissionLevel getPlayerPermissionLevel(World world, PlayerEntity player) {
         Optional<Island> island = SkylandsAPI.getIsland(world);
         if (island.isPresent() && island.get().isMember(player)) {
-            if (island.get().owner.uuid == player.getUuid()) return PermissionLevel.OWNER;
-            else return PermissionLevel.MEMBER;
+            if (island.get().owner.uuid == player.getUuid()) return SkylandsPermissionLevels.OWNER;
+            else return SkylandsPermissionLevels.MEMBER;
         }
 
-        if (world.getRegistryKey().equals(World.OVERWORLD)) {
-            return PermissionLevel.VISITOR;
-        }
-
-        return PermissionLevel.VISITOR;
+        return SkylandsPermissionLevels.VISITOR;
     }
 
     public static boolean isWithinIsland(World world, BlockPos pos) {
@@ -95,7 +92,7 @@ public class WorldProtection {
         }
 
         if (world.getRegistryKey().equals(World.OVERWORLD)) {
-            return !Skylands.instance.hub.hasProtection;
+            return !Skylands.getInstance().hub.hasProtection;
         }
 
         return true;

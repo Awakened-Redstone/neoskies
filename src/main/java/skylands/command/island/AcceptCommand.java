@@ -1,4 +1,4 @@
-package skylands.command;
+package skylands.command.island;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -17,31 +17,35 @@ import static skylands.command.utils.CommandUtils.node;
 import static skylands.command.utils.CommandUtils.register;
 
 public class AcceptCommand {
+    public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
+        register(dispatcher, node()
+            .then(literal("accept")
+                .requires(Permissions.require("skylands.command.accept", true))
+                .then(argument("player", word())
+                    .executes(context -> {
+                        String inviter = StringArgumentType.getString(context, "player");
+                        var player = context.getSource().getPlayer();
 
-    static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
-        register(dispatcher, node().then(literal("accept").requires(Permissions.require("skylands.command.accept", true))
-                .then(argument("player", word()).executes(context -> {
-                    String inviter = StringArgumentType.getString(context, "player");
-                    var player = context.getSource().getPlayer();
-
-                    if (player != null) {
-                        AcceptCommand.run(player, inviter);
-                    }
-                    return 1;
-                })))
+                        if (player != null) {
+                            AcceptCommand.run(player, inviter);
+                        }
+                        return 1;
+                    })
+                )
+            )
         );
     }
 
     static void run(ServerPlayerEntity player, String ownerName) {
         var inviter = Players.get(ownerName);
         if (inviter.isPresent()) {
-            var island = Skylands.instance.islands.get(inviter.get());
+            var island = Skylands.getInstance().islands.getByPlayer(inviter.get());
             if (island.isPresent()) {
-                var invite = Skylands.instance.invites.get(island.get(), player);
+                var invite = Skylands.getInstance().invites.get(island.get(), player);
                 if (invite.isPresent()) {
                     if (!invite.get().accepted) {
                         invite.get().accept(player);
-                        player.sendMessage(Texts.prefixed("message.skylands.accept.success", map -> map.put("%owner%", ownerName)));
+                        player.sendMessage(Texts.prefixed("message.skylands.accept.success", map -> map.put("owner", ownerName)));
                         SkylandComponents.PLAYER_DATA.get(player).addIsland(ownerName);
                     }
                 } else {

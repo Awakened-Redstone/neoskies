@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+@Deprecated //TODO: Move to Stimuli
 public interface PlayerEvents {
     Event<PlayerTick> TICK = EventFactory.createArrayBacked(PlayerTick.class, (listeners) -> player -> {
         for (PlayerTick event : listeners) {

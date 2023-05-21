@@ -1,4 +1,4 @@
-package skylands.command;
+package skylands.command.island;
 
 import com.mojang.brigadier.CommandDispatcher;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -17,21 +17,26 @@ import static skylands.command.utils.CommandUtils.register;
 
 public class KickCommand {
 
-    static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
-        register(dispatcher, node().then(literal("kick").requires(Permissions.require("skylands.command.kick", true))
-                .then(argument("player", player()).executes(context -> {
-                    var player = context.getSource().getPlayer();
-                    var kickedPlayer = EntityArgumentType.getPlayer(context, "player");
-                    if (player != null && kickedPlayer != null) {
-                        KickCommand.run(player, kickedPlayer);
-                    }
-                    return 1;
-                }))
-        ));
+    public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
+        register(dispatcher, node()
+            .then(literal("kick")
+                .requires(Permissions.require("skylands.command.kick", true))
+                .then(argument("player", player())
+                    .executes(context -> {
+                        var player = context.getSource().getPlayer();
+                        var kickedPlayer = EntityArgumentType.getPlayer(context, "player");
+                        if (player != null && kickedPlayer != null) {
+                            KickCommand.run(player, kickedPlayer);
+                        }
+                        return 1;
+                    })
+                )
+            )
+        );
     }
 
     static void run(ServerPlayerEntity player, ServerPlayerEntity kicked) {
-        Skylands.instance.islands.get(player).ifPresentOrElse(island -> {
+        Skylands.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
             if (player.getName().getString().equals(kicked.getName().getString())) {
                 player.sendMessage(Texts.prefixed("message.skylands.kick_visitor.yourself"));
             } else {
@@ -40,12 +45,12 @@ public class KickCommand {
                 } else {
                     SkylandsAPI.getIsland(kicked.getWorld()).ifPresent(isl -> {
                         if (isl.owner.uuid.equals(island.owner.uuid)) {
-                            player.sendMessage(Texts.prefixed("message.skylands.kick_visitor.success", map -> map.put("%player%", kicked.getName().getString())));
+                            player.sendMessage(Texts.prefixed("message.skylands.kick_visitor.success", map -> map.put("player", kicked.getName().getString())));
 
-                            kicked.sendMessage(Texts.prefixed("message.skylands.kick_visitor.kick", map -> map.put("%owner%", player.getName().getString())));
-                            Skylands.instance.hub.visit(player);
+                            kicked.sendMessage(Texts.prefixed("message.skylands.kick_visitor.kick", map -> map.put("owner", player.getName().getString())));
+                            Skylands.getInstance().hub.visit(player);
                         } else {
-                            player.sendMessage(Texts.prefixed("message.skylands.kick_visitor.fail", map -> map.put("%player%", kicked.getName().getString())));
+                            player.sendMessage(Texts.prefixed("message.skylands.kick_visitor.fail", map -> map.put("player", kicked.getName().getString())));
                         }
                     });
                 }

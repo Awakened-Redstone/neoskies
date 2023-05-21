@@ -30,7 +30,7 @@ public abstract class ArmorStandMixin extends LivingEntity {
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     void damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (!world.isClient && source.getAttacker() instanceof PlayerEntity attacker) {
-            if (!WorldProtection.canModify(world, attacker)) {
+            if (!WorldProtection.canModify(world, this.getBlockPos(), attacker)) {
                 protectionWarning(attacker, "entity_hurt");
                 cir.setReturnValue(false);
             }

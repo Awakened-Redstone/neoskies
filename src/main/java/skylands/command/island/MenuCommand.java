@@ -1,4 +1,4 @@
-package skylands.command;
+package skylands.command.island;
 
 import com.awakenedredstone.cbserverconfig.polymer.CBGuiElementBuilder;
 import com.awakenedredstone.cbserverconfig.polymer.CBSimpleGuiBuilder;
@@ -33,7 +33,7 @@ import static skylands.command.utils.CommandUtils.node;
 import static skylands.command.utils.CommandUtils.register;
 
 public class MenuCommand {
-    static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
+    public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node().then(literal("menu").executes(context -> MenuCommand.execute(context.getSource()))));
 
         for (String alias : SkylandsMain.MAIN_CONFIG.commandAliases()) {
@@ -59,63 +59,63 @@ public class MenuCommand {
             boolean dirty = false;
         };
         final Consumer<SlotHolder> consumer = slotHolder -> {
-            Optional<Island> islandOptional = SkylandsAPI.getIsland(player);
+            Optional<Island> islandOptional = SkylandsAPI.getIslandByPlayer(player);
             Utils.fillGui(slotHolder, new CBGuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE).setName(Text.empty()).build());
             if (Permissions.check(player, "skylands.teleport.hub", true)) {
                 slotHolder.setSlot(10, new CBGuiElementBuilder(Items.BEACON).setName(Texts.of("item_name.skylands.hub"))
-                        .setCallback((index, type, action, gui) -> {
-                            //gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.3f, 1);
-                            Skylands.instance.hub.visit(player);
-                            gui.close();
-                        })
-                        .build());
+                    .setCallback((index, type, action, gui) -> {
+                        //gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.3f, 1);
+                        Skylands.getInstance().hub.visit(player);
+                        gui.close();
+                    })
+                    .build());
             }
             if (islandOptional.isPresent()) {
                 if (Permissions.check(player, "skylands.teleport.home", true)) {
                     slotHolder.setSlot(11, new CBGuiElementBuilder(Items.GRASS_BLOCK).setName(Texts.of("item_name.skylands.home"))
-                            .setCallback((index, type, action, gui) -> {
-                                //gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.3f, 1);
-                                HomeCommand.run(player);
-                                gui.close();
-                            })
-                            .build());
+                        .setCallback((index, type, action, gui) -> {
+                            //gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.3f, 1);
+                            HomeCommand.run(player);
+                            gui.close();
+                        })
+                        .build());
                 }
                 if (Permissions.check(player, "skylands.island.settings", true)) {
                     slotHolder.setSlot(12, new CBGuiElementBuilder(Items.REDSTONE).setName(Texts.of("item_name.skylands.island_settings"))
-                            .setCallback((index, type, action, gui) -> {
-                                gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
-                                new IslandSettingsGui(islandOptional.get(), gui).openGui(player);
-                            })
-                            .build());
+                        .setCallback((index, type, action, gui) -> {
+                            gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
+                            new IslandSettingsGui(islandOptional.get(), gui).openGui(player);
+                        })
+                        .build());
                 }
             } else if (Permissions.check(player, "skylands.island.create", true)) {
                 slotHolder.setSlot(11, new CBGuiElementBuilder(Items.OAK_SAPLING).setName(Texts.of("item_name.skylands.create"))
-                        .setCallback((index, type, action, gui) -> {
-                            gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
-                            CreateCommand.run(player);
-                        })
-                        .build());
+                    .setCallback((index, type, action, gui) -> {
+                        gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
+                        CreateCommand.run(player);
+                    })
+                    .build());
             }
             if (Permissions.check(player, "skylands.admin.protection.bypass", 4)) {
                 Set<PlayerEntity> protectionBypass = SkylandsMain.PROTECTION_BYPASS;
                 boolean overrideMode = protectionBypass.contains(player);
                 Item item = overrideMode ? Items.OAK_CHEST_BOAT : Items.OAK_BOAT;
                 slotHolder.setSlot(slotHolder.getSize() - 2, new CBGuiElementBuilder(item).setName(Texts.of("item_name.skylands.protection_bypass"))
-                        .addLoreLine(Texts.of("text.skylands.protection_bypass", map -> map.put("%value%", String.valueOf(overrideMode))))
-                        .setCallback((index, type, action, gui) -> {
-                            gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
-                            if (overrideMode) protectionBypass.remove(player);
-                            else protectionBypass.add(player);
-                            ref.dirty = true;
-                        }).build());
+                    .addLoreLine(Texts.of("text.skylands.protection_bypass", map -> map.put("value", String.valueOf(overrideMode))))
+                    .setCallback((index, type, action, gui) -> {
+                        gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
+                        if (overrideMode) protectionBypass.remove(player);
+                        else protectionBypass.add(player);
+                        ref.dirty = true;
+                    }).build());
             }
             if (Permissions.check(player, "skylands.admin.settings", 4)) {
                 slotHolder.setSlot(slotHolder.getSize() - 1, new CBGuiElementBuilder(Items.COMMAND_BLOCK_MINECART).setName(Texts.of("item_name.skylands.mod_settings"))
-                        .setCallback((index, type, action, gui) -> {
-                            gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
-                            new ConfigScreen(source.getPlayer(), SkylandsMain.MAIN_CONFIG, null, null);
-                        })
-                        .build());
+                    .setCallback((index, type, action, gui) -> {
+                        gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
+                        new ConfigScreen(source.getPlayer(), SkylandsMain.MAIN_CONFIG, null, null);
+                    })
+                    .build());
             }
         };
 

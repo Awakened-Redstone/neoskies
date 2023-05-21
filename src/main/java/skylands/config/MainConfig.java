@@ -9,6 +9,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 @Config(name = "skylands", wrapperName = "MainConfigs")
 public class MainConfig {
+    public String language = "en_us";
     public String command = "sl";
     public List<String> commandAliases = new ArrayList<>();
     public String adminCommand = "force-sl";

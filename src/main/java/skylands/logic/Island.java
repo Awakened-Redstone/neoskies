@@ -1,5 +1,7 @@
 package skylands.logic;
 
+import eu.pb4.common.economy.api.EconomyAccount;
+import lombok.Getter;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -24,6 +26,7 @@ import skylands.api.events.IslandEvents;
 import skylands.api.island.IslandSettings;
 import skylands.api.island.PermissionLevel;
 import skylands.api.island.SettingsManager;
+import skylands.logic.economy.SkylandsEconomyAccount;
 import skylands.util.Constants;
 import skylands.util.Players;
 import skylands.util.Texts;
@@ -37,16 +40,18 @@ import java.util.*;
 //TODO: Advanced island settings
 //TODO: Island levels
 public class Island {
-    private final MinecraftServer server = skylands.logic.Skylands.instance.server;
-    private final Fantasy fantasy = skylands.logic.Skylands.instance.fantasy;
+    private final MinecraftServer server = skylands.logic.Skylands.getServer();
+    private final Fantasy fantasy = skylands.logic.Skylands.getInstance().fantasy;
     private final Map<Identifier, IslandSettings> settings = new HashMap<>();
+    public final Member owner;
+    @Getter private UUID islandId = UUID.randomUUID();
     private RuntimeWorldConfig islandConfig = null;
     private RuntimeWorldConfig netherConfig = null;
     private RuntimeWorldConfig endConfig = null;
-    public Member owner;
     public ArrayList<Member> members = new ArrayList<>();
     public ArrayList<Member> bans = new ArrayList<>();
     public int radius = SkylandsMain.MAIN_CONFIG.defaultIslandRadius();
+    private EconomyAccount wallet;
     boolean freshCreated = false;
 
     public boolean locked = false;
@@ -58,25 +63,34 @@ public class Island {
     public Instant created = Instant.now();
 
     public Island(UUID uuid, String name) {
-        this.owner = new Member(uuid, name);
+        this(new Member(uuid, name));
     }
 
     public Island(PlayerEntity owner) {
-        this.owner = new Member(owner);
+        this(new Member(owner));
     }
 
     public Island(Member owner) {
         this.owner = owner;
+        this.wallet = new SkylandsEconomyAccount(islandId, new Identifier(owner.uuid.toString(), islandId.toString()));
+        Skylands.getInstance().economy.PROVIDER.getAccounts().computeIfAbsent(islandId, id -> wallet);
     }
 
     public static Island fromNbt(NbtCompound nbt) {
         Island island = new Island(Member.fromNbt(nbt.getCompound("owner")));
+        island.islandId = nbt.getUuid("id");
         island.hasNether = nbt.getBoolean("hasNether");
         island.hasEnd = nbt.getBoolean("hasEnd");
         island.created = Instant.parse(nbt.getString("created"));
         island.locked = nbt.getBoolean("locked");
         island.radius = nbt.getInt("radius");
         island.freshCreated = nbt.getBoolean("freshCreated");
+
+        NbtCompound walletNbt = nbt.getCompound("wallet");
+        Identifier id = new Identifier(walletNbt.getString("id"));
+        long balance = walletNbt.getLong("balance");
+        island.wallet = new SkylandsEconomyAccount(island.islandId, id, balance);
+        Skylands.getInstance().economy.PROVIDER.getAccounts().computeIfAbsent(island.islandId, id1 -> island.wallet);
 
         NbtCompound spawnPosNbt = nbt.getCompound("spawnPos");
         double spawnPosX = spawnPosNbt.getDouble("x");
@@ -107,7 +121,7 @@ public class Island {
         NbtCompound settingsNbt = nbt.getCompound("settings");
         settingsNbt.getKeys().forEach(key -> {
             NbtCompound settingsDataNbt = settingsNbt.getCompound(key);
-            PermissionLevel level = PermissionLevel.fromValue(settingsDataNbt.getInt("level"));
+            PermissionLevel level = PermissionLevel.fromValue(settingsDataNbt.getString("permission"));
             if (level != null) {
                 IslandSettings islandSettings = new IslandSettings(level);
                 island.settings.put(new Identifier(key), islandSettings);
@@ -122,12 +136,18 @@ public class Island {
     public NbtCompound toNbt() {
         NbtCompound nbt = new NbtCompound();
         nbt.put("owner", this.owner.toNbt());
+        nbt.putUuid("id", this.islandId);
         nbt.putBoolean("hasNether", this.hasNether);
         nbt.putBoolean("hasEnd", this.hasEnd);
         nbt.putString("created", this.created.toString());
         nbt.putBoolean("locked", this.locked);
         nbt.putInt("radius", radius);
         nbt.putBoolean("freshCreated", this.freshCreated);
+
+        NbtCompound walletNbt = new NbtCompound();
+        walletNbt.putString("id", wallet.id().toString());
+        walletNbt.putLong("balance", wallet.balance());
+        nbt.put("wallet", walletNbt);
 
         NbtCompound spawnPosNbt = new NbtCompound();
         spawnPosNbt.putDouble("x", this.spawnPos.getX());
@@ -163,7 +183,7 @@ public class Island {
         NbtCompound settingsNbt = new NbtCompound();
         this.settings.forEach((identifier, settings) -> {
             NbtCompound settingsDataNbt = new NbtCompound();
-            settingsDataNbt.putInt("level", settings.level.getLevel());
+            settingsDataNbt.putString("permission", settings.permissionLevel.getId().toString());
             settingsNbt.put(identifier.toString(), settingsDataNbt);
         });
         nbt.put("settings", settingsNbt);
@@ -208,8 +228,8 @@ public class Island {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isWithinBorder(BlockPos pos) {
         if (radius < 0) return true;
-        int minY = getWorld().getBottomY();
-        return new Box(new BlockPos(0, 0, 0)).expand(radius).withMinY(minY - 1).withMaxY(getWorld().getTopY() + 1).contains(new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
+        int minY = getOverworld().getBottomY();
+        return new Box(new BlockPos(0, 0, 0)).expand(radius).withMinY(minY - 1).withMaxY(getOverworld().getTopY() + 1).contains(new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
     }
 
     public Map<Identifier, IslandSettings> getSettings() {
@@ -217,11 +237,11 @@ public class Island {
     }
 
     public IslandSettings getSettings(Identifier identifier) {
-        return settings.get(identifier);
+        return settings.computeIfAbsent(identifier, id -> SettingsManager.getDefaultSettings().get(id));
     }
 
     public boolean isInteractionAllowed(Identifier identifier, PermissionLevel source) {
-        return source.getLevel() >= settings.get(identifier).level.getLevel();
+        return source.getLevel() >= getSettings(identifier).permissionLevel.getLevel();
     }
 
     public RuntimeWorldHandle getHandler() {
@@ -284,6 +304,12 @@ public class Island {
                 .setSeed(RandomSeed.getSeed());
     }
 
+    public ServerWorld getOverworld() {
+        RuntimeWorldHandle handler = this.getHandler();
+        handler.setTickWhenEmpty(false);
+        return handler.asWorld();
+    }
+
     //TODO: End island
     public ServerWorld getEnd() {
         RuntimeWorldHandle handler = this.getEndHandler();
@@ -301,20 +327,14 @@ public class Island {
         return world;
     }
 
-    public ServerWorld getWorld() {
-        RuntimeWorldHandle handler = this.getHandler();
-        handler.setTickWhenEmpty(false);
-        return handler.asWorld();
-    }
-
     public void visit(PlayerEntity player, Vec3d pos) {
-        ServerWorld world = this.getWorld();
+        ServerWorld world = this.getOverworld();
         player.teleport(world, pos.getX(), pos.getY(), pos.getZ(), Set.of(), 0, 0);
 
         if(!isMember(player)) {
             Players.get(this.owner.name).ifPresent(owner -> {
                 if(!player.getUuid().equals(owner.getUuid())) {
-                    owner.sendMessage(Texts.prefixed("message.skylands.island_visit.visit", map -> map.put("%visitor%", player.getName().getString())));
+                    owner.sendMessage(Texts.prefixed("message.skylands.island_visit.visit", map -> map.put("visitor", player.getName().getString())));
                 }
             });
         }
@@ -336,7 +356,7 @@ public class Island {
     }
 
     public void onFirstLoad(PlayerEntity player) {
-        ServerWorld world = this.getWorld();
+        ServerWorld world = this.getOverworld();
         StructureTemplate structure = server.getStructureTemplateManager().getTemplateOrBlank(SkylandsMain.id("start_island"));
         StructurePlacementData data = new StructurePlacementData().setMirror(BlockMirror.NONE).setIgnoreEntities(true);
         structure.place(world, new BlockPos(-7, 65, -7), new BlockPos(0, 0, 0), data, world.getRandom(), Block.NOTIFY_ALL);
@@ -367,5 +387,16 @@ public class Island {
         IslandEvents.ON_END_FIRST_LOAD.invoker().onLoad(world, this);
 
         this.hasEnd = true;
+    }
+
+    public Identifier getIslandIdentifier() {
+        return new Identifier(owner.uuid.toString(), islandId.toString());
+    }
+
+    public EconomyAccount getWallet() {
+        if (wallet == null) {
+            wallet = new SkylandsEconomyAccount(islandId, new Identifier(owner.uuid.toString(), islandId.toString()));
+        }
+        return wallet;
     }
 }

@@ -2,14 +2,17 @@ package skylands.api.island;
 
 import com.awakenedredstone.cbserverconfig.polymer.CBGuiElement;
 import com.awakenedredstone.cbserverconfig.polymer.CBGuiElementBuilder;
+import com.awakenedredstone.cbserverconfig.util.MapBuilder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import skylands.SkylandsMain;
 import skylands.logic.Island;
+import skylands.logic.SkylandsRegistries;
 import skylands.util.Texts;
 
 import java.util.*;
@@ -79,20 +82,26 @@ public class SettingsManager {
         List<Text> lore = new ArrayList<>();
         lore.add(Texts.of(identifier.getNamespace() + ".island_settings." + identifier.getPath() + ".description"));
         lore.add(Text.empty());
-        int value = island.getSettings().get(identifier).level.getLevel();
+        int value = island.getSettings().get(identifier).permissionLevel.getLevel();
         List<Integer> levels = new ArrayList<>();
-        for (PermissionLevel level : PermissionLevel.values()) {
-            levels.add((int) level.getLevel());
+        for (Map.Entry<RegistryKey<PermissionLevel>, PermissionLevel> entry : SkylandsRegistries.PERMISSION_LEVELS.getEntrySet()) {
+            levels.add(entry.getValue().getLevel());
         }
         if (!levels.contains(value)) levels.add(value);
         levels.sort(Integer::compareTo);
         Collections.reverse(levels);
 
         for (Integer level : levels) {
+
+            Text levelText = Texts.of("text.skylands.island_settings.level." + level);
+            Map<String, Text> placeholders = new MapBuilder<String, Text>()
+                .put("level", levelText)
+                .build();
+
             if (value == level) {
-                lore.add(Texts.prefixed("text.skylands.island_settings.selected", "text.skylands.island_settings.level." + level));
+                lore.add(Texts.of(Text.translatable("text.skylands.island_settings.selected"), placeholders));
             } else {
-                lore.add(Texts.prefixed("text.skylands.island_settings.unselected", "text.skylands.island_settings.level." + level));
+                lore.add(Texts.of(Text.translatable("text.skylands.island_settings.unselected"), placeholders));
             }
         }
 
@@ -101,10 +110,10 @@ public class SettingsManager {
 
     private static void offsetPermission(IslandSettings settings, int offset) {
         int position = 0;
-        PermissionLevel[] levels = PermissionLevel.values();
-        int length = levels.length;
+        List<PermissionLevel> levels = SkylandsRegistries.PERMISSION_LEVELS.streamEntries().map(RegistryEntry.Reference::value).toList();
+        int length = levels.size();
         for (int i = 0; i < length; i++) {
-            if (levels[i] == settings.level) {
+            if (levels.get(i) == settings.permissionLevel) {
                 position = i;
                 break;
             }
@@ -119,22 +128,6 @@ public class SettingsManager {
             position -= length;
         }
 
-        settings.level = levels[position];
-    }
-
-    static {
-        register(SkylandsMain.id("place"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.STONE).build());
-        register(SkylandsMain.id("break"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.WOODEN_PICKAXE).build());
-        register(SkylandsMain.id("redstone"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.REDSTONE).build());
-        register(SkylandsMain.id("beacon"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.BEACON).build());
-        register(SkylandsMain.id("composter"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.COMPOSTER).build());
-        register(SkylandsMain.id("lodestone"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.LODESTONE).build());
-        register(SkylandsMain.id("anvil"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.ANVIL).build());
-        register(SkylandsMain.id("brewing_stand"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.BREWING_STAND).build());
-        register(SkylandsMain.id("containers"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.CHEST).build());
-        register(SkylandsMain.id("respawn_anchor"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.RESPAWN_ANCHOR).build());
-        register(SkylandsMain.id("hurt_hostile"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.DIAMOND_SWORD).build());
-        register(SkylandsMain.id("hurt_passive"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.WOODEN_SWORD).build());
-        register(SkylandsMain.id("dripleaf"), new IslandSettings(PermissionLevel.MEMBER), new CBGuiElementBuilder(Items.BIG_DRIPLEAF).build());
+        settings.permissionLevel = levels.get(position);
     }
 }

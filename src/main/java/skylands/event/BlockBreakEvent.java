@@ -5,7 +5,7 @@ import net.minecraft.block.CropBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import skylands.logic.SkylandsIslandSettings;
+import skylands.logic.registry.SkylandsIslandSettings;
 import skylands.util.Texts;
 import skylands.util.WorldProtection;
 

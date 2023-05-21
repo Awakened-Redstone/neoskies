@@ -21,7 +21,6 @@ import skylands.util.Worlds;
 /* TODO: ======= OPTIMIZE THIS ======= */
 /* TODO: ======= OPTIMIZE THIS ======= */
 /* TODO: ======= OPTIMIZE THIS ======= */
-@SuppressWarnings("ConstantValue")
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
     private double lastSize = -1;
@@ -37,14 +36,14 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     // TODO: Add other visual ways to show the limit
     @Inject(method = "increaseTravelMotionStats", at = @At("HEAD"))
     private void increaseTravelMotionStats(double dx, double dy, double dz, CallbackInfo ci) {
-        if (((Object) this) instanceof ServerPlayerEntity serverPlayer && SkylandsAPI.getIsland(world).isPresent() && !lastPos.equals(getPos())) {
+        if (((PlayerEntity) (Object) this) instanceof ServerPlayerEntity serverPlayer && SkylandsAPI.isIsland(world) && !lastPos.equals(getPos())) {
             lastPos = getPos();
             double x = Math.abs(getX());
             double z = Math.abs(getZ());
             int range = 64;
             Island island = SkylandsAPI.getIsland(world).get();
             if (x > island.radius + range + 8 || z > island.radius + range + 8) {
-                Worlds.teleportToIsland(serverPlayer, false);
+                Worlds.returnToIslandSpawn(serverPlayer, false);
                 return;
             }
             WorldBorder defaultWorldBorder = world.getWorldBorder();

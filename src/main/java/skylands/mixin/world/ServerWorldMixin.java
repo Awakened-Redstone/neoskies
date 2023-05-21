@@ -70,4 +70,11 @@ public abstract class ServerWorldMixin extends World implements StructureWorldAc
         }
     }
 
+    @Inject(method = "createEndSpawnPlatform", at = @At("HEAD"), cancellable = true)
+    private static void skylands$fixEndSpawn(ServerWorld world, CallbackInfo ci) {
+        if (SkylandsAPI.isIsland(world.getRegistryKey())) {
+            ci.cancel();
+        }
+    }
+
 }

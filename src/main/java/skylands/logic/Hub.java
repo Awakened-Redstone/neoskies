@@ -21,7 +21,7 @@ public class Hub {
     public void visit(PlayerEntity player) {
         var world = Skylands.getServer().getOverworld();
         player.sendMessage(Texts.prefixed("message.skylands.hub_visit"));
-        FabricDimensions.teleport(player, world, new TeleportTarget(Skylands.instance.hub.pos, new Vec3d(0, 0, 0), 0, 0));
+        FabricDimensions.teleport(player, world, new TeleportTarget(Skylands.getInstance().hub.pos, new Vec3d(0, 0, 0), 0, 0));
         IslandEvents.ON_HUB_VISIT.invoker().invoke(player, world);
     }
 

@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import skylands.logic.Skylands;
+import skylands.api.SkylandsAPI;
 import skylands.util.WorldProtection;
 
 import static skylands.util.ServerUtils.protectionWarning;
@@ -24,19 +24,17 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     void damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        if (!world.isClient && world.getServer() != null) {
+        if (!world.isClient) {
             if ((LivingEntity) (Object) this instanceof PlayerEntity player) {
-                //Keep it as a failsafe, better than adding extra code to ticking :P
-                if (!WorldProtection.canModify(world, player)) {
-                    protectionWarning(player, "damage_take");
-                    if (source.equals(world.getDamageSources().outOfWorld())) {
-                        Skylands.instance.hub.visit(player);
-                    }
+                if (!WorldProtection.canModify(world, this.getBlockPos(), player) && !source.equals(world.getDamageSources().outOfWorld()) && !SkylandsAPI.isHub(world)) {
                     cir.setReturnValue(false);
                 }
             }
             if (source.getAttacker() instanceof PlayerEntity attacker) {
-                if (!WorldProtection.canModify(world, attacker)) {
+                System.out.println(attacker.getDisplayName());
+                System.out.println(this.getBlockPos());
+                System.out.println(WorldProtection.canModify(world, this.getBlockPos(), attacker));
+                if (!WorldProtection.canModify(world, this.getBlockPos(), attacker)) {
                     protectionWarning(attacker, "entity_hurt");
                     cir.setReturnValue(false);
                 }

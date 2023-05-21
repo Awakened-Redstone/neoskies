@@ -21,7 +21,7 @@ public class IslandStuck {
     }
 
     public void delete(PlayerEntity player) {
-        this.get(player).ifPresent(island -> {
+        this.getByPlayer(player).ifPresent(island -> {
             island.getNetherHandler().delete();
             island.getEndHandler().delete();
             island.getHandler().delete();
@@ -30,7 +30,7 @@ public class IslandStuck {
     }
 
     public void delete(String playerName) {
-        this.get(playerName).ifPresent(island -> {
+        this.getByPlayer(playerName).ifPresent(island -> {
             island.getNetherHandler().delete();
             island.getEndHandler().delete();
             island.getHandler().delete();
@@ -38,23 +38,30 @@ public class IslandStuck {
         stuck.removeIf(island -> island.owner.name.equals(playerName));
     }
 
-    public Optional<Island> get(PlayerEntity player) {
+    public Optional<Island> getByPlayer(PlayerEntity player) {
         for (var island : this.stuck) {
             if (island.owner.uuid.equals(player.getUuid())) return Optional.of(island);
         }
         return Optional.empty();
     }
 
-    public Optional<Island> get(String playerName) {
+    public Optional<Island> getByPlayer(String playerName) {
         for (var island : this.stuck) {
             if (island.owner.name.equals(playerName)) return Optional.of(island);
         }
         return Optional.empty();
     }
 
-    public Optional<Island> get(UUID playerUuid) {
+    public Optional<Island> getByPlayer(UUID playerUuid) {
         for (var island : this.stuck) {
             if (island.owner.uuid.equals(playerUuid)) return Optional.of(island);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Island> get(UUID islandId) {
+        for (var island : this.stuck) {
+            if (island.getIslandId().equals(islandId)) return Optional.of(island);
         }
         return Optional.empty();
     }
@@ -91,8 +98,7 @@ public class IslandStuck {
         islandStuckNbt.putInt("size", this.stuck.size());
         for (int i = 0; i < this.stuck.size(); i++) {
             Island island = this.stuck.get(i);
-            NbtCompound islandNbt = island.toNbt();
-            islandStuckNbt.put(Integer.toString(i), islandNbt);
+            islandStuckNbt.put(Integer.toString(i), island.toNbt());
         }
         nbt.put("islandStuck", islandStuckNbt);
     }

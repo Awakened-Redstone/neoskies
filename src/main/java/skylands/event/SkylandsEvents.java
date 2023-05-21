@@ -14,6 +14,7 @@ import nota.Nota;
 import nota.event.SongStartEvent;
 import nota.player.PositionSongPlayer;
 import skylands.SkylandsMain;
+import skylands.api.SkylandsAPI;
 import skylands.util.Texts;
 import skylands.util.Worlds;
 
@@ -21,14 +22,14 @@ import java.util.UUID;
 
 public class SkylandsEvents {
 
-    //TODO: Replace events with simuli
+    //TODO: Replace events with stimuli
     public static void init() {
         SongStartEvent.EVENT.register(songPlayer -> {
             if (songPlayer.getId().equals(SkylandsMain.id("hub_song_player")) && songPlayer instanceof PositionSongPlayer sp) {
                 for (UUID uuid : sp.getPlayerUUIDs()) {
                     PlayerEntity player = Nota.getAPI().getServer().getPlayerManager().getPlayer(uuid);
                     if (player != null && sp.isInRange(player)) {
-                        player.sendMessage(Texts.of("message.skylands.now_playing", map -> map.put("%song%", sp.getSong().getTitle())), true);
+                        player.sendMessage(Texts.of("message.skylands.now_playing", map -> map.put("song", sp.getSong().getTitle())), true);
                     }
                 }
             }
@@ -67,9 +68,9 @@ public class SkylandsEvents {
         });
 
         PlayerEvents.TICK.register(player -> {
-            if (SkylandsMain.MAIN_CONFIG.safeVoid()) {
-                if (player.getY() < player.world.getBottomY() - SkylandsMain.MAIN_CONFIG.safeVoidBlocksBelow()) {
-                    player.server.execute(() -> Worlds.teleportToIsland(player, SkylandsMain.MAIN_CONFIG.safeVoidFallDamage()));
+            if (player.getY() < player.world.getBottomY() - SkylandsMain.MAIN_CONFIG.safeVoidBlocksBelow()) {
+                if ((SkylandsMain.MAIN_CONFIG.safeVoid() && SkylandsAPI.getIsland(player.world).isPresent()) || SkylandsAPI.isHub(player.world)) {
+                    player.server.execute(() -> Worlds.returnToIslandSpawn(player, SkylandsMain.MAIN_CONFIG.safeVoidFallDamage() || !SkylandsAPI.isHub(player.world)));
                 }
             }
         });

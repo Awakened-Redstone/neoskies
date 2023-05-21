@@ -1,20 +1,22 @@
 package skylands.logic;
 
+import lombok.Getter;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
-import skylands.api.BalanceHandler;
+import skylands.logic.economy.Economy;
 import skylands.util.NbtMigrator;
 import xyz.nucleoid.fantasy.Fantasy;
 
 public class Skylands {
     public int format = 4;
-    public static Skylands instance;
-    public MinecraftServer server;
+    @Getter
+    private static Skylands instance;
+    private final MinecraftServer server;
     public Fantasy fantasy;
     public IslandStuck islands;
     public Hub hub;
     public Invites invites;
-    public BalanceHandler balanceHandler;
+    public Economy economy;
 
     public Skylands(MinecraftServer server) {
         this.server = server;
@@ -22,7 +24,7 @@ public class Skylands {
         this.islands = new IslandStuck();
         this.hub = new Hub();
         this.invites = new Invites();
-        this.balanceHandler = new SkylandsBalanceHandler();
+        this.economy = new Economy();
     }
 
     public void readFromNbt(NbtCompound nbt) {
@@ -46,8 +48,10 @@ public class Skylands {
         nbt.put("skylands", skylandsNbt);
     }
 
-    public static Skylands getInstance() {
-        return Skylands.instance;
+    //Lock the instance so noone can possibly change it
+    public static void init(MinecraftServer server) {
+        if (Skylands.instance != null) throw new IllegalStateException("Skylands already has been initialized!");
+        Skylands.instance = new Skylands(server);
     }
 
     public void onTick(MinecraftServer server) {

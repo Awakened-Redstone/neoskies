@@ -1,4 +1,4 @@
-package skylands.command;
+package skylands.command.island;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -20,26 +20,30 @@ import static skylands.command.utils.CommandUtils.register;
 
 public class DeleteCommand {
 
-    static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
-        register(dispatcher, node().then(literal("delete").requires(Permissions.require("skylands.island.delete", true))
+    public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
+        register(dispatcher, node()
+            .then(literal("delete")
+                .requires(Permissions.require("skylands.island.delete", true))
                 .executes(context -> {
-            var player = context.getSource().getPlayer();
-            if (player != null) DeleteCommand.warn(player);
-            return 1;
-        }).then(argument("confirmation", word()).executes(context -> {
-            var player = context.getSource().getPlayer();
-            String confirmWord = StringArgumentType.getString(context, "confirmation");
-            if (player != null) DeleteCommand.run(player, confirmWord);
-            return 1;
-        }))));
+                    var player = context.getSource().getPlayer();
+                    if (player != null) DeleteCommand.warn(player);
+                    return 1;
+                }).then(argument("confirmation", word()).executes(context -> {
+                    var player = context.getSource().getPlayer();
+                    String confirmWord = StringArgumentType.getString(context, "confirmation");
+                    if (player != null) DeleteCommand.run(player, confirmWord);
+                    return 1;
+                }))
+            )
+        );
     }
 
     static void run(ServerPlayerEntity player, String confirmWord) {
 
         if (confirmWord.equals("CONFIRM")) {
-            IslandStuck islands = Skylands.instance.islands;
+            IslandStuck islands = Skylands.getInstance().islands;
 
-            islands.get(player).ifPresentOrElse(island -> {
+            islands.getByPlayer(player).ifPresentOrElse(island -> {
                 var created = island.created;
                 var now = Instant.now();
                 var hours = ChronoUnit.HOURS.between(created, now);
@@ -60,9 +64,9 @@ public class DeleteCommand {
     }
 
     static void warn(ServerPlayerEntity player) {
-        IslandStuck islands = Skylands.instance.islands;
+        IslandStuck islands = Skylands.getInstance().islands;
 
-        islands.get(player).ifPresentOrElse(island -> {
+        islands.getByPlayer(player).ifPresentOrElse(island -> {
             var created = island.created;
             var now = Instant.now();
             var hours = ChronoUnit.HOURS.between(created, now);
