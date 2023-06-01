@@ -15,14 +15,13 @@ import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.command.argument.EntityArgumentType.player;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
-import static skylands.command.utils.CommandUtils.node;
-import static skylands.command.utils.CommandUtils.register;
+import static skylands.command.utils.CommandUtils.*;
 
 public class BanCommands {
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node()
             .then(literal("ban")
-                .requires(Permissions.require("skylands.command.ban", true))
+                .requires(requiresIsland("skylands.command.ban", true))
                 .then(argument("player", player())
                     .executes(context -> {
                         var player = context.getSource().getPlayer();

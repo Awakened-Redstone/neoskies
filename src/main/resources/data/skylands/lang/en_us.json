@@ -63,6 +63,18 @@
   "message.skylands.settings.visits_pos_change": "Visits position got changed to <color:#3fd9ff>%pos%",
   "message.skylands.settings.no_island": "<color:#ff816a>You don't have an Island yet!",
   "message.skylands.error.player_only": "<color:#ff816a>Only players can execute this!",
+  "message.skylands.island.level.scan.opening": "Opening scan menu...",
+  "message.skylands.island.level.scan.time_taken": "Scan finished in %time%",
+  "message.skylands.island.level.scan.preparing": "<yellow>Preparing scan...",
+  "message.skylands.island.level.scan.progress": "Scanning: <gray>%progress%<aqua>/<gray>%total% chunks",
+  "message.skylands.island.level.scan.confirm": "Start island scan?",
+  "message.skylands.island.level.scan.start": "<green>Scan island",
+  "message.skylands.island.level.scan.cancel": "<red>Cancel",
+  "message.skylands.island.level.scan.close": "<red>Close",
+  "message.skylands.island.level.scan.background": "                                                      \n\n\n\n\n\n\n\n\n\n\n\n",
+
+  "message.skylands.island.modify.size": "Successfully modified the size of <color:#3fd9ff>%player%'s <color:#98f9ff>island to <color:#3fd9ff>%size%<color:#98f9ff>",
+
   "message.skylands.world_protection.anvil": "You can't open anvils out here!",
   "message.skylands.world_protection.armor_stand_use": "You can't interact with entities out here!",
   "message.skylands.world_protection.axe_use": "You can't modify blocks out here!",
@@ -194,6 +206,7 @@
   "text.config.skylands.option.disableEntitiesOutsideIslands": "Disable entities outside islands",
   "text.config.skylands.option.enableEndIsland": "Enable End islands",
   "text.config.skylands.option.safeVoid": "Safe void",
+  "text.config.skylands.option.safeVoidFallDamage": "Keep fall damage on safe void",
   "text.config.skylands.option.safeVoidBlocksBelow": "Safe void trigger offset",
   "text.config.skylands.option.showProtectionMessages": "Show protection messages"
 }

@@ -2,7 +2,6 @@ package skylands.command.island;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import skylands.logic.IslandStuck;
@@ -15,15 +14,14 @@ import java.time.temporal.ChronoUnit;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
-import static skylands.command.utils.CommandUtils.node;
-import static skylands.command.utils.CommandUtils.register;
+import static skylands.command.utils.CommandUtils.*;
 
 public class DeleteCommand {
 
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node()
             .then(literal("delete")
-                .requires(Permissions.require("skylands.island.delete", true))
+                .requires(requiresIsland("skylands.island.delete", true))
                 .executes(context -> {
                     var player = context.getSource().getPlayer();
                     if (player != null) DeleteCommand.warn(player);
@@ -48,7 +46,8 @@ public class DeleteCommand {
                 var now = Instant.now();
                 var hours = ChronoUnit.HOURS.between(created, now);
 
-                if (hours >= 24) {
+                //TODO: undo this
+                if (25 >= 24) {
                     islands.delete(player);
                     player.sendMessage(Texts.prefixed("message.skylands.island_delete.success"));
                 } else {
@@ -71,7 +70,8 @@ public class DeleteCommand {
             var now = Instant.now();
             var hours = ChronoUnit.HOURS.between(created, now);
 
-            if (hours >= 24) {
+            //TODO: undo this
+            if (25 >= 24) {
                 player.sendMessage(Texts.prefixed("message.skylands.island_delete.warning"));
             } else {
                 player.sendMessage(Texts.prefixed("message.skylands.island_delete.too_often"));

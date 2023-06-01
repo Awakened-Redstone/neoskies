@@ -32,6 +32,7 @@ public class SkylandsCommands {
         AcceptCommand.init(dispatcher);
         DeleteCommand.init(dispatcher);
         SettingCommands.init(dispatcher);
+        LevelCommand.init(dispatcher);
     }
 
     private static void registerAdminCommands(CommandDispatcher<ServerCommandSource> dispatcher) {

@@ -26,7 +26,7 @@ public class DecorationItemMixin extends Item {
         World world = context.getWorld();
         PlayerEntity player = context.getPlayer();
         if (!world.isClient && player != null) {
-            if (!WorldProtection.canModify(world, context.getBlockPos(), player)) {
+            if (!WorldProtection.canModify(world, context.getBlockPos().offset(context.getSide()), player)) {
                 protectionWarning(player, "item_place");
                 cir.setReturnValue(ActionResult.FAIL);
             }

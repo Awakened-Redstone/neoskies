@@ -67,6 +67,10 @@ public class SkylandsAPI {
         return Optional.empty();
     }
 
+    public static boolean hasIsland(PlayerEntity player) {
+        return getIslandByPlayer(player).isPresent();
+    }
+
     public static @Nullable EconomyAccount getIslandWallet(Island island) {
         return island.getWallet();
     }

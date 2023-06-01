@@ -47,6 +47,8 @@ dependencies {
     modImplementation include("eu.pb4:common-protection-api:${project.cpa}")
     modImplementation include("eu.pb4:common-economy-api:${project.cea}")
 
+    modImplementation include("eu.pb4:polymer-virtual-entity:${project.polymer}")
+
     modImplementation "com.awakenedredstone:cbserverconfig:${project.cbsc}"
     annotationProcessor(modCompileOnly "io.wispforest:owo-lib:0.10.3+1.19.4") //Temporary
 

@@ -12,14 +12,13 @@ import skylands.util.Texts;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
-import static skylands.command.utils.CommandUtils.node;
-import static skylands.command.utils.CommandUtils.register;
+import static skylands.command.utils.CommandUtils.*;
 
 public class HomeCommand {
 
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node()
-            .then(literal("home").requires(Permissions.require("skylands.teleport.home", true))
+            .then(literal("home").requires(requiresIsland("skylands.teleport.home", true))
                 .executes(context -> {
                     var player = context.getSource().getPlayer();
                     if (player != null) {

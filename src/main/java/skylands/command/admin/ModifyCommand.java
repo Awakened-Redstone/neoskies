@@ -1,11 +1,11 @@
 package skylands.command.admin;
 
+import com.awakenedredstone.cbserverconfig.util.MapBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import skylands.api.SkylandsAPI;
 import skylands.command.utils.CommandUtils;
@@ -42,7 +42,10 @@ public class ModifyCommand {
         if (!assertIsland(source, island)) return 0;
         island.radius = size;
 
-        source.sendFeedback(Texts.of(Text.translatable("skylands.command.admin.modify.size.success", island.getIslandId(), size)), true);
+        source.sendFeedback(Texts.of(Texts.of("message.skylands.island.modify.size", new MapBuilder.StringMap()
+            .put("player", island.owner.name)
+            .putAny("size", size)
+            .build())), true);
 
         return 0;
     }

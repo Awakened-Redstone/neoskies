@@ -2,23 +2,29 @@ package skylands.logic;
 
 import lombok.Getter;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import skylands.logic.economy.Economy;
 import skylands.util.NbtMigrator;
+import skylands.util.PreInitData;
+import skylands.util.Scheduler;
 import xyz.nucleoid.fantasy.Fantasy;
 
 public class Skylands {
-    public int format = 4;
+    @Getter
+    private int format = 1;
     @Getter
     private static Skylands instance;
     private final MinecraftServer server;
-    public Fantasy fantasy;
-    public IslandStuck islands;
-    public Hub hub;
-    public Invites invites;
-    public Economy economy;
+    public final Fantasy fantasy;
+    public final IslandStuck islands;
+    public final Hub hub;
+    public final Invites invites;
+    public final Economy economy;
+    public final Scheduler scheduler;
 
     public Skylands(MinecraftServer server) {
+        this.scheduler = new Scheduler();
         this.server = server;
         this.fantasy = Fantasy.get(server);
         this.islands = new IslandStuck();
@@ -56,10 +62,24 @@ public class Skylands {
 
     public void onTick(MinecraftServer server) {
         this.invites.tick(server);
+        this.scheduler.tick(server);
+    }
+
+    public void close() {
+        Skylands.instance = null;
+        this.scheduler.close();
     }
 
     public static MinecraftServer getServer() {
         return getInstance().server;
+    }
+
+    public static Scheduler getScheduler() {
+        return getInstance().scheduler;
+    }
+
+    public static ResourceManager getResourceManager() {
+        return instance == null ? PreInitData.getInstance().getResourceManager() : Skylands.getServer().getResourceManager();
     }
 
 }

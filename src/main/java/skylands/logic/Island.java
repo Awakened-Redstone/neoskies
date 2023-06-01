@@ -2,9 +2,11 @@ package skylands.logic;
 
 import eu.pb4.common.economy.api.EconomyAccount;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
@@ -57,8 +59,12 @@ public class Island {
     public boolean locked = false;
     public Vec3d spawnPos = SkylandsMain.MAIN_CONFIG.defaultIslandLocation();
     public Vec3d visitsPos = SkylandsMain.MAIN_CONFIG.defaultIslandLocation();
+    public LinkedHashMap<Block, Integer> blocks = new LinkedHashMap<>();
     public boolean hasNether = false;
     public boolean hasEnd = false;
+
+    @Getter @Setter
+    private boolean scanning = false;
 
     public Instant created = Instant.now();
 
@@ -128,6 +134,13 @@ public class Island {
             }
         });
 
+        NbtCompound blocksNbt = nbt.getCompound("blocks");
+        blocksNbt.getKeys().forEach(key -> {
+            Block block = Registries.BLOCK.get(new Identifier(key));
+            int amount = blocksNbt.getInt(key);
+            island.blocks.put(block, amount);
+        });
+
         SettingsManager.update(island.settings);
 
         return island;
@@ -187,6 +200,12 @@ public class Island {
             settingsNbt.put(identifier.toString(), settingsDataNbt);
         });
         nbt.put("settings", settingsNbt);
+
+        NbtCompound blocksNbt = new NbtCompound();
+        this.blocks.forEach((block, amount) -> {
+            blocksNbt.putInt(Registries.BLOCK.getId(block).toString(), amount);
+        });
+        nbt.put("blocks", blocksNbt);
 
         return nbt;
     }

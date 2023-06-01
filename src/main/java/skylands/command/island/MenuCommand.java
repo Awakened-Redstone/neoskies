@@ -34,7 +34,11 @@ import static skylands.command.utils.CommandUtils.register;
 
 public class MenuCommand {
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
-        register(dispatcher, node().then(literal("menu").executes(context -> MenuCommand.execute(context.getSource()))));
+        register(dispatcher, node().then(literal("menu")
+                .requires(Permissions.require("skylands.command.menu", true))
+                .executes(context -> MenuCommand.execute(context.getSource()))
+            )
+        );
 
         for (String alias : SkylandsMain.MAIN_CONFIG.commandAliases()) {
             dispatcher.register(CommandManager.literal(alias).executes(context -> MenuCommand.execute(context.getSource())));

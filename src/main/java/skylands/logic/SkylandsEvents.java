@@ -1,4 +1,4 @@
-package skylands.event;
+package skylands.logic;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -15,6 +15,7 @@ import nota.event.SongStartEvent;
 import nota.player.PositionSongPlayer;
 import skylands.SkylandsMain;
 import skylands.api.SkylandsAPI;
+import skylands.event.*;
 import skylands.util.Texts;
 import skylands.util.Worlds;
 
@@ -35,8 +36,9 @@ public class SkylandsEvents {
             }
         });
 
-        ServerLifecycleEvents.SERVER_STARTING.register(ServerStartEvent::onStart);
-        ServerTickEvents.END_SERVER_TICK.register(ServerTickEvent::onTick);
+        ServerLifecycleEvents.SERVER_STARTING.register(ServerEventListener::onStart);
+        ServerLifecycleEvents.SERVER_STOPPED.register(ServerEventListener::onStop);
+        ServerTickEvents.END_SERVER_TICK.register(ServerEventListener::onTick);
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> PlayerConnectEvent.onJoin(server, handler.player));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PlayerConnectEvent.onLeave(server, handler.player));
         PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {

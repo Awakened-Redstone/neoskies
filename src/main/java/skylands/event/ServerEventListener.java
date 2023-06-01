@@ -7,15 +7,25 @@ import net.minecraft.server.MinecraftServer;
 import skylands.SkylandsMain;
 import skylands.logic.Island;
 import skylands.logic.Skylands;
+import skylands.util.PreInitData;
 
 import java.util.Optional;
 
-public class ServerStartEvent {
+public class ServerEventListener {
+
+    public static void onTick(MinecraftServer server) {
+        Skylands.getInstance().onTick(server);
+    }
 
     public static void onStart(MinecraftServer server) {
         Skylands.init(server);
+        PreInitData.close();
         CommonEconomy.register("skylands", Skylands.getInstance().economy.PROVIDER);
         registerPlaceholders();
+    }
+
+    public static void onStop(MinecraftServer server) {
+        Skylands.getInstance().close();
     }
 
     //TODO: Add placeholders

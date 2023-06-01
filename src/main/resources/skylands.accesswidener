@@ -12,3 +12,4 @@ accessible method net/minecraft/text/TranslatableTextContent updateTranslations 
 
 # Fields
 accessible field net/minecraft/text/TranslatableTextContent translations Ljava/util/List;
+accessible field net/minecraft/server/world/ThreadedAnvilChunkStorage chunkHolders Lit/unimi/dsi/fastutil/longs/Long2ObjectLinkedOpenHashMap;

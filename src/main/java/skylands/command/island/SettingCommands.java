@@ -1,7 +1,6 @@
 package skylands.command.island;
 
 import com.mojang.brigadier.CommandDispatcher;
-import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,18 +19,17 @@ import java.util.Optional;
 import static net.minecraft.command.argument.BlockPosArgumentType.blockPos;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
-import static skylands.command.utils.CommandUtils.node;
-import static skylands.command.utils.CommandUtils.register;
+import static skylands.command.utils.CommandUtils.*;
 
 public class SettingCommands {
 
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node()
             .then(literal("settings")
-                .requires(Permissions.require("skylands.island.settings", true))
+                .requires(requiresIsland("skylands.island.settings", true))
                 .executes(context -> settingsGui(context.getSource()))
                 .then(literal("lock")
-                    .requires(Permissions.require("skylands.island.lock", true))
+                    .requires(requiresIsland("skylands.island.lock", true))
                     .executes(context -> {
                         var player = context.getSource().getPlayer();
                         if (player != null) {
@@ -41,7 +39,7 @@ public class SettingCommands {
                     })
                 ).then(literal("position")
                     .then(literal("spawn")
-                        .requires(Permissions.require("skylands.island.settings.position.spawn", true))
+                        .requires(requiresIsland("skylands.island.settings.position.spawn", true))
                         .then(argument("position", blockPos())
                             .executes(context -> {
                                 var player = context.getSource().getPlayer();
@@ -53,7 +51,7 @@ public class SettingCommands {
                             })
                         )
                     ).then(literal("visit")
-                        .requires(Permissions.require("skylands.island.settings.position.visit", true))
+                        .requires(requiresIsland("skylands.island.settings.position.visit", true))
                         .then(argument("position", blockPos())
                             .executes(context -> {
                                 var player = context.getSource().getPlayer();

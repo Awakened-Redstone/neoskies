@@ -4,21 +4,24 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import skylands.SkylandsMain;
+import skylands.api.SkylandsAPI;
 import skylands.logic.Island;
 import skylands.logic.Skylands;
 import skylands.util.Texts;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 
 public class CommandUtils {
-
-    public static SuggestionProvider<ServerCommandSource> ISLAND_SUGGESTIONS = (context, builder) -> {
+    public static final SuggestionProvider<ServerCommandSource> ISLAND_SUGGESTIONS = (context, builder) -> {
         List<Island> islands = Skylands.getInstance().islands.stuck;
         for (Island island : islands) {
             builder.suggest(island.getIslandId().toString());
@@ -32,6 +35,18 @@ public class CommandUtils {
             return false;
         }
         return true;
+    }
+
+    public static boolean assertPlayer(ServerCommandSource source) {
+        if (!source.isExecutedByPlayer()) {
+            source.sendError(Texts.of("message.skylands.error.player_olny"));
+            return false;
+        }
+        return true;
+    }
+
+    public static Predicate<ServerCommandSource> requiresIsland(@NotNull String permission, boolean defaultValue) {
+        return source -> Permissions.check(source, permission, defaultValue) && source.isExecutedByPlayer() && SkylandsAPI.hasIsland(source.getPlayer());
     }
 
     public static LiteralArgumentBuilder<ServerCommandSource> node() {
