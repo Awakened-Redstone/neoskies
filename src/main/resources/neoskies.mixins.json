@@ -1,0 +1,35 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.awakenedredstone.neoskies.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "block.EndPortalBlockMixin",
+    "block.FireBlockMixin",
+    "block.accessor.WorldBorderAccessor",
+    "block.entity.EndGatewayBlockEntityMixin",
+    "compat.JanksonAcessor",
+    "compat.POJODeserializerAccessor",
+    "entity.EntityMixin",
+    "entity.PlayerManagerMixin",
+    "entity.ServerPlayerEntityMixin",
+    "item.ArmorStandItemMixin",
+    "item.BlockItemMixin",
+    "item.BoatItemMixin",
+    "item.ItemStackMixin",
+    "item.MinecartItemMixin",
+    "world.ChunkMixin",
+    "world.PlayerEntityMixin",
+    "world.PortalForcerMixin",
+    "world.ServerWorldMixin",
+    "world.protection.SculkCatalystBlockEntityMixin",
+    "world.protection.SculkSensorBlockEntityMixin",
+    "world.protection.SculkSensorBlockMixin",
+    "world.protection.SculkShriekerBlockEntityMixin",
+    "world.protection.SculkShriekerBlockMixin",
+    "world.protection.VibrationListenerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

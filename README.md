@@ -1,6 +1,6 @@
 ## About
 <!-- modrinth_exclude.start -->
-<img align="right" width="128" src="src/main/resources/assets/skylands/icon.png">
+<img align="right" width="128" src="src/main/resources/assets/neoskies/icon.png">
 <!-- modrinth_exclude.end -->
 
 NeoSkies is a skyblock Minecraft mod, with island settings, teams, island upgrades, dedicated worlds for each island, economy integration (with Common Economy API) and more!
