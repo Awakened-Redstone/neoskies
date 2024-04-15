@@ -1,46 +1,40 @@
 {
   "schemaVersion": 1,
-  "id": "skylands-custom",
+  "id": "neoskies",
   "version": "${version}",
-  "name": "Skylands (custom)",
-  "description": "Simple Skyblock Islands generator and manager.\nModified version of Skylands",
+  "name": "NeoSkies",
+  "description": "",
   "authors": [
-    "PinkGoosik",
     "Awakened Redstone"
   ],
-  "contributors": [
-    "KujouMolean"
-  ],
-  "contact": {
-    "homepage": "https://modrinth.com/mod/skylands",
-    "sources": "https://github.com/tyap-lyap/skylands",
-    "issues": "https://github.com/tyap-lyap/skylands/issues"
-  },
   "license": "LGPL-3.0",
-  "icon": "assets/skylands/icon.png",
-  "accessWidener": "skylands.accesswidener",
+  "icon": "assets/neoskies/icon.png",
+  "accessWidener": "neoskies.accesswidener",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "skylands.SkylandsMain"
+      "com.awakenedredstone.neoskies.SkylandsMain"
+    ],
+    "fabric-datagen": [
+      "com.awakenedredstone.neoskies.datagen.NeoSkiesDatagen"
     ],
     "cardinal-components": [
-      "skylands.data.SkylandComponents"
+      "com.awakenedredstone.neoskies.data.SkylandComponents"
     ]
   },
   "mixins": [
-    "skylands.mixins.json"
+    "neoskies.mixins.json"
   ],
   "custom": {
     "cardinal-components": [
-      "skylands:world_data",
-      "skylands:player_data"
+      "neoskies:world_data",
+      "neoskies:player_data"
     ]
   },
   "depends": {
     "fabricloader": "*",
     "fabric-api": ">=0.76.0",
-    "minecraft": "1.19.4",
+    "minecraft": "1.20.4",
     "java": ">=17"
   },
   "breaks": {

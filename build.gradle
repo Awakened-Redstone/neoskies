@@ -1,10 +1,32 @@
 plugins {
-	id "fabric-loom" version "1.1-SNAPSHOT"
-    id 'io.freefair.lombok' version '6.6.2'
+	id "fabric-loom" version "1.6-SNAPSHOT"
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDirs += [
+              'src/main/generated'
+            ]
+        }
+    }
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/skylands.accesswidener")
+    accessWidenerPath = file("src/main/resources/neoskies.accesswidener")
+
+    runs {
+        datagenServer {
+            server()
+            name "Data Generation"
+            vmArg "-Dfabric-api.datagen"
+            vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
+            vmArg "-Dfabric-api.datagen.modid=neoskies"
+
+            ideConfigGenerated = true
+            runDir "build/datagen"
+        }
+    }
 }
 
 archivesBaseName = project.archives_base_name
@@ -12,47 +34,48 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-    //mavenLocal()
-	maven {
-		url "https://api.modrinth.com/maven"
-		content { includeGroup "maven.modrinth" }
-	}
 	maven { url "https://maven.nucleoid.xyz" }
 	maven { url "https://maven.awakenedredstone.com" }
 	maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-	maven { url "https://ladysnake.jfrog.io/artifactory/mods" }
-	maven { url = "https://jitpack.io" }
-
-    maven { url "https://maven.wispforest.io" } //Temporary
+	maven { url "https://maven.ladysnake.org/releases" }
+    maven { url "https://maven.isxander.dev/releases" }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
+    //region Fabric
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-
 	modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader}"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api}"
-	modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-api:${project.cca}"
-	include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cca}"
-	include "dev.onyxstudios.cardinal-components-api:cardinal-components-world:${project.cca}"
-	include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cca}"
-
-	modImplementation include("eu.pb4:sgui:${project.sgui}")
-	modImplementation include("xyz.nucleoid:fantasy:${project.fantasy}")
-	modImplementation include("maven.modrinth:nota:${project.nota}")
-	modImplementation include("eu.pb4:placeholder-api:${project.papi}")
-	modImplementation include("xyz.nucleoid:server-translations-api:${project.sta}")
+    //endregion
+    // region Cardinal Components
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-api:${project.cardinal_components_api}"
+	include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cardinal_components_api}"
+	include "dev.onyxstudios.cardinal-components-api:cardinal-components-world:${project.cardinal_components_api}"
+    // endregion
+    // region Nucleoid
+    modImplementation include("xyz.nucleoid:fantasy:${project.fantasy}")
     modImplementation include("xyz.nucleoid:stimuli:${project.stimuli}")
-    modImplementation include("me.lucko:fabric-permissions-api:${project.fpa}")
-    modImplementation include("eu.pb4:common-protection-api:${project.cpa}")
-    modImplementation include("eu.pb4:common-economy-api:${project.cea}")
-
+    modImplementation include("xyz.nucleoid:server-translations-api:${project.server_translations_api}")
+    //endregion
+    // region Patbox
+    modImplementation include("eu.pb4:sgui:${project.server_gui}")
+    modImplementation include("eu.pb4:placeholder-api:${project.placeholder_api}")
+    modImplementation include("eu.pb4:common-economy-api:${project.common_economy_api}")
+    modImplementation include("eu.pb4:common-protection-api:${project.common_protection_api}")
+    //region Polymer
+    modImplementation include("eu.pb4:polymer-core:${project.polymer}")
+    modImplementation include("eu.pb4:polymer-resource-pack:${project.polymer}")
     modImplementation include("eu.pb4:polymer-virtual-entity:${project.polymer}")
-
-    modImplementation "com.awakenedredstone:cbserverconfig:${project.cbsc}"
-    annotationProcessor(modCompileOnly "io.wispforest:owo-lib:0.10.3+1.19.4") //Temporary
-
-    include(implementation(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${project.mixin_extras}")))
+    //endregion
+    //endregion
+    // region Others
+    modImplementation include("me.lucko:fabric-permissions-api:${project.fabric_permission_api}")
+    //endregion
+    // region Non mod dependencies
+    include api("blue.endless:jankson:${project.jankson_version}")
+    //endregion
 }
 
 processResources {

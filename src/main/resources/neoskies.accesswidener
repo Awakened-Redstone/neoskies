@@ -1,0 +1,23 @@
+accessWidener v1 named
+
+# Classes
+accessible class net/minecraft/world/border/WorldBorder$Area
+accessible class net/minecraft/world/border/WorldBorder$MovingArea
+accessible class net/minecraft/world/border/WorldBorder$StaticArea
+accessible class net/minecraft/block/entity/SculkSensorBlockEntity$VibrationCallback
+accessible class net/minecraft/block/entity/SculkShriekerBlockEntity$VibrationCallback
+
+# Methods
+accessible method net/minecraft/server/network/ServerPlayerEntity getPermissionLevel ()I
+accessible method net/minecraft/world/border/WorldBorder$MovingArea <init> (Lnet/minecraft/world/border/WorldBorder;DDJ)V
+accessible method net/minecraft/text/TranslatableTextContent updateTranslations ()V
+accessible method net/minecraft/server/network/ServerPlayerInteractionManager setGameMode (Lnet/minecraft/world/GameMode;Lnet/minecraft/world/GameMode;)V
+accessible method net/minecraft/entity/Entity refreshPosition ()V
+accessible method net/minecraft/entity/player/PlayerEntity dropShoulderEntities ()V
+accessible method net/minecraft/server/network/ServerPlayerEntity forgiveMobAnger ()V
+
+# Fields
+accessible field net/minecraft/text/TranslatableTextContent translations Ljava/util/List;
+accessible field net/minecraft/server/world/ThreadedAnvilChunkStorage chunkHolders Lit/unimi/dsi/fastutil/longs/Long2ObjectLinkedOpenHashMap;
+accessible field net/minecraft/world/WorldSaveHandler playerDataDir Ljava/io/File;
+accessible field net/minecraft/server/MinecraftServer saveHandler Lnet/minecraft/world/WorldSaveHandler;
