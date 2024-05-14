@@ -1,5 +1,7 @@
 package com.awakenedredstone.neoskies.mixin.world.protection;
 
+import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
+import com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags;
 import com.awakenedredstone.neoskies.util.ServerUtils;
 import net.minecraft.block.AbstractCandleBlock;
 import net.minecraft.block.BlockState;
@@ -27,13 +29,11 @@ public abstract class PotionEntityMixin extends ThrownItemEntity {
     @Inject(method = "extinguishFire", at = @At("HEAD"), cancellable = true)
     void interact(BlockPos pos, CallbackInfo ci) {
         if (!getWorld().isClient()) {
-            if ((getOwner() instanceof PlayerEntity player && !WorldProtection.canModify(getWorld(), pos, player))) {
+            if ((getOwner() instanceof PlayerEntity player && !WorldProtection.canModify(getWorld(), pos, player, NeoSkiesIslandSettings.BREAK_BLOCKS))) {
                 BlockState blockState = this.getWorld().getBlockState(pos);
-                if (blockState.isIn(BlockTags.FIRE) || AbstractCandleBlock.isLitCandle(blockState) || CampfireBlock.isLitCampfire(blockState)) {
-                    ServerUtils.protectionWarning(player, "extinguish");
+                if (blockState.isIn(NeoSkiesBlockTags.EXTINGUISHABLE)) {
+                    ServerUtils.protectionWarning(player, NeoSkiesIslandSettings.BREAK_BLOCKS);
                 }
-                ci.cancel();
-            } else if (!WorldProtection.isWithinIsland(getWorld(), pos)) {
                 ci.cancel();
             }
         }

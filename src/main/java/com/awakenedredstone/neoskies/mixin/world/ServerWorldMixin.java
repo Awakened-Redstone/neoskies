@@ -1,8 +1,8 @@
 package com.awakenedredstone.neoskies.mixin.world;
 
-import com.awakenedredstone.neoskies.config.MainConfig;
 import com.awakenedredstone.neoskies.logic.Skylands;
 import com.google.common.collect.ImmutableList;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -36,7 +36,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import com.awakenedredstone.neoskies.SkylandsMain;
 import com.awakenedredstone.neoskies.api.SkylandsAPI;
 import com.awakenedredstone.neoskies.util.WorldProtection;
 
@@ -51,6 +50,14 @@ public abstract class ServerWorldMixin extends World implements StructureWorldAc
 
     protected ServerWorldMixin(MutableWorldProperties properties, RegistryKey<World> registryRef, DynamicRegistryManager registryManager, RegistryEntry<DimensionType> dimensionEntry, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates) {
         super(properties, registryRef, registryManager, dimensionEntry, profiler, isClient, debugWorld, biomeAccess, maxChainedNeighborUpdates);
+    }
+
+    @ModifyExpressionValue(method = "tickChunk", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/random/Random;nextInt(I)I", ordinal = 0))
+    private int disableLightningOnHub(int original) {
+        if (SkylandsAPI.isHub(this) && Skylands.getConfig().disableLightningOnHub) {
+            return 1;
+        }
+        return original;
     }
 
     @Inject(method = "spawnEntity", at = @At("HEAD"), cancellable = true)

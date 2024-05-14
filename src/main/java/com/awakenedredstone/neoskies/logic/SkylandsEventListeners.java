@@ -1,11 +1,10 @@
 package com.awakenedredstone.neoskies.logic;
 
 import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.event.PlayerConnectEvent;
-import com.awakenedredstone.neoskies.event.PlayerEvents;
-import com.awakenedredstone.neoskies.event.ServerEventListener;
+import com.awakenedredstone.neoskies.event.*;
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
 import com.awakenedredstone.neoskies.logic.settings.IslandSettings;
+import com.awakenedredstone.neoskies.logic.tags.NeoSkiesItemTags;
 import com.awakenedredstone.neoskies.util.ServerUtils;
 import com.awakenedredstone.neoskies.util.WorldProtection;
 import com.awakenedredstone.neoskies.util.Worlds;
@@ -14,7 +13,11 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Ownable;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -24,12 +27,11 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import xyz.nucleoid.stimuli.Stimuli;
-import xyz.nucleoid.stimuli.event.block.BlockBreakEvent;
-import xyz.nucleoid.stimuli.event.block.BlockPlaceEvent;
-import xyz.nucleoid.stimuli.event.block.BlockTrampleEvent;
-import xyz.nucleoid.stimuli.event.block.BlockUseEvent;
+import xyz.nucleoid.stimuli.event.block.*;
+import xyz.nucleoid.stimuli.event.entity.EntityDamageEvent;
 import xyz.nucleoid.stimuli.event.entity.EntityShearEvent;
 import xyz.nucleoid.stimuli.event.entity.EntityUseEvent;
 import xyz.nucleoid.stimuli.event.player.PlayerAttackEntityEvent;
@@ -52,10 +54,16 @@ public class SkylandsEventListeners {
             }
         });
 
-        Stimuli.global().listen(BlockUseEvent.EVENT, (player, hand, hitResult) -> {
+        /*Stimuli.global().listen(BlockUseEvent.EVENT, (player, hand, hitResult) -> {
             World world = player.getWorld();
+            ItemStack stack = player.getStackInHand(hand);
+            if (!stack.isEmpty() && player.isSneaking()) {
+                return ActionResult.PASS;
+            }
+
             BlockPos pos = hitResult.getBlockPos();
             BlockState state = world.getBlockState(pos);
+
             IslandSettings settings = null;
 
             for (Map.Entry<TagKey<Block>, IslandSettings> entry : NeoSkiesIslandSettings.getRuleBlockTags().entrySet()) {
@@ -71,16 +79,18 @@ public class SkylandsEventListeners {
 
             if (!WorldProtection.canModify(world, pos, player, settings)) {
                 ServerUtils.protectionWarning(player, settings.getTranslationKey());
+                int slot = hand == Hand.MAIN_HAND ? player.getInventory().selectedSlot : 40;
+                player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID, 0, slot, stack));
                 return ActionResult.FAIL;
             }
 
             return ActionResult.PASS;
-        });
+        });*/
 
         Stimuli.global().listen(BlockPlaceEvent.BEFORE, (player, world, pos, state, context) -> {
             BlockPos blockPos = context.getBlockPos().offset(context.getSide());
             if (!WorldProtection.canModify(world, blockPos, player, NeoSkiesIslandSettings.PLACE_BLOCKS)) {
-                ServerUtils.protectionWarning(player, "neoskies.place_blocks");
+                ServerUtils.protectionWarning(player, NeoSkiesIslandSettings.PLACE_BLOCKS);
                 int slot = context.getHand() == Hand.MAIN_HAND ? player.getInventory().selectedSlot : 40;
                 var stack = context.getStack();
                 player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID, 0, slot, stack));
@@ -91,7 +101,7 @@ public class SkylandsEventListeners {
 
         Stimuli.global().listen(BlockBreakEvent.EVENT, (player, world, pos) -> {
             if (!WorldProtection.canModify(world, pos, player, NeoSkiesIslandSettings.BREAK_BLOCKS)) {
-                ServerUtils.protectionWarning(player, "neoskies.break_blocks");
+                ServerUtils.protectionWarning(player, NeoSkiesIslandSettings.BREAK_BLOCKS);
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS;
@@ -99,25 +109,17 @@ public class SkylandsEventListeners {
 
         Stimuli.global().listen(BlockTrampleEvent.EVENT, (entity, world, pos, from, to) -> {
             if (entity instanceof PlayerEntity player && !WorldProtection.canModify(world, pos, player, NeoSkiesIslandSettings.BREAK_BLOCKS)) {
-                ServerUtils.protectionWarning(player, "neoskies.break_blocks");
+                ServerUtils.protectionWarning(player, NeoSkiesIslandSettings.BREAK_BLOCKS);
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS;
         });
 
-        Stimuli.global().listen(PlayerAttackEntityEvent.EVENT, (attacker, hand, attacked, hitResult) -> {
-            boolean monster = attacked instanceof Monster;
-            IslandSettings rule = monster ? NeoSkiesIslandSettings.HURT_HOSTILE : NeoSkiesIslandSettings.HURT_PASSIVE;
-            if (!WorldProtection.canModify(attacker.getWorld(), attacked.getBlockPos(), attacker, rule)) {
-                ServerUtils.protectionWarning(attacker, monster ? "neoskies.hurt_hostile" : "neoskies.hurt_passive");
-                return ActionResult.FAIL;
-            }
-            return ActionResult.PASS;
-        });
+        Stimuli.global().listen(GenericEntityDamageEvent.EVENT, SkylandsEventListeners::onEntityDamage);
 
         Stimuli.global().listen(EntityShearEvent.EVENT, (entity, player, hand, pos) -> {
             if (!WorldProtection.canModify(player.getWorld(), pos, player, NeoSkiesIslandSettings.SHEAR_ENTITY)) {
-                ServerUtils.protectionWarning(player, "entity_shear");
+                ServerUtils.protectionWarning(player, NeoSkiesIslandSettings.SHEAR_ENTITY);
                 return ActionResult.FAIL;
             }
             return ActionResult.PASS;
@@ -127,19 +129,52 @@ public class SkylandsEventListeners {
             for (Map.Entry<TagKey<EntityType<?>>, IslandSettings> entry : NeoSkiesIslandSettings.getRuleEntityTags().entrySet()) {
                 if (entity.getType().isIn(entry.getKey())) {
                     if (!WorldProtection.canModify(player.getWorld(), entity.getBlockPos(), player, entry.getValue())) {
-                        ServerUtils.protectionWarning(player, entry.getValue().getTranslationKey());
+                        ServerUtils.protectionWarning(player, entry.getValue());
                         return ActionResult.FAIL;
                     }
                 }
             }
 
             ItemStack stack = player.getStackInHand(hand);
-            if (stack.isOf(Items.LEAD) && !WorldProtection.canModify(player.getWorld(), entity.getBlockPos(), player, NeoSkiesIslandSettings.LEASH_ENTITY)) {
-                ServerUtils.protectionWarning(player, NeoSkiesIslandSettings.LEASH_ENTITY.getTranslationKey());
+            if (stack.isIn(NeoSkiesItemTags.LEAD) && !WorldProtection.canModify(player.getWorld(), entity.getBlockPos(), player, NeoSkiesIslandSettings.LEASH_ENTITY)) {
+                ServerUtils.protectionWarning(player, NeoSkiesIslandSettings.LEASH_ENTITY);
                 return ActionResult.FAIL;
             }
 
             return ActionResult.PASS;
         });
+
+        Stimuli.global().listen(FlowerPotModifyEvent.EVENT, (player, hand, hitResult) -> {
+            if (!WorldProtection.canModify(player.getWorld(), hitResult.getBlockPos(), player, NeoSkiesIslandSettings.PLACE_BLOCKS)) {
+                ServerUtils.protectionWarning(player, NeoSkiesIslandSettings.PLACE_BLOCKS);
+                return ActionResult.FAIL;
+            }
+
+            return ActionResult.PASS;
+        });
+    }
+
+    private static ActionResult onEntityDamage(Entity entity, DamageSource source, float amount) {
+        PlayerEntity player = null;
+        Entity attacker = source.getAttacker();
+
+        if (attacker instanceof PlayerEntity) {
+            player = (PlayerEntity) attacker;
+        } else if (attacker instanceof Ownable ownable && ownable.getOwner() instanceof PlayerEntity owner) {
+            player = owner;
+        }
+
+        if (player == null) {
+            return ActionResult.PASS;
+        }
+
+        boolean monster = entity instanceof Monster;
+        IslandSettings rule = monster ? NeoSkiesIslandSettings.HURT_HOSTILE : NeoSkiesIslandSettings.HURT_PASSIVE;
+        if (!WorldProtection.canModify(attacker.getWorld(), entity.getBlockPos(), player, rule)) {
+            ServerUtils.protectionWarning(player, rule);
+            return ActionResult.FAIL;
+        }
+
+        return ActionResult.PASS;
     }
 }

@@ -1,6 +1,7 @@
 package com.awakenedredstone.neoskies.data;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentV3;
+import net.minecraft.registry.RegistryWrapper;
+import org.ladysnake.cca.api.v3.component.ComponentV3;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 
@@ -33,7 +34,7 @@ public class PlayerComponent implements ComponentV3 {
     }
 
     @Override
-    public void readFromNbt(NbtCompound tag) {
+    public void readFromNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         NbtCompound islandsNbt = tag.getCompound("islands");
         int size = islandsNbt.getInt("size");
         for (int i = 0; i < size; i++) {
@@ -43,7 +44,7 @@ public class PlayerComponent implements ComponentV3 {
     }
 
     @Override
-    public void writeToNbt(NbtCompound tag) {
+    public void writeToNbt(NbtCompound tag, RegistryWrapper.WrapperLookup registryLookup) {
         NbtCompound islandsNbt = new NbtCompound();
         islandsNbt.putInt("size", this.islands.size());
         for (int i = 0; i < this.islands.size(); i++) {

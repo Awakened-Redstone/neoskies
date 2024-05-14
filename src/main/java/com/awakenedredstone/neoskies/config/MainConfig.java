@@ -28,6 +28,9 @@ public class MainConfig extends Config {
     @Comment("The mod admin command aliases")
     public List<String> adminCommandAliases = new ArrayList<>(List.of("skyblockadmin"));
 
+    @Comment("Disables spawning lightning and horse traps in the hub")
+    public boolean disableLightningOnHub = true;
+
     @Comment("Allow the player to visit their own island")
     public boolean allowVisitCurrentIsland = false;
 

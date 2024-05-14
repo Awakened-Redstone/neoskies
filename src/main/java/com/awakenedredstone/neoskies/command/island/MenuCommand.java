@@ -51,7 +51,6 @@ public class MenuCommand {
         }
 
         ServerPlayerEntity player = source.getPlayer();
-        assert player != null;
 
         int permissionLevel = player.getPermissionLevel();
 
@@ -63,7 +62,7 @@ public class MenuCommand {
         };
         final Consumer<SlotHolder> consumer = slotHolder -> {
             Optional<Island> islandOptional = SkylandsAPI.getIslandByPlayer(player);
-            UIUtils.fillGui(slotHolder, new CBGuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE).setName(Text.empty()).build());
+            UIUtils.fillGui(slotHolder, new CBGuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE).setName(Text.empty()).hideTooltip().build());
             if (Permissions.check(player, "neoskies.teleport.hub", true)) {
                 slotHolder.setSlot(10, new CBGuiElementBuilder(Items.BEACON).setName(Texts.of("item_name.neoskies.hub"))
                     .setCallback((index, type, action, gui) -> {
@@ -86,7 +85,7 @@ public class MenuCommand {
                 if (Permissions.check(player, "neoskies.island.settings", true)) {
                     slotHolder.setSlot(12, new CBGuiElementBuilder(Items.REDSTONE).setName(Texts.of("item_name.neoskies.island_settings"))
                         .setCallback((index, type, action, gui) -> {
-                            gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
+                            gui.getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
                             new IslandSettingsGui(islandOptional.get(), gui).openGui(player);
                         })
                         .build());
@@ -94,7 +93,7 @@ public class MenuCommand {
             } else if (Permissions.check(player, "neoskies.island.create", true)) {
                 slotHolder.setSlot(11, new CBGuiElementBuilder(Items.OAK_SAPLING).setName(Texts.of("item_name.neoskies.create"))
                     .setCallback((index, type, action, gui) -> {
-                        gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
+                        gui.getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
                         CreateCommand.run(player);
                         ref.dirty = true;
                     })
@@ -107,7 +106,7 @@ public class MenuCommand {
                 slotHolder.setSlot(slotHolder.getSize() - 2, new CBGuiElementBuilder(item).setName(Texts.of("item_name.neoskies.protection_bypass"))
                     .addLoreLine(Texts.of("text.neoskies.protection_bypass", map -> map.put("value", String.valueOf(overrideMode))))
                     .setCallback((index, type, action, gui) -> {
-                        gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
+                        gui.getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
                         if (overrideMode) protectionBypass.remove(player);
                         else protectionBypass.add(player);
                         ref.dirty = true;
@@ -135,7 +134,7 @@ public class MenuCommand {
         });
 
         guiBuilder.build(player).open();
-        player.playSound(SoundEvents.ENTITY_HORSE_SADDLE, SoundCategory.MASTER, 0.4f, 1.2f);
+        player.playSoundToPlayer(SoundEvents.ENTITY_HORSE_SADDLE, SoundCategory.MASTER, 0.4f, 1.2f);
         return 1;
     }
 }

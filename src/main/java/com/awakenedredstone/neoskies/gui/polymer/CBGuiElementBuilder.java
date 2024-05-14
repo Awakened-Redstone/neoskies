@@ -2,96 +2,77 @@ package com.awakenedredstone.neoskies.gui.polymer;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTextures;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
+import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
+import net.minecraft.component.DataComponentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.CustomModelDataComponent;
+import net.minecraft.component.type.LoreComponent;
+import net.minecraft.component.type.ProfileComponent;
+import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.util.Rarity;
+import net.minecraft.util.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
-public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuilder {
+public class CBGuiElementBuilder extends GuiElementBuilder {
 
     /**
-     * Constructs a GuiElementBuilder with the default options
+     * Constructs a CBGuiElementBuilder with the default options
      */
-    public CBGuiElementBuilder() {}
+    public CBGuiElementBuilder() {
+    }
 
     /**
-     * Constructs a GuiElementBuilder with the specified Item.
+     * Constructs a CBGuiElementBuilder with the specified Item.
      *
      * @param item the item to use
      */
     public CBGuiElementBuilder(Item item) {
-        super(item);
+        this.itemStack = new ItemStack(item);
     }
 
     /**
-     * Constructs a GuiElementBuilder with the specified Item
+     * Constructs a CBGuiElementBuilder with the specified Item
      * and number of items.
      *
      * @param item  the item to use
      * @param count the number of items
      */
     public CBGuiElementBuilder(Item item, int count) {
-        super(item, count);
+        this.itemStack = new ItemStack(item, count);
     }
 
     /**
-     * Constructs a GuiElementBuilder based on the supplied stack.
+     * Constructs a CBGuiElementBuilder with the specified ItemStack
+     *
+     * @param stack  the item stack to use
+     */
+    public CBGuiElementBuilder(ItemStack stack) {
+        this.itemStack = stack.copy();
+    }
+
+    /**
+     * Constructs a CBGuiElementBuilder based on the supplied stack.
      *
      * @param stack the stack to base the builder of
      * @return the constructed builder
      */
-    @NotNull
-    public static CBGuiElementBuilder from(@NotNull ItemStack stack) {
-        CBGuiElementBuilder builder = new CBGuiElementBuilder(stack.getItem(), stack.getCount());
-        NbtCompound tag = stack.getOrCreateNbt().copy();
-
-        if (stack.hasCustomName()) {
-            builder.setName((MutableText) stack.getName());
-            tag.getCompound("display").remove("Name");
-        }
-
-        if (tag.contains("display") && tag.getCompound("display").contains("Lore")) {
-            builder.setLore(CBGuiElementBuilder.getLore(stack));
-            tag.getCompound("display").remove("Lore");
-        }
-
-        if (stack.isDamaged()) {
-            builder.setDamage(stack.getDamage());
-            tag.remove("Damage");
-        }
-
-        if (stack.hasEnchantments()) {
-            for (NbtElement enc : stack.getEnchantments()) {
-                Registries.ENCHANTMENT.getOrEmpty(Identifier.tryParse(((NbtCompound) enc).getString("id"))).ifPresent(enchantment -> builder.enchant(enchantment, ((NbtCompound) enc).getInt("lvl")));
-            }
-            tag.remove("Enchantments");
-        }
-
-        if (stack.getOrCreateNbt().contains("HideFlags")) {
-            builder.hideFlags(stack.getOrCreateNbt().getByte("HideFlags"));
-            tag.remove("HideFlags");
-        }
-
-        builder.tag = tag;
-
-        return builder;
+    public static CBGuiElementBuilder from(ItemStack stack) {
+        return new CBGuiElementBuilder(stack);
     }
 
     @NotNull
@@ -107,6 +88,15 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
         return from(element.getItemStack());
     }
 
+    public ItemStack getItemStack() {
+        return itemStack;
+    }
+
+    @Deprecated
+    public static List<Text> getLore(ItemStack stack) {
+        return stack.getOrDefault(DataComponentTypes.LORE, LoreComponent.DEFAULT).lines();
+    }
+
     /**
      * Sets the type of Item of the element.
      *
@@ -114,7 +104,7 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
      * @return this element builder
      */
     public CBGuiElementBuilder setItem(Item item) {
-        this.item = item;
+        this.itemStack = new ItemStack(item.getRegistryEntry(), this.itemStack.getCount(), this.itemStack.getComponentChanges());
         return this;
     }
 
@@ -124,8 +114,19 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
      * @param name the name to use
      * @return this element builder
      */
-    public CBGuiElementBuilder setName(@NotNull Text name) {
-        this.name = name.copy();
+    public CBGuiElementBuilder setName(Text name) {
+        this.itemStack.set(DataComponentTypes.ITEM_NAME, name.copy());
+        return this;
+    }
+
+    /**
+     * Sets the rarity of the element.
+     *
+     * @param rarity to use
+     * @return this element builder
+     */
+    public CBGuiElementBuilder setRarity(Rarity rarity) {
+        this.itemStack.set(DataComponentTypes.RARITY, rarity);
         return this;
     }
 
@@ -136,7 +137,19 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
      * @return this element builder
      */
     public CBGuiElementBuilder setCount(int count) {
-        this.count = count;
+        this.itemStack.setCount(count);
+        return this;
+    }
+
+
+    /**
+     * Sets the max number of items in the element.
+     *
+     * @param count the number of items
+     * @return this element builder
+     */
+    public CBGuiElementBuilder setMaxCount(int count) {
+        this.itemStack.set(DataComponentTypes.MAX_STACK_SIZE, count);
         return this;
     }
 
@@ -147,7 +160,7 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
      * @return this element builder
      */
     public CBGuiElementBuilder setLore(List<Text> lore) {
-        this.lore = lore;
+        this.itemStack.set(DataComponentTypes.LORE, new LoreComponent(lore));
         return this;
     }
 
@@ -158,7 +171,7 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
      * @return this element builder
      */
     public CBGuiElementBuilder addLoreLine(Text lore) {
-        this.lore.add(lore);
+        this.itemStack.apply(DataComponentTypes.LORE, LoreComponent.DEFAULT, lore, LoreComponent::with);
         return this;
     }
 
@@ -170,42 +183,63 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
      * @return this element builder
      */
     public CBGuiElementBuilder setDamage(int damage) {
-        this.damage = damage;
+        this.itemStack.set(DataComponentTypes.DAMAGE, damage);
         return this;
     }
 
     /**
-     * Hides all {@link ItemStack.TooltipSection}s from the element display
+     * Set the max damage of the element.
      *
+     * @param damage the amount of durability the item is missing
      * @return this element builder
      */
-    public CBGuiElementBuilder hideFlags() {
-        this.hideFlags = 127;
+    public CBGuiElementBuilder setMaxDamage(int damage) {
+        this.itemStack.set(DataComponentTypes.MAX_DAMAGE, damage);
         return this;
     }
 
     /**
-     * Hides a {@link ItemStack.TooltipSection}
-     * from the elements display.
-     *
-     * @param section the section to hide
+     * Disables all default components on an item.
      * @return this element builder
      */
-    public CBGuiElementBuilder hideFlag(@NotNull ItemStack.TooltipSection section) {
-        this.hideFlags = (byte) (this.hideFlags | section.getFlag());
+    public CBGuiElementBuilder noDefaults() {
+        for (var x : this.itemStack.getItem().getComponents()) {
+            if (this.itemStack.get(x.type()) == x.value()) {
+                this.itemStack.set(x.type(), null);
+            }
+        }
+        return this;
+    }
+
+    public <T> CBGuiElementBuilder setComponent(DataComponentType<T> type, @Nullable T value) {
+        this.itemStack.set(type, value);
         return this;
     }
 
     /**
-     * Set the {@link ItemStack.TooltipSection}s to
-     * hide from the elements display, by the flags.
+     * Hides all component-item related tooltip added by item's or non name/lore components.
      *
-     * @param value the flags to hide
      * @return this element builder
-     * @see CBGuiElementBuilder#hideFlag(ItemStack.TooltipSection)
      */
-    public CBGuiElementBuilder hideFlags(byte value) {
-        this.hideFlags = value;
+    public CBGuiElementBuilder hideDefaultTooltip() {
+        this.itemStack.apply(DataComponentTypes.TRIM, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
+        this.itemStack.apply(DataComponentTypes.UNBREAKABLE, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
+        this.itemStack.apply(DataComponentTypes.ENCHANTMENTS, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
+        this.itemStack.apply(DataComponentTypes.STORED_ENCHANTMENTS, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
+        this.itemStack.apply(DataComponentTypes.ATTRIBUTE_MODIFIERS, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
+        this.itemStack.apply(DataComponentTypes.DYED_COLOR, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
+        this.itemStack.apply(DataComponentTypes.CAN_BREAK, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
+        this.itemStack.apply(DataComponentTypes.CAN_PLACE_ON, null, comp -> comp != null ? comp.withShowInTooltip(false) : null);
+        this.itemStack.set(DataComponentTypes.HIDE_ADDITIONAL_TOOLTIP, Unit.INSTANCE);
+        return this;
+    }
+
+    /**
+     * Hides tooltip completely, making it never show
+     * @return this element builder
+     */
+    public CBGuiElementBuilder hideTooltip() {
+        this.itemStack.set(DataComponentTypes.HIDE_TOOLTIP, Unit.INSTANCE);
         return this;
     }
 
@@ -217,7 +251,7 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
      * @return this element builder
      */
     public CBGuiElementBuilder enchant(Enchantment enchantment, int level) {
-        this.enchantments.put(enchantment, level);
+        this.itemStack.addEnchantment(enchantment, level);
         return this;
     }
 
@@ -227,8 +261,18 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
      * @return this element builder
      */
     public CBGuiElementBuilder glow() {
-        this.enchantments.put(Enchantments.LUCK_OF_THE_SEA, 1);
-        return hideFlag(ItemStack.TooltipSection.ENCHANTMENTS);
+        this.itemStack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true);
+        return this;
+    }
+
+    /**
+     * Sets the element to have an enchantment glint.
+     *
+     * @return this element builder
+     */
+    public CBGuiElementBuilder glow(boolean value) {
+        this.itemStack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, value);
+        return this;
     }
 
     /**
@@ -238,7 +282,7 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
      * @return this element builder
      */
     public CBGuiElementBuilder setCustomModelData(int value) {
-        this.getOrCreateNbt().putInt("CustomModelData", value);
+        this.itemStack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(value));
         return this;
     }
 
@@ -248,8 +292,8 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
      * @return this element builder
      */
     public CBGuiElementBuilder unbreakable() {
-        this.getOrCreateNbt().putBoolean("Unbreakable", true);
-        return hideFlag(ItemStack.TooltipSection.UNBREAKABLE);
+        this.itemStack.set(DataComponentTypes.UNBREAKABLE, new UnbreakableComponent(true));
+        return this;
     }
 
     /**
@@ -264,7 +308,7 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
      * @param server  the server instance, used to get the textures
      * @return this element builder
      */
-    public GuiElementBuilder setSkullOwner(GameProfile profile, @Nullable MinecraftServer server) {
+    public CBGuiElementBuilder setSkullOwner(GameProfile profile, @Nullable MinecraftServer server) {
         if (profile.getId() != null && server != null) {
             if (server.getSessionService().getTextures(profile) == MinecraftProfileTextures.EMPTY) {
                 var tmp = server.getSessionService().fetchProfile(profile.getId(), false);
@@ -273,10 +317,8 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
                 }
             }
 
-            this.getOrCreateNbt().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), profile));
-        } else {
-            this.getOrCreateNbt().putString("SkullOwner", profile.getName());
         }
+        this.itemStack.set(DataComponentTypes.PROFILE, new ProfileComponent(profile));
         return this;
     }
 
@@ -303,28 +345,14 @@ public class CBGuiElementBuilder extends eu.pb4.sgui.api.elements.GuiElementBuil
      * @return this element builder
      */
     public CBGuiElementBuilder setSkullOwner(String value, @Nullable String signature, @Nullable UUID uuid) {
-        NbtCompound skullOwner = new NbtCompound();
-        NbtCompound properties = new NbtCompound();
-        NbtCompound valueData = new NbtCompound();
-        NbtList textures = new NbtList();
-
-        valueData.putString("Value", value);
-        if (signature != null) {
-            valueData.putString("Signature", signature);
-        }
-
-        textures.add(valueData);
-        properties.put("textures", textures);
-
-        skullOwner.put("Id", NbtHelper.fromUuid(uuid != null ? uuid : Util.NIL_UUID));
-        skullOwner.put("Properties", properties);
-        this.getOrCreateNbt().put("SkullOwner", skullOwner);
-
+        PropertyMap map = new PropertyMap();
+        map.put("textures", new Property("textures", value, signature));
+        this.itemStack.set(DataComponentTypes.PROFILE, new ProfileComponent(Optional.empty(), Optional.ofNullable(uuid), map));
         return this;
     }
 
     @Override
-    public CBGuiElementBuilder setCallback(CBGuiElement.ClickCallback callback) {
+    public CBGuiElementBuilder setCallback(GuiElement.ClickCallback callback) {
         this.callback = callback;
         return this;
     }

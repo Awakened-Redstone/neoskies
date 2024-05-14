@@ -1,5 +1,6 @@
 package com.awakenedredstone.neoskies.gui;
 
+import com.awakenedredstone.neoskies.api.island.IslandSettingsManager;
 import com.awakenedredstone.neoskies.gui.polymer.CBGuiElement;
 import com.awakenedredstone.neoskies.gui.polymer.CBGuiElementBuilder;
 import com.awakenedredstone.neoskies.gui.polymer.CBSimpleGuiBuilder;
@@ -17,7 +18,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import com.awakenedredstone.neoskies.api.island.IslandSettings;
-import com.awakenedredstone.neoskies.api.island.SettingsManager;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.util.Texts;
 
@@ -33,7 +33,7 @@ public class IslandSettingsGui {
     private final Consumer<SlotGuiInterface> simpleUpdateGui;
     private int page = 0;
 
-    private final CBGuiElement filler = new CBGuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE).setName(Text.empty()).build();
+    private final CBGuiElement filler = new CBGuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE).setName(Text.empty()).hideTooltip().build();
     private final CBGuiElement nextPage = new CBGuiElementBuilder(Items.LIME_STAINED_GLASS_PANE).setName(Texts.of("neoskies.page.next")).setCallback((index, type, action, gui) -> offsetPage(1, gui)).build();
     private final CBGuiElement prevPage = new CBGuiElementBuilder(Items.RED_STAINED_GLASS_PANE).setName(Texts.of("neoskies.page.previous")).setCallback((index, type, action, gui) -> offsetPage(-1, gui)).build();
 
@@ -49,11 +49,11 @@ public class IslandSettingsGui {
             gui.setTitle(Texts.of("gui.neoskies.island_settings"));
 
             int slot = 10;
-            int offset = page * 24;
-            for (int i = offset; i < Math.min(offset + 24, island.getSettings().size()); i++) {
+            int offset = page * 28;
+            for (int i = offset; i < Math.min(offset + 28, island.getSettings().size()); i++) {
                 if ((slot + 1) % 9 == 0 && slot > 10) slot += 2;
                 Map.Entry<Identifier, IslandSettings> pageEntry = entries.get(i);
-                gui.setSlot(slot++, SettingsManager.getIcon(pageEntry.getKey(), island));
+                gui.setSlot(slot++, IslandSettingsManager.getIcon(pageEntry.getKey(), island));
             }
 
             if (page < getPageMax()) gui.setSlot(gui.getSize() - 8, nextPage);
@@ -62,7 +62,7 @@ public class IslandSettingsGui {
             CBGuiElementBuilder close = new CBGuiElementBuilder(Items.BARRIER)
                     .setName(Texts.of("gui.neoskies.close"))
                     .setCallback((index, type, action, gui1) -> {
-                        gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
+                        gui.getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
                         if (parent != null) {
                             parent.close();
                             parent.open();
@@ -73,11 +73,11 @@ public class IslandSettingsGui {
 
         simpleUpdateGui = gui -> {
             int slot = 10;
-            int offset = page * 24;
-            for (int i = offset; i < Math.min(offset + 24, island.getSettings().size()); i++) {
+            int offset = page * 28;
+            for (int i = offset; i < Math.min(offset + 28, island.getSettings().size()); i++) {
                 if ((slot + 1) % 9 == 0 && slot > 10) slot += 2;
                 Map.Entry<Identifier, IslandSettings> pageEntry = entries.get(i);
-                gui.setSlot(slot++, SettingsManager.getIcon(pageEntry.getKey(), island));
+                gui.setSlot(slot++, IslandSettingsManager.getIcon(pageEntry.getKey(), island));
             }
         };
     }
@@ -97,12 +97,12 @@ public class IslandSettingsGui {
     }
 
     public void offsetPage(int offset, SlotGuiInterface gui) {
-        gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
-        this.page = (int) MathHelper.clamp(this.page + offset, 0, Math.floor(island.getSettings().size() / 24f));
+        gui.getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
+        this.page = (int) MathHelper.clamp(this.page + offset, 0, Math.floor(island.getSettings().size() / 28f));
         updateGui.accept(gui);
     }
 
     private int getPageMax() {
-        return (int) Math.ceil(island.getSettings().size() / 24f) - 1;
+        return (int) Math.ceil(island.getSettings().size() / 28f) - 1;
     }
 }

@@ -1,5 +1,6 @@
 package com.awakenedredstone.neoskies.logic;
 
+import com.awakenedredstone.neoskies.api.island.IslandSettingsManager;
 import eu.pb4.common.economy.api.EconomyAccount;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,6 +17,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.RandomSeed;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
@@ -25,7 +27,6 @@ import com.awakenedredstone.neoskies.SkylandsMain;
 import com.awakenedredstone.neoskies.api.events.IslandEvents;
 import com.awakenedredstone.neoskies.api.island.IslandSettings;
 import com.awakenedredstone.neoskies.api.island.PermissionLevel;
-import com.awakenedredstone.neoskies.api.island.SettingsManager;
 import com.awakenedredstone.neoskies.logic.economy.SkylandsEconomyAccount;
 import com.awakenedredstone.neoskies.util.Constants;
 import com.awakenedredstone.neoskies.util.Players;
@@ -139,7 +140,7 @@ public class Island {
             island.blocks.put(new Identifier(key), amount);
         });
 
-        SettingsManager.update(island.settings);
+        IslandSettingsManager.update(island.settings);
 
         //TODO: Load gamerules into island
 
@@ -192,7 +193,7 @@ public class Island {
         }
         nbt.put("bans", bansNbt);
 
-        SettingsManager.update(this.settings);
+        IslandSettingsManager.update(this.settings);
         NbtCompound settingsNbt = new NbtCompound();
         this.settings.forEach((identifier, settings) -> {
             NbtCompound settingsDataNbt = new NbtCompound();
@@ -206,7 +207,7 @@ public class Island {
         this.blocks.forEach((block, amount) -> blocksNbt.putInt(block.toString(), amount));
         nbt.put("blocks", blocksNbt);
 
-        nbt.put("game_rules", getOverworld().getGameRules().toNbt());
+        //nbt.put("game_rules", getOverworld().getGameRules().toNbt());
 
         return nbt;
     }
@@ -281,7 +282,7 @@ public class Island {
     }
 
     public IslandSettings getSettings(Identifier identifier) {
-        return settings.computeIfAbsent(identifier, id -> SettingsManager.getDefaultSettings().get(id));
+        return settings.computeIfAbsent(identifier, id -> IslandSettingsManager.getDefaultSettings().get(id));
     }
 
     public boolean isInteractionAllowed(Identifier identifier, PermissionLevel source) {
@@ -301,11 +302,12 @@ public class Island {
         FlatChunkGenerator generator = new FlatChunkGenerator(flat);
 
         return new RuntimeWorldConfig()
-                .setDimensionType(DimensionTypes.OVERWORLD)
-                .setGenerator(generator)
-                .setDifficulty(Difficulty.NORMAL)
-                .setShouldTickTime(true)
-                .setSeed(0L);
+          .setDimensionType(DimensionTypes.OVERWORLD)
+          .setGenerator(generator)
+          .setMirrorOverworldDifficulty(true)
+          .setMirrorOverworldGameRules(true)
+          .setShouldTickTime(true)
+          .setSeed(0L);
     }
 
     public RuntimeWorldHandle getNetherHandler() {
@@ -321,11 +323,11 @@ public class Island {
         FlatChunkGenerator generator = new FlatChunkGenerator(flat);
 
         return new RuntimeWorldConfig()
-                .setDimensionType(DimensionTypes.THE_NETHER)
-                .setGenerator(generator)
-                .setDifficulty(Difficulty.NORMAL)
-                .setShouldTickTime(false)
-                .setSeed(RandomSeed.getSeed());
+          .setDimensionType(DimensionTypes.THE_NETHER)
+          .setGenerator(generator)
+          .setDifficulty(Difficulty.NORMAL)
+          .setShouldTickTime(false)
+          .setSeed(RandomSeed.getSeed());
     }
 
     public RuntimeWorldHandle getEndHandler() {
@@ -341,11 +343,11 @@ public class Island {
         FlatChunkGenerator generator = new FlatChunkGenerator(flat);
 
         return new RuntimeWorldConfig()
-                .setDimensionType(DimensionTypes.THE_END)
-                .setGenerator(generator)
-                .setDifficulty(Difficulty.NORMAL)
-                .setShouldTickTime(false)
-                .setSeed(RandomSeed.getSeed());
+          .setDimensionType(DimensionTypes.THE_END)
+          .setGenerator(generator)
+          .setDifficulty(Difficulty.NORMAL)
+          .setShouldTickTime(false)
+          .setSeed(RandomSeed.getSeed());
     }
 
     public ServerWorld getOverworld() {
@@ -383,9 +385,9 @@ public class Island {
         ServerWorld world = this.getOverworld();
         player.teleport(world, pos.getX(), pos.getY(), pos.getZ(), Set.of(), 0, 0);
 
-        if(!isMember(player)) {
+        if (!isMember(player)) {
             Players.get(this.owner.name).ifPresent(owner -> {
-                if(!player.getUuid().equals(owner.getUuid())) {
+                if (!player.getUuid().equals(owner.getUuid())) {
                     owner.sendMessage(Texts.prefixed("message.neoskies.island_visit.visit", map -> map.put("visitor", player.getName().getString())));
                 }
             });

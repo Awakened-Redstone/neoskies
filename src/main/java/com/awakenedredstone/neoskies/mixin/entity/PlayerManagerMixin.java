@@ -69,13 +69,13 @@ public abstract class PlayerManagerMixin implements ExtendedPlayerManager {
 
                 //Load the proper island dimension
                 if (SkylandsAPI.isOverworld(registryKey)) {
-                    LOGGER.info("Loading overworld for " + registryKey.getValue());
+                    LOGGER.debug("Loading overworld for {}", registryKey.getValue());
                     island.getOverworld();
                 } else if (SkylandsAPI.isNether(registryKey)) {
-                    LOGGER.info("Loading nether for " + registryKey.getValue());
+                    LOGGER.debug("Loading nether for {}", registryKey.getValue());
                     island.getNether();
                 } else if (SkylandsAPI.isEnd(registryKey)) {
-                    LOGGER.info("Loading end for " + registryKey.getValue());
+                    LOGGER.debug("Loading end for {}", registryKey.getValue());
                     island.getEnd();
                 }
             } else {
