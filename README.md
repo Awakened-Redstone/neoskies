@@ -10,23 +10,23 @@ This is a server-side mod, fully compatible with **vanilla** clients
 
 ### User Commands
 
-- **/is home** -> Open the mod GUI
-- **/is hub** -> Teleport to the Hub.
-- **/is create** -> Creates an Island.
-- **/is home** -> Teleport to your Island.
-- **/is visit <player>** -> Visit someone's Island.
-- **/is home <player>** -> Teleport to an Island you are member of.
-- **/is members invite <player>** -> Invite player to your Island.
-- **/is members remove <player>** -> Remove player from your Island.
-- **/is accept <player>** -> Accept Island join invite request.
-- **/is kick <player>** -> Kick player from your Island.
-- **/is ban <player>** -> Ban player from visiting your Island.
-- **/is unban <player>** -> Unban player to allow visiting your Island.
-- **/is delete** -> Deletes your Island.
-- **/is settings set-spawn-pos** -> Changes home position.
-- **/is settings set-visits-pos** -> Changes visits position.
-- **/is settings toggle-visits** -> Enables/disables ability to visit your Island.
-- **/is help** -> Sends this list.
+- **/sb home** -> Open the mod GUI
+- **/sb hub** -> Teleport to the Hub.
+- **/sb create** -> Creates an Island.
+- **/sb home** -> Teleport to your Island.
+- **/sb visit <player>** -> Visit someone's Island.
+- **/sb home <player>** -> Teleport to an Island you are member of.
+- **/sb members invite <player>** -> Invite player to your Island.
+- **/sb members remove <player>** -> Remove player from your Island.
+- **/sb accept <player>** -> Accept Island join invite request.
+- **/sb kick <player>** -> Kick player from your Island.
+- **/sb ban <player>** -> Ban player from visiting your Island.
+- **/sb unban <player>** -> Unban player to allow visiting your Island.
+- **/sb delete** -> Deletes your Island.
+- **/sb settings set-spawn-pos** -> Changes home position.
+- **/sb settings set-visits-pos** -> Changes visits position.
+- **/sb settings toggle-visits** -> Enables/disables ability to visit your Island.
+- **/sb help** -> Sends this list.
 
 ### Admin Commands
 
