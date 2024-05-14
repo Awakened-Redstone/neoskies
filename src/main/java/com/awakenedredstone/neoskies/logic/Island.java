@@ -1,6 +1,16 @@
 package com.awakenedredstone.neoskies.logic;
 
-import com.awakenedredstone.neoskies.api.island.IslandSettingsManager;
+import com.awakenedredstone.neoskies.SkylandsMain;
+import com.awakenedredstone.neoskies.api.events.IslandEvents;
+import com.awakenedredstone.neoskies.api.island.CurrentSettings;
+import com.awakenedredstone.neoskies.api.island.PermissionLevel;
+import com.awakenedredstone.neoskies.logic.economy.SkylandsEconomyAccount;
+import com.awakenedredstone.neoskies.logic.registry.SkylandsRegistries;
+import com.awakenedredstone.neoskies.logic.settings.IslandSettings;
+import com.awakenedredstone.neoskies.logic.settings.IslandSettingsUtil;
+import com.awakenedredstone.neoskies.util.Constants;
+import com.awakenedredstone.neoskies.util.Players;
+import com.awakenedredstone.neoskies.util.Texts;
 import eu.pb4.common.economy.api.EconomyAccount;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,20 +27,11 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.RandomSeed;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import org.jetbrains.annotations.Nullable;
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.api.events.IslandEvents;
-import com.awakenedredstone.neoskies.api.island.IslandSettings;
-import com.awakenedredstone.neoskies.api.island.PermissionLevel;
-import com.awakenedredstone.neoskies.logic.economy.SkylandsEconomyAccount;
-import com.awakenedredstone.neoskies.util.Constants;
-import com.awakenedredstone.neoskies.util.Players;
-import com.awakenedredstone.neoskies.util.Texts;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
 import xyz.nucleoid.fantasy.RuntimeWorldHandle;
@@ -42,7 +43,7 @@ import java.util.*;
 //TODO: Advanced island settings
 public class Island {
     protected final Fantasy fantasy = Skylands.getInstance().fantasy;
-    protected final Map<Identifier, IslandSettings> settings = new HashMap<>();
+    protected final Map<Identifier, CurrentSettings> settings = new HashMap<>();
     public final Member owner;
     private UUID islandId = UUID.randomUUID();
     protected RuntimeWorldConfig islandConfig = null;
@@ -123,13 +124,20 @@ public class Island {
             island.bans.add(Member.fromNbt(member));
         }
 
+        for (IslandSettings islandSetting : SkylandsRegistries.ISLAND_SETTINGS) {
+            CurrentSettings currentSettings = new CurrentSettings(islandSetting, islandSetting.getDefaultLevel());
+            island.settings.put(islandSetting.getIdentifier(), currentSettings);
+        }
+
         NbtCompound settingsNbt = nbt.getCompound("settings");
         settingsNbt.getKeys().forEach(key -> {
+            Identifier identifier = new Identifier(key);
             NbtCompound settingsDataNbt = settingsNbt.getCompound(key);
             PermissionLevel level = PermissionLevel.fromValue(settingsDataNbt.getString("permission"));
+            IslandSettings islandSettings = SkylandsRegistries.ISLAND_SETTINGS.get(identifier);
             if (level != null) {
-                IslandSettings islandSettings = new IslandSettings(level);
-                island.settings.put(new Identifier(key), islandSettings);
+                CurrentSettings currentSettings = new CurrentSettings(islandSettings, level);
+                island.settings.put(identifier, currentSettings);
             }
         });
 
@@ -139,8 +147,6 @@ public class Island {
             int amount = blocksNbt.getInt(key);
             island.blocks.put(new Identifier(key), amount);
         });
-
-        IslandSettingsManager.update(island.settings);
 
         //TODO: Load gamerules into island
 
@@ -193,11 +199,15 @@ public class Island {
         }
         nbt.put("bans", bansNbt);
 
-        IslandSettingsManager.update(this.settings);
+        for (IslandSettings islandSetting : SkylandsRegistries.ISLAND_SETTINGS) {
+            CurrentSettings currentSettings = new CurrentSettings(islandSetting, islandSetting.getDefaultLevel());
+            this.settings.put(islandSetting.getIdentifier(), currentSettings);
+        }
+
         NbtCompound settingsNbt = new NbtCompound();
         this.settings.forEach((identifier, settings) -> {
             NbtCompound settingsDataNbt = new NbtCompound();
-            settingsDataNbt.putString("permission", settings.permissionLevel.getId().toString());
+            settingsDataNbt.putString("permission", settings.getPermissionLevel().getId().toString());
             settingsNbt.put(identifier.toString(), settingsDataNbt);
         });
         nbt.put("settings", settingsNbt);
@@ -277,16 +287,21 @@ public class Island {
         return new Box(new BlockPos(0, 0, 0)).expand(radius).withMinY(minY - 1).withMaxY(getOverworld().getTopY() + 1).contains(new Vec3d(pos.getX(), pos.getY(), pos.getZ()));
     }
 
-    public Map<Identifier, IslandSettings> getSettings() {
+    public Map<Identifier, CurrentSettings> getSettings() {
         return settings;
     }
 
-    public IslandSettings getSettings(Identifier identifier) {
-        return settings.computeIfAbsent(identifier, id -> IslandSettingsManager.getDefaultSettings().get(id));
+    @Nullable
+    public CurrentSettings getSettings(Identifier identifier) {
+        return settings.computeIfAbsent(identifier, IslandSettingsUtil::getModifiable);
     }
 
     public boolean isInteractionAllowed(Identifier identifier, PermissionLevel source) {
-        return source.getLevel() >= getSettings(identifier).permissionLevel.getLevel();
+        CurrentSettings settings = getSettings(identifier);
+        if (settings == null) {
+            throw new NullPointerException("No Island Settings exist for the provided identifier " + identifier.toString());
+        }
+        return source.getLevel() >= settings.getPermissionLevel().getLevel();
     }
 
     public RuntimeWorldHandle getOverworldHandler() {

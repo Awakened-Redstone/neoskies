@@ -1,9 +1,8 @@
 package com.awakenedredstone.neoskies.test;
 
-import com.awakenedredstone.neoskies.api.island.IslandSettingsManager;
 import com.awakenedredstone.neoskies.command.utils.CommandUtils;
-import com.google.common.collect.ImmutableList;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.awakenedredstone.neoskies.logic.registry.SkylandsRegistries;
+import com.awakenedredstone.neoskies.logic.settings.IslandSettings;
 import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -14,8 +13,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.KillCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -59,9 +56,9 @@ public final class SkylandsTestMain implements ModInitializer {
                 .executes(context -> {
                     ServerCommandSource source = context.getSource();
                     MutableText text = Text.empty();
-                    for (Identifier settings : IslandSettingsManager.getDefaultSettings().keySet()) {
+                    for (IslandSettings settings : SkylandsRegistries.ISLAND_SETTINGS) {
                         Language lang = Language.getInstance();
-                        String translationKey = settings.toTranslationKey();
+                        String translationKey = settings.getIdentifier().toTranslationKey();
                         boolean hasTranslation = lang.hasTranslation("island_protection." + translationKey);
                         text.append(Text.literal(translationKey));
                         text.append(Text.literal(": "));
@@ -77,9 +74,9 @@ public final class SkylandsTestMain implements ModInitializer {
                 .executes(context -> {
                     ServerCommandSource source = context.getSource();
                     MutableText text = Text.empty();
-                    for (Identifier settings : IslandSettingsManager.getDefaultSettings().keySet()) {
+                    for (IslandSettings settings : SkylandsRegistries.ISLAND_SETTINGS) {
                         Language lang = Language.getInstance();
-                        String translationKey = settings.toTranslationKey();
+                        String translationKey = settings.getIdentifier().toTranslationKey();
                         boolean hasTranslation = lang.hasTranslation("island_settings." + translationKey);
                         text.append(Text.literal(translationKey));
                         text.append(Text.literal(": "));
@@ -95,9 +92,9 @@ public final class SkylandsTestMain implements ModInitializer {
                 .executes(context -> {
                     ServerCommandSource source = context.getSource();
                     MutableText text = Text.empty();
-                    for (Identifier settings : IslandSettingsManager.getDefaultSettings().keySet()) {
+                    for (IslandSettings settings : SkylandsRegistries.ISLAND_SETTINGS) {
                         Language lang = Language.getInstance();
-                        String translationKey = settings.toTranslationKey();
+                        String translationKey = settings.getIdentifier().toTranslationKey();
                         boolean hasTranslation = lang.hasTranslation("island_settings." + translationKey + ".description");
                         text.append(Text.literal(translationKey));
                         text.append(Text.literal(": "));

@@ -17,7 +17,7 @@ public class ServerUtils {
     }
 
     public static void protectionWarning(PlayerEntity player, IslandSettings settings) {
-        if (Skylands.getConfig().showProtectionMessages && !settings.isSilent()) {
+        if (Skylands.getConfig().showProtectionMessages) {
             actionbarPrefixed(player, "island_protection." + settings.getTranslationKey());
         }
     }

@@ -1,9 +1,11 @@
 package com.awakenedredstone.neoskies.gui;
 
-import com.awakenedredstone.neoskies.api.island.IslandSettingsManager;
+import com.awakenedredstone.neoskies.api.island.CurrentSettings;
 import com.awakenedredstone.neoskies.gui.polymer.CBGuiElement;
 import com.awakenedredstone.neoskies.gui.polymer.CBGuiElementBuilder;
 import com.awakenedredstone.neoskies.gui.polymer.CBSimpleGuiBuilder;
+import com.awakenedredstone.neoskies.logic.Island;
+import com.awakenedredstone.neoskies.util.Texts;
 import com.awakenedredstone.neoskies.util.UIUtils;
 import eu.pb4.sgui.api.gui.GuiInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -14,21 +16,17 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
-import com.awakenedredstone.neoskies.api.island.IslandSettings;
-import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.util.Texts;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class IslandSettingsGui {
     private final Island island;
     private final GuiInterface parent;
-    private final List<Map.Entry<Identifier, IslandSettings>> entries;
+    private final List<CurrentSettings> entries;
     private final Consumer<SlotGuiInterface> updateGui;
     private final Consumer<SlotGuiInterface> simpleUpdateGui;
     private int page = 0;
@@ -41,7 +39,7 @@ public class IslandSettingsGui {
     public IslandSettingsGui(Island island, @Nullable GuiInterface parent) {
         this.island = island;
         this.parent = parent;
-        this.entries = island.getSettings().entrySet().stream().toList();
+        this.entries = new ArrayList<>(island.getSettings().values());
 
         updateGui = gui -> {
             UIUtils.fillGui(gui, filler);
@@ -52,8 +50,8 @@ public class IslandSettingsGui {
             int offset = page * 28;
             for (int i = offset; i < Math.min(offset + 28, island.getSettings().size()); i++) {
                 if ((slot + 1) % 9 == 0 && slot > 10) slot += 2;
-                Map.Entry<Identifier, IslandSettings> pageEntry = entries.get(i);
-                gui.setSlot(slot++, IslandSettingsManager.getIcon(pageEntry.getKey(), island));
+                CurrentSettings currentSettings = entries.get(i);
+                gui.setSlot(slot++, currentSettings.getSettings().buildIcon(island));
             }
 
             if (page < getPageMax()) gui.setSlot(gui.getSize() - 8, nextPage);
@@ -76,8 +74,9 @@ public class IslandSettingsGui {
             int offset = page * 28;
             for (int i = offset; i < Math.min(offset + 28, island.getSettings().size()); i++) {
                 if ((slot + 1) % 9 == 0 && slot > 10) slot += 2;
-                Map.Entry<Identifier, IslandSettings> pageEntry = entries.get(i);
-                gui.setSlot(slot++, IslandSettingsManager.getIcon(pageEntry.getKey(), island));
+                CurrentSettings currentSettings = entries.get(i);
+
+                gui.setSlot(slot++, currentSettings.getSettings().buildIcon(island));
             }
         };
     }
