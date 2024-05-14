@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "neoskies-test",
+  "version": "${version}",
+  "name": "NeoSkies TestMod",
+  "description": "Library to work with server-side events with the ability to filter by event source",
+  "authors": ["Nucleoid Contributors"],
+  "license": "LGPLv3",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.awakenedredstone.neoskies.test.SkylandsTestMain"
+    ]
+  }
+}

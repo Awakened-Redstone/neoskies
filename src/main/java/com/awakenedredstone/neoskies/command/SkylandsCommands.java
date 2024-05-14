@@ -2,14 +2,19 @@ package com.awakenedredstone.neoskies.command;
 
 import com.awakenedredstone.neoskies.config.MainConfig;
 import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import com.awakenedredstone.neoskies.SkylandsMain;
 import com.awakenedredstone.neoskies.command.admin.*;
 import com.awakenedredstone.neoskies.command.island.*;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+
+import java.util.Set;
 
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.adminNode;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.registerAdmin;
@@ -53,8 +58,33 @@ public class SkylandsCommands {
         registerAdmin(dispatcher, adminNode()
           .then(CommandManager.literal("reload")
             .executes(context -> {
-                context.getSource().sendFeedback(() -> Text.translatable("message.neoskies.reload"), true);
+                context.getSource().sendFeedback(() -> Texts.prefixed(Text.translatable("commands.neoskies.reload")), true);
                 Skylands.getConfig().load();
+                return 1;
+            })
+          )
+        );
+
+        registerAdmin(dispatcher, adminNode()
+          .then(CommandManager.literal("bypass")
+            .executes(context -> {
+                ServerCommandSource source = context.getSource();
+                if (!source.isExecutedByPlayer()) {
+                    source.sendError(Texts.prefixed(Text.translatable("commands.neoskies.error.player_only")));
+                    return 0;
+                }
+
+                ServerPlayerEntity player = source.getPlayer();
+
+                Set<PlayerEntity> protectionBypass = SkylandsMain.PROTECTION_BYPASS;
+                boolean overrideMode = protectionBypass.contains(player);
+                if (overrideMode) {
+                    protectionBypass.remove(player);
+                    source.sendFeedback(() -> Texts.prefixed(Text.translatable("commands.neoskies.admin.bypass.disable")), true);
+                } else {
+                    protectionBypass.add(player);
+                    source.sendFeedback(() -> Texts.prefixed(Text.translatable("commands.neoskies.admin.bypass.enable")), true);
+                }
                 return 1;
             })
           )

@@ -4,7 +4,7 @@ import com.awakenedredstone.neoskies.gui.polymer.CBGuiElement;
 import com.awakenedredstone.neoskies.gui.polymer.CBGuiElementBuilder;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
-import com.awakenedredstone.neoskies.api.island.SettingsManager;
+import com.awakenedredstone.neoskies.api.island.IslandSettingsManager;
 import com.awakenedredstone.neoskies.logic.registry.SkylandsPermissionLevels;
 
 public abstract class IslandSettings {
@@ -48,6 +48,6 @@ public abstract class IslandSettings {
     }
 
     protected void register() {
-        SettingsManager.register(identifier, new com.awakenedredstone.neoskies.api.island.IslandSettings(SkylandsPermissionLevels.MEMBER), icon);
+        IslandSettingsManager.register(identifier, new com.awakenedredstone.neoskies.api.island.IslandSettings(SkylandsPermissionLevels.MEMBER), icon);
     }
 }

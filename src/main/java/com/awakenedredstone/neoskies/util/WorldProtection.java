@@ -11,13 +11,17 @@ import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.Skylands;
 import com.awakenedredstone.neoskies.logic.registry.SkylandsPermissionLevels;
 import com.awakenedredstone.neoskies.logic.settings.IslandSettings;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 public class WorldProtection {
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean canModify(World world, PlayerEntity player) {
+    /**
+     * @deprecated Please use {@link WorldProtection#canModify(World, PlayerEntity, IslandSettings)}
+     **/
+    @Deprecated
+    public static boolean canModify(@NotNull World world, @NotNull PlayerEntity player) {
         if (SkylandsMain.PROTECTION_BYPASS.contains(player)) {
             if (Permissions.check(player, "neoskies.admin.protection.bypass", 4)) return true;
             else SkylandsMain.PROTECTION_BYPASS.remove(player);
@@ -34,9 +38,11 @@ public class WorldProtection {
         return true;
     }
 
+    /**
+     * @deprecated Please use {@link WorldProtection#canModify(World, BlockPos, PlayerEntity, IslandSettings)}
+     **/
     @Deprecated
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean canModify(World world, BlockPos pos, PlayerEntity player) {
+    public static boolean canModify(@NotNull World world, @NotNull BlockPos pos, @NotNull PlayerEntity player) {
         if (SkylandsMain.PROTECTION_BYPASS.contains(player)) {
             if (Permissions.check(player, "neoskies.admin.protection.bypass", 4)) {
                 return true;
@@ -60,7 +66,18 @@ public class WorldProtection {
         return false;
     }
 
-    public static <T extends IslandSettings> boolean canModify(World world, BlockPos pos, PlayerEntity player, T setting) {
+    @SafeVarargs
+    public static <T extends IslandSettings> boolean canModify(@NotNull World world, @NotNull BlockPos pos, @NotNull PlayerEntity player, @NotNull T... settings) {
+        boolean allowed = true;
+        for (T setting : settings) {
+            if (!canModify(world, pos, player, setting)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static <T extends IslandSettings> boolean canModify(@NotNull World world, @NotNull BlockPos pos, @NotNull PlayerEntity player, @NotNull T setting) {
         if (SkylandsMain.PROTECTION_BYPASS.contains(player)) {
             if (Permissions.check(player, "neoskies.admin.protection.bypass", 4)) {
                 return true;
@@ -86,7 +103,7 @@ public class WorldProtection {
         return false;
     }
 
-    public static <T extends IslandSettings> boolean canModify(World world, PlayerEntity player, T setting) {
+    public static <T extends IslandSettings> boolean canModify(@NotNull World world, @NotNull PlayerEntity player, @NotNull T setting) {
         if (SkylandsMain.PROTECTION_BYPASS.contains(player)) {
             if (Permissions.check(player, "neoskies.admin.protection.bypass", 4)) {
                 return true;
@@ -109,7 +126,7 @@ public class WorldProtection {
         return false;
     }
 
-    public static PermissionLevel getPlayerPermissionLevel(World world, PlayerEntity player) {
+    public static @NotNull PermissionLevel getPlayerPermissionLevel(@NotNull World world, @NotNull PlayerEntity player) {
         Optional<Island> island = SkylandsAPI.getIsland(world);
         if (island.isPresent() && island.get().isMember(player)) {
             if (island.get().owner.uuid == player.getUuid()) {
@@ -123,7 +140,7 @@ public class WorldProtection {
         return SkylandsPermissionLevels.VISITOR;
     }
 
-    public static boolean isWithinIsland(World world, BlockPos pos) {
+    public static boolean isWithinIsland(@NotNull World world, @NotNull BlockPos pos) {
         Optional<Island> island = SkylandsAPI.getIsland(world);
 
         if (SkylandsAPI.isHub(world)) {

@@ -117,7 +117,7 @@ public abstract class PagedGui extends SimpleGui {
         private static final DisplayElement FILLER = DisplayElement.of(
             new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE)
                 .setName(Text.empty())
-                .hideFlags()
+                .hideDefaultTooltip()
         );
 
         public static DisplayElement of(GuiElementInterface element) {
@@ -144,7 +144,7 @@ public abstract class PagedGui extends SimpleGui {
                 return DisplayElement.of(
                     new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setName(Text.translatable("spectatorMenu.next_page").formatted(Formatting.DARK_GRAY))
-                        .hideFlags()
+                        .hideDefaultTooltip()
                         .setSkullOwner(SkinEncoder.encode("7e57720a4878c8bcab0e9c9c47d9e55128ccd77ba3445a54a91e3e1e1a27356e"))
                 );
             }
@@ -163,7 +163,7 @@ public abstract class PagedGui extends SimpleGui {
                 return DisplayElement.of(
                     new GuiElementBuilder(Items.PLAYER_HEAD)
                         .setName(Text.translatable("spectatorMenu.previous_page").formatted(Formatting.DARK_GRAY))
-                        .hideFlags()
+                        .hideDefaultTooltip()
                         .setSkullOwner(SkinEncoder.encode("50820f76e3e041c75f76d0f301232bdf48321b534fe6a859ccb873d2981a9623"))
                 );
             }
@@ -179,7 +179,7 @@ public abstract class PagedGui extends SimpleGui {
     }
 
     public static void playSound(ServerPlayerEntity player, SoundEvent sound) {
-        player.playSound(sound, SoundCategory.MASTER, 1, 1);
+        player.playSoundToPlayer(sound, SoundCategory.MASTER, 1, 1);
     }
 
     public static void playClickSound(ServerPlayerEntity player) {

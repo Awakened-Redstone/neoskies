@@ -98,7 +98,7 @@ public class LevelCommand {
             Block block1 = Registries.BLOCK.get(block);
             ItemStack stack = block1.asItem().getDefaultStack();
             GuiElementBuilder builder = GuiElementBuilder.from(stack.isEmpty() ? new ItemStack(Items.BARRIER) : stack)
-              .hideFlags()
+              .hideDefaultTooltip()
               .addLoreLine(Texts.of("x%d blocks".formatted(count)))
               .addLoreLine(Texts.of("%d points".formatted(points * count)));
 

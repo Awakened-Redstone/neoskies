@@ -1,10 +1,9 @@
 package com.awakenedredstone.neoskies.util;
 
-import com.awakenedredstone.neoskies.config.MainConfig;
 import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.settings.IslandSettings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
-import com.awakenedredstone.neoskies.SkylandsMain;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -12,7 +11,15 @@ import java.util.function.Consumer;
 public class ServerUtils {
 
     public static void protectionWarning(PlayerEntity player, String key) {
-        if (Skylands.getConfig().showProtectionMessages) actionbarPrefixed(player, "island_protection." + key);
+        if (Skylands.getConfig().showProtectionMessages) {
+            actionbarPrefixed(player, "island_protection." + key);
+        }
+    }
+
+    public static void protectionWarning(PlayerEntity player, IslandSettings settings) {
+        if (Skylands.getConfig().showProtectionMessages && !settings.isSilent()) {
+            actionbarPrefixed(player, "island_protection." + settings.getTranslationKey());
+        }
     }
 
     public static void actionbarPrefixed(PlayerEntity player, String message, Consumer<Map<String, String>> builder) {

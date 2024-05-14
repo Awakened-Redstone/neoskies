@@ -111,7 +111,7 @@ public class SettingCommands {
         Optional<Island> optionalIsland = SkylandsAPI.getIslandByPlayer(player);
         optionalIsland.ifPresentOrElse(island -> {
             //noinspection DataFlowIssue
-            player.playSound(SoundEvents.ENTITY_HORSE_SADDLE, SoundCategory.MASTER, 0.4f, 1);
+            player.playSoundToPlayer(SoundEvents.ENTITY_HORSE_SADDLE, SoundCategory.MASTER, 0.4f, 1);
             new IslandSettingsGui(island, null).openGui(player);
         }, () -> source.sendError(Texts.prefixed("message.neoskies.error.missing_island")));
 

@@ -1,14 +1,22 @@
 package com.awakenedredstone.neoskies.datagen;
 
-import com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.Oxidizable;
+import net.minecraft.data.DataProvider;
+import net.minecraft.item.Item;
+import net.minecraft.item.MinecartItem;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.util.Identifier;
 
 import java.util.concurrent.CompletableFuture;
+
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.*;
 
 public class NeoSkiesBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     public NeoSkiesBlockTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
@@ -17,23 +25,32 @@ public class NeoSkiesBlockTagProvider extends FabricTagProvider.BlockTagProvider
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup arg) {
-        getOrCreateTagBuilder(NeoSkiesBlockTags.ANVIL)
+        getOrCreateTagBuilder(ANVIL)
           .forceAddTag(BlockTags.ANVIL);
 
-        getOrCreateTagBuilder(NeoSkiesBlockTags.BEACON)
+        getOrCreateTagBuilder(BEACON)
           .add(Blocks.BEACON);
 
-        getOrCreateTagBuilder(NeoSkiesBlockTags.BREWING_STAND)
+        getOrCreateTagBuilder(BREWING_STAND)
           .add(Blocks.BREWING_STAND);
 
-        getOrCreateTagBuilder(NeoSkiesBlockTags.COMPOSTER)
+        getOrCreateTagBuilder(COMPOSTER)
           .add(Blocks.COMPOSTER);
 
-        getOrCreateTagBuilder(NeoSkiesBlockTags.CONTAINERS)
+        getOrCreateTagBuilder(CONTAINERS_WITH_ITEM)
           .forceAddTag(BlockTags.CAMPFIRES)
+          .add(
+            Blocks.CHISELED_BOOKSHELF,
+            Blocks.DECORATED_POT,
+            Blocks.JUKEBOX,
+            Blocks.VAULT
+          );
+
+        getOrCreateTagBuilder(CONTAINERS)
           .forceAddTag(ConventionalBlockTags.CHESTS)
-          .forceAddTag(ConventionalBlockTags.WOODEN_BARRELS)
+          .forceAddTag(ConventionalBlockTags.BARRELS)
           .forceAddTag(ConventionalBlockTags.SHULKER_BOXES)
+          .addTag(CONTAINERS_WITH_ITEM)
           .add(
             Blocks.DISPENSER,
             Blocks.DROPPER,
@@ -41,24 +58,24 @@ public class NeoSkiesBlockTagProvider extends FabricTagProvider.BlockTagProvider
             Blocks.BLAST_FURNACE,
             Blocks.SMOKER,
             Blocks.HOPPER,
-            Blocks.CHISELED_BOOKSHELF,
-            Blocks.DECORATED_POT,
-            Blocks.JUKEBOX,
-            Blocks.SPAWNER
+            Blocks.BEEHIVE,
+            Blocks.BEE_NEST,
+            Blocks.SUSPICIOUS_GRAVEL,
+            Blocks.SUSPICIOUS_SAND
           );
 
-        getOrCreateTagBuilder(NeoSkiesBlockTags.DOORS)
+        getOrCreateTagBuilder(DOORS)
           .forceAddTag(BlockTags.DOORS)
           .forceAddTag(BlockTags.TRAPDOORS)
           .forceAddTag(BlockTags.FENCE_GATES);
 
-        getOrCreateTagBuilder(NeoSkiesBlockTags.LECTERN)
+        getOrCreateTagBuilder(LECTERN)
           .add(Blocks.LECTERN);
 
-        getOrCreateTagBuilder(NeoSkiesBlockTags.LODESTONE)
+        getOrCreateTagBuilder(LODESTONE)
           .add(Blocks.LODESTONE);
 
-        getOrCreateTagBuilder(NeoSkiesBlockTags.REDSTONE)
+        getOrCreateTagBuilder(REDSTONE)
           .forceAddTag(BlockTags.BUTTONS)
           .forceAddTag(BlockTags.PRESSURE_PLATES)
           .add(
@@ -70,7 +87,58 @@ public class NeoSkiesBlockTagProvider extends FabricTagProvider.BlockTagProvider
             Blocks.DAYLIGHT_DETECTOR
           );
 
-        getOrCreateTagBuilder(NeoSkiesBlockTags.RESPAWN_ANCHOR)
+        getOrCreateTagBuilder(RESPAWN_ANCHOR)
           .add(Blocks.RESPAWN_ANCHOR);
+
+        getOrCreateTagBuilder(SPAWNER)
+          .add(
+            Blocks.SPAWNER,
+            Blocks.TRIAL_SPAWNER
+          );
+
+        getOrCreateTagBuilder(DRAGON_EGG)
+          .add(Blocks.DRAGON_EGG);
+
+        FabricTagProvider<Block>.FabricTagBuilder unwaxedCopper = getOrCreateTagBuilder(UNWAXED_COPPER_BLOCKS);
+        FabricTagProvider<Block>.FabricTagBuilder waxedCopper = getOrCreateTagBuilder(WAXED_COPPER_BLOCKS);
+        for (Block block : Registries.BLOCK) {
+            Identifier id = Registries.BLOCK.getId(block);
+            boolean waxed = id.getPath().startsWith("waxed_");
+            if (block instanceof Oxidizable) {
+                unwaxedCopper.add(block);
+            } else if (waxed) {
+                waxedCopper.add(block);
+            }
+        }
+
+        getOrCreateTagBuilder(COPPER_BLOCKS)
+          .addTag(UNWAXED_COPPER_BLOCKS)
+          .addTag(WAXED_COPPER_BLOCKS);
+
+        getOrCreateTagBuilder(EXTINGUISHABLE)
+          .forceAddTag(BlockTags.FIRE)
+          .forceAddTag(BlockTags.CAMPFIRES)
+          .forceAddTag(BlockTags.CANDLES)
+          .forceAddTag(BlockTags.CANDLE_CAKES);
+
+        getOrCreateTagBuilder(OTHERS)
+          .forceAddTag(BlockTags.CANDLE_CAKES)
+          .forceAddTag(BlockTags.CANDLES)
+          .forceAddTag(BlockTags.BANNERS)
+          .forceAddTag(BlockTags.BEDS)
+          .add(
+            Blocks.CAKE,
+            Blocks.BELL
+          );
+
+        getOrCreateTagBuilder(HARVEST)
+          .forceAddTag(BlockTags.CAVE_VINES)
+          .add(
+            Blocks.SWEET_BERRY_BUSH,
+            Blocks.PUMPKIN
+          );
+
+        getOrCreateTagBuilder(SIGNS)
+          .forceAddTag(BlockTags.SIGNS);
     }
 }

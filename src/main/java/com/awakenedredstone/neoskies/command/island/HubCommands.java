@@ -20,36 +20,40 @@ public class HubCommands {
 
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node()
-            .then(literal("hub")
-                .requires(Permissions.require("neoskies.teleport.hub", true))
-                .executes(context -> {
-                    var source = context.getSource();
-                    var player = source.getPlayer();
-                    MinecraftServer server = source.getServer();
-                    if (player != null) {
-                        HubCommands.visit(player, server);
-                    }
-                    return 1;
-                })
-            )
+          .then(literal("hub")
+            .requires(Permissions.require("neoskies.teleport.hub", true))
+            .executes(context -> {
+                var source = context.getSource();
+                var player = source.getPlayer();
+                MinecraftServer server = source.getServer();
+                if (player != null) {
+                    HubCommands.visit(player, server);
+                }
+                return 1;
+            })
+          )
         );
 
         registerAdmin(dispatcher, adminNode()
-            .then(literal("hub").requires(Permissions.require("neoskies.admin.hub", 4))
-                .then(literal("pos").requires(Permissions.require("neoskies.admin.hub.pos", 4))
-                    .then(argument("position", blockPos()).executes(context -> {
-                        var pos = BlockPosArgumentType.getBlockPos(context, "position");
-                        var source = context.getSource();
-                        HubCommands.setPos(pos, source);
-                        return 1;
-                    })))
-                .then(literal("protection").requires(Permissions.require("neoskies.admin.hub.protection", 4))
-                    .executes(context -> {
-                        HubCommands.toggleProtection(context.getSource());
-                        return 1;
-                    })
-                )
-            )
+          .then(literal("hub").requires(Permissions.require("neoskies.admin.hub", 4))
+            .then(literal("pos").requires(Permissions.require("neoskies.admin.hub.pos", 4))
+              .then(argument("position", blockPos()).executes(context -> {
+                  var pos = BlockPosArgumentType.getBlockPos(context, "position");
+                  var source = context.getSource();
+                  HubCommands.setPos(pos, source);
+                  return 1;
+              }))
+            ).then(literal("protection").requires(Permissions.require("neoskies.admin.hub.protection", 4))
+              .executes(context -> {
+                  HubCommands.toggleProtection(context.getSource());
+                  return 1;
+              })
+            )/*.then(literal("settings").requires(Permissions.require("neoskies.admin.hub.settings", 4))
+              .executes(context -> {
+
+              })
+            )*/
+          )
         );
     }
 

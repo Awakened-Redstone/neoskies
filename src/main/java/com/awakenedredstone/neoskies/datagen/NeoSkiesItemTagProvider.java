@@ -1,6 +1,5 @@
 package com.awakenedredstone.neoskies.datagen;
 
-import com.awakenedredstone.neoskies.logic.tags.NeoSkiesItemTags;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.item.*;
@@ -10,6 +9,8 @@ import net.minecraft.registry.tag.ItemTags;
 
 import java.util.concurrent.CompletableFuture;
 
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesItemTags.*;
+
 public class NeoSkiesItemTagProvider extends FabricTagProvider.ItemTagProvider {
     public NeoSkiesItemTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
         super(output, registriesFuture);
@@ -17,55 +18,48 @@ public class NeoSkiesItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup arg) {
-        FabricTagProvider<Item>.FabricTagBuilder blockInteraction = getOrCreateTagBuilder(NeoSkiesItemTags.BLOCK_INTERACTION)
+        getOrCreateTagBuilder(PLACE)
           .forceAddTag(ItemTags.AXES)
           .forceAddTag(ItemTags.HOES)
           .forceAddTag(ItemTags.SHOVELS)
-          .forceAddTag(ItemTags.MUSIC_DISCS)
           .add(
             Items.ARMOR_STAND,
             Items.BONE_MEAL,
-            Items.BRUSH,
-            Items.COMPASS,
             Items.DEBUG_STICK,
-            Items.END_CRYSTAL,
             Items.ENDER_EYE,
-            Items.FILLED_MAP,
             Items.FIRE_CHARGE,
-            Items.FIREWORK_ROCKET,
-            Items.FLINT_AND_STEEL,
             Items.HONEYCOMB,
-            Items.LEAD,
-            Items.POWDER_SNOW_BUCKET,
-            Items.SHEARS
+            Items.SHEARS,
+            Items.END_CRYSTAL,
+            Items.FLINT_AND_STEEL,
+            Items.POWDER_SNOW_BUCKET
           );
 
+        var spawner = getOrCreateTagBuilder(SPAWNER);
+
         for (Item item : Registries.ITEM) {
-            if (item instanceof DecorationItem ||
-              item instanceof MinecartItem ||
-              item instanceof PlaceableOnWaterItem ||
-              item instanceof SpawnEggItem ||
-              item instanceof PotionItem
-            ) {
-                blockInteraction.add(item);
+            if (item instanceof SpawnEggItem) {
+                spawner.add(item);
             }
         }
 
-        FabricTagProvider<Item>.FabricTagBuilder generalInteraction = getOrCreateTagBuilder(NeoSkiesItemTags.BLOCK_INTERACTION)
-          .forceAddTag(ItemTags.BOATS)
+        getOrCreateTagBuilder(CONTAINERS)
           .add(
-            Items.ENDER_EYE,
+            Items.FILLED_MAP,
             Items.GLASS_BOTTLE
           );
 
+        getOrCreateTagBuilder(LODESTONE)
+          .add(Items.COMPASS);
+
+        FabricTagProvider<Item>.FabricTagBuilder minecarts = getOrCreateTagBuilder(MINECART);
         for (Item item : Registries.ITEM) {
-            if (item instanceof BucketItem ||
-              item instanceof SpawnEggItem
-            ) {
-                generalInteraction.add(item);
+            if (item instanceof MinecartItem) {
+                minecarts.add(item);
             }
         }
 
-
+        getOrCreateTagBuilder(LEAD)
+          .add(Items.LEAD);
     }
 }
