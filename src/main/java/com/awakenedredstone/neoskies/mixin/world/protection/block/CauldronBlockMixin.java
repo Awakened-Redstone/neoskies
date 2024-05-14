@@ -2,12 +2,12 @@ package com.awakenedredstone.neoskies.mixin.world.protection.block;
 
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
 import com.awakenedredstone.neoskies.util.ServerUtils;
+import com.awakenedredstone.neoskies.util.WorldProtection;
 import net.minecraft.block.AbstractCauldronBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import com.awakenedredstone.neoskies.util.WorldProtection;
 
 @Mixin(AbstractCauldronBlock.class)
 public class CauldronBlockMixin {

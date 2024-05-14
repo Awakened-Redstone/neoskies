@@ -1,12 +1,15 @@
 package com.awakenedredstone.neoskies.config;
 
 import blue.endless.jankson.Comment;
+import com.awakenedredstone.neoskies.config.source.Config;
 import com.awakenedredstone.neoskies.config.source.JanksonBuilder;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import com.awakenedredstone.neoskies.config.source.Config;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainConfig extends Config {
     public MainConfig() {

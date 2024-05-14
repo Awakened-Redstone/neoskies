@@ -1,6 +1,7 @@
 package com.awakenedredstone.neoskies.mixin.world.protection;
 
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
+import com.awakenedredstone.neoskies.util.WorldProtection;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.Ownable;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import com.awakenedredstone.neoskies.util.WorldProtection;
 
 import java.util.Optional;
 

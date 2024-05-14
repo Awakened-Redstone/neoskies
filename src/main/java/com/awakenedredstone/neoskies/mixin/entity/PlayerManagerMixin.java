@@ -1,5 +1,10 @@
 package com.awakenedredstone.neoskies.mixin.entity;
 
+import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.duck.ExtendedPlayerManager;
+import com.awakenedredstone.neoskies.duck.ExtendedServerPlayerEntity;
+import com.awakenedredstone.neoskies.logic.Island;
+import com.awakenedredstone.neoskies.logic.Skylands;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.entity.Entity;
@@ -24,11 +29,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.duck.ExtendedPlayerManager;
-import com.awakenedredstone.neoskies.duck.ExtendedServerPlayerEntity;
-import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;

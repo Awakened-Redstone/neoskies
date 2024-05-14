@@ -1,5 +1,9 @@
 package com.awakenedredstone.neoskies.mixin.entity;
 
+import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.duck.ExtendedServerPlayerEntity;
+import com.awakenedredstone.neoskies.event.PlayerEvents;
+import com.awakenedredstone.neoskies.util.Worlds;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.damage.DamageSource;
@@ -19,10 +23,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.duck.ExtendedServerPlayerEntity;
-import com.awakenedredstone.neoskies.event.PlayerEvents;
-import com.awakenedredstone.neoskies.util.Worlds;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity implements ExtendedServerPlayerEntity {

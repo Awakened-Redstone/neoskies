@@ -1,5 +1,10 @@
 package com.awakenedredstone.neoskies.command.island;
 
+import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.gui.IslandSettingsGui;
+import com.awakenedredstone.neoskies.logic.Island;
+import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
@@ -8,18 +13,12 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.gui.IslandSettingsGui;
-import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
-import com.awakenedredstone.neoskies.util.Texts;
 
 import java.util.Optional;
 
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
 import static net.minecraft.command.argument.BlockPosArgumentType.blockPos;
 import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class SettingCommands {

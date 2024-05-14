@@ -1,14 +1,13 @@
 package com.awakenedredstone.neoskies.api;
 
+import com.awakenedredstone.neoskies.logic.Island;
+import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.util.Constants;
 import eu.pb4.common.economy.api.EconomyAccount;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
-import com.awakenedredstone.neoskies.util.Constants;
 
 import java.util.Optional;
 import java.util.UUID;

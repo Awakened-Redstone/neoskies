@@ -2,6 +2,7 @@ package com.awakenedredstone.neoskies.mixin.world.protection.item;
 
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
 import com.awakenedredstone.neoskies.util.ServerUtils;
+import com.awakenedredstone.neoskies.util.WorldProtection;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.block.BlockState;
@@ -16,7 +17,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import com.awakenedredstone.neoskies.util.WorldProtection;
 
 import java.util.Optional;
 

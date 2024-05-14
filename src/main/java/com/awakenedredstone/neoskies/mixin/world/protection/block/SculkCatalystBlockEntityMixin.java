@@ -1,6 +1,7 @@
 package com.awakenedredstone.neoskies.mixin.world.protection.block;
 
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
+import com.awakenedredstone.neoskies.util.WorldProtection;
 import net.minecraft.block.entity.SculkCatalystBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -11,15 +12,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.event.PositionSource;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import com.awakenedredstone.neoskies.util.WorldProtection;
-
-import java.util.Optional;
 
 @Mixin(SculkCatalystBlockEntity.Listener.class)
 public abstract class SculkCatalystBlockEntityMixin {

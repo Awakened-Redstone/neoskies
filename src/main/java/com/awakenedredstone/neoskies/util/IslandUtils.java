@@ -1,7 +1,7 @@
 package com.awakenedredstone.neoskies.util;
 
-import net.minecraft.entity.player.PlayerEntity;
 import com.awakenedredstone.neoskies.logic.Island;
+import net.minecraft.entity.player.PlayerEntity;
 
 public class IslandUtils {
 

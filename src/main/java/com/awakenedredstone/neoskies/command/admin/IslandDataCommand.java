@@ -1,25 +1,25 @@
 package com.awakenedredstone.neoskies.command.admin;
 
+import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.command.utils.CommandUtils;
+import com.awakenedredstone.neoskies.logic.Island;
+import com.awakenedredstone.neoskies.logic.Skylands;
 import com.awakenedredstone.neoskies.util.MapBuilder;
+import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.ServerCommandSource;
 import org.jetbrains.annotations.Nullable;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.command.utils.CommandUtils;
-import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
-import com.awakenedredstone.neoskies.util.Texts;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.adminNode;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.registerAdmin;
+import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class IslandDataCommand {
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {

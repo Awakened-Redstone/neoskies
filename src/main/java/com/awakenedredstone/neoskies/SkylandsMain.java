@@ -1,6 +1,11 @@
 package com.awakenedredstone.neoskies;
 
+import com.awakenedredstone.neoskies.command.SkylandsCommands;
+import com.awakenedredstone.neoskies.font.FontManager;
 import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.SkylandsEventListeners;
+import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
+import com.awakenedredstone.neoskies.logic.registry.SkylandsPermissionLevels;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.api.ModInitializer;
@@ -8,11 +13,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.awakenedredstone.neoskies.command.SkylandsCommands;
-import com.awakenedredstone.neoskies.font.FontManager;
-import com.awakenedredstone.neoskies.logic.SkylandsEventListeners;
-import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
-import com.awakenedredstone.neoskies.logic.registry.SkylandsPermissionLevels;
 
 import java.util.HashSet;
 import java.util.Set;

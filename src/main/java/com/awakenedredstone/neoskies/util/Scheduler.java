@@ -1,8 +1,8 @@
 package com.awakenedredstone.neoskies.util;
 
+import com.awakenedredstone.neoskies.logic.Skylands;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
-import com.awakenedredstone.neoskies.logic.Skylands;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;

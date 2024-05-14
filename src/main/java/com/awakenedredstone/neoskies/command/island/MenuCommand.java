@@ -1,7 +1,13 @@
 package com.awakenedredstone.neoskies.command.island;
 
+import com.awakenedredstone.neoskies.SkylandsMain;
+import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.gui.IslandSettingsGui;
 import com.awakenedredstone.neoskies.gui.polymer.CBGuiElementBuilder;
 import com.awakenedredstone.neoskies.gui.polymer.CBSimpleGuiBuilder;
+import com.awakenedredstone.neoskies.logic.Island;
+import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.util.Texts;
 import com.awakenedredstone.neoskies.util.UIUtils;
 import com.mojang.brigadier.CommandDispatcher;
 import eu.pb4.sgui.api.SlotHolder;
@@ -16,20 +22,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.gui.IslandSettingsGui;
-import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
-import com.awakenedredstone.neoskies.util.Texts;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import static net.minecraft.server.command.CommandManager.literal;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class MenuCommand {
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {

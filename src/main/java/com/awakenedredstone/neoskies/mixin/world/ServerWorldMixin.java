@@ -1,6 +1,8 @@
 package com.awakenedredstone.neoskies.mixin.world;
 
+import com.awakenedredstone.neoskies.api.SkylandsAPI;
 import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.util.WorldProtection;
 import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.entity.Entity;
@@ -36,8 +38,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.util.WorldProtection;
 
 import java.util.List;
 import java.util.concurrent.Executor;

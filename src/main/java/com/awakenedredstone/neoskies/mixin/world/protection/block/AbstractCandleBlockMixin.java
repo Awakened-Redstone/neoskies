@@ -2,6 +2,7 @@ package com.awakenedredstone.neoskies.mixin.world.protection.block;
 
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
 import com.awakenedredstone.neoskies.util.ServerUtils;
+import com.awakenedredstone.neoskies.util.WorldProtection;
 import net.minecraft.block.AbstractCandleBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -13,7 +14,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import com.awakenedredstone.neoskies.util.WorldProtection;
 
 @Mixin(AbstractCandleBlock.class)
 public class AbstractCandleBlockMixin {

@@ -1,20 +1,17 @@
 package com.awakenedredstone.neoskies.command.island;
 
-import com.awakenedredstone.neoskies.command.utils.CommandUtils;
+import com.awakenedredstone.neoskies.logic.IslandStuck;
+import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import com.awakenedredstone.neoskies.logic.IslandStuck;
-import com.awakenedredstone.neoskies.logic.Skylands;
-import com.awakenedredstone.neoskies.util.Texts;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.mustBeIslandOwner;
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;

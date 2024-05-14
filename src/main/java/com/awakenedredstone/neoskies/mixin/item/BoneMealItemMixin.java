@@ -2,6 +2,7 @@ package com.awakenedredstone.neoskies.mixin.item;
 
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
 import com.awakenedredstone.neoskies.util.ServerUtils;
+import com.awakenedredstone.neoskies.util.WorldProtection;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemStack;
@@ -15,7 +16,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import com.awakenedredstone.neoskies.util.WorldProtection;
 
 @Mixin(BoneMealItem.class)
 public class BoneMealItemMixin {

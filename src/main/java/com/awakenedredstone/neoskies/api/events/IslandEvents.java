@@ -1,10 +1,10 @@
 package com.awakenedredstone.neoskies.api.events;
 
+import com.awakenedredstone.neoskies.logic.Island;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
-import com.awakenedredstone.neoskies.logic.Island;
 
 public interface IslandEvents {
     Event<HubVisitEvent> ON_HUB_VISIT = EventFactory.createArrayBacked(HubVisitEvent.class, callbacks -> (player, world) -> {

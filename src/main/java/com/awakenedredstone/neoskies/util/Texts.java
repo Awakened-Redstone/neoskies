@@ -4,7 +4,6 @@ import com.awakenedredstone.neoskies.logic.Skylands;
 import eu.pb4.placeholders.api.TextParserUtils;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
-import com.awakenedredstone.neoskies.SkylandsMain;
 import xyz.nucleoid.server.translations.api.Localization;
 import xyz.nucleoid.server.translations.api.language.ServerLanguage;
 

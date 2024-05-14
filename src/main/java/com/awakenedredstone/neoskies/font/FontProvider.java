@@ -1,12 +1,12 @@
 package com.awakenedredstone.neoskies.font;
 
+import com.awakenedredstone.neoskies.SkylandsMain;
+import com.awakenedredstone.neoskies.logic.Skylands;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.logic.Skylands;
 
 import java.io.IOException;
 import java.io.InputStream;

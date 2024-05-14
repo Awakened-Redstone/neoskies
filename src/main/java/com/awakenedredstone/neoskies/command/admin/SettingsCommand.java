@@ -1,15 +1,14 @@
 package com.awakenedredstone.neoskies.command.admin;
 
+import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.ServerCommandSource;
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.util.Texts;
 import net.minecraft.text.Text;
 
-import static net.minecraft.server.command.CommandManager.literal;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.adminNode;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.registerAdmin;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class SettingsCommand {
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {

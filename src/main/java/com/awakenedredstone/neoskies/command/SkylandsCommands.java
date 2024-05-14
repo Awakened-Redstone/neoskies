@@ -1,6 +1,8 @@
 package com.awakenedredstone.neoskies.command;
 
-import com.awakenedredstone.neoskies.config.MainConfig;
+import com.awakenedredstone.neoskies.SkylandsMain;
+import com.awakenedredstone.neoskies.command.admin.*;
+import com.awakenedredstone.neoskies.command.island.*;
 import com.awakenedredstone.neoskies.logic.Skylands;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
@@ -8,9 +10,6 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.command.admin.*;
-import com.awakenedredstone.neoskies.command.island.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 

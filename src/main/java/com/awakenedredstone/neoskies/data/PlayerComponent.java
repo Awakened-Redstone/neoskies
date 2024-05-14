@@ -1,9 +1,9 @@
 package com.awakenedredstone.neoskies.data;
 
-import net.minecraft.registry.RegistryWrapper;
-import org.ladysnake.cca.api.v3.component.ComponentV3;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
+import org.ladysnake.cca.api.v3.component.ComponentV3;
 
 import java.util.ArrayList;
 

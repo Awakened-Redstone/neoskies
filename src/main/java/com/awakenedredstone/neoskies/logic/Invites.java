@@ -1,8 +1,8 @@
 package com.awakenedredstone.neoskies.logic;
 
+import com.awakenedredstone.neoskies.util.Texts;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
-import com.awakenedredstone.neoskies.util.Texts;
 
 import java.util.ArrayList;
 import java.util.Optional;

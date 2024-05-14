@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.api.island;
 
-import com.awakenedredstone.neoskies.logic.SkylandsRegistries;
+import com.awakenedredstone.neoskies.logic.registry.SkylandsRegistries;
 import net.minecraft.util.Identifier;
 
 import java.util.concurrent.atomic.AtomicReference;

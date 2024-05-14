@@ -1,17 +1,17 @@
 package com.awakenedredstone.neoskies.logic;
 
+import com.awakenedredstone.neoskies.SkylandsMain;
 import com.awakenedredstone.neoskies.config.IslandRanking;
 import com.awakenedredstone.neoskies.config.MainConfig;
-import eu.pb4.common.protection.api.CommonProtection;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.server.MinecraftServer;
-import com.awakenedredstone.neoskies.SkylandsMain;
 import com.awakenedredstone.neoskies.logic.economy.Economy;
 import com.awakenedredstone.neoskies.logic.protection.SkylandsProtectionProvider;
 import com.awakenedredstone.neoskies.util.NbtMigrator;
 import com.awakenedredstone.neoskies.util.PreInitData;
 import com.awakenedredstone.neoskies.util.Scheduler;
+import eu.pb4.common.protection.api.CommonProtection;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.server.MinecraftServer;
 import xyz.nucleoid.fantasy.Fantasy;
 
 public class Skylands {

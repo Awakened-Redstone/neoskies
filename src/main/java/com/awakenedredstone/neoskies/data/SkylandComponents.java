@@ -1,10 +1,10 @@
 package com.awakenedredstone.neoskies.data;
 
+import com.awakenedredstone.neoskies.SkylandsMain;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistryV3;
 import org.ladysnake.cca.api.v3.world.WorldComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.world.WorldComponentInitializer;
-import com.awakenedredstone.neoskies.SkylandsMain;
 
 public class SkylandComponents implements WorldComponentInitializer/*, EntityComponentInitializer*/ {
     public static final ComponentKey<WorldComponent> WORLD_DATA = ComponentRegistryV3.INSTANCE.getOrCreate(SkylandsMain.id("world_data"), WorldComponent.class);

@@ -1,5 +1,7 @@
 package com.awakenedredstone.neoskies.mixin.block;
 
+import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.Skylands;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.EndPortalBlock;
@@ -12,9 +14,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.logic.Island;
 
 import java.util.Optional;
 

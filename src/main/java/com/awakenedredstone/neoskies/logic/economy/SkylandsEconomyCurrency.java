@@ -1,10 +1,10 @@
 package com.awakenedredstone.neoskies.logic.economy;
 
+import com.awakenedredstone.neoskies.logic.Skylands;
 import eu.pb4.common.economy.api.EconomyCurrency;
 import eu.pb4.common.economy.api.EconomyProvider;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import com.awakenedredstone.neoskies.logic.Skylands;
 
 @SuppressWarnings("ClassCanBeRecord")
 public class SkylandsEconomyCurrency implements EconomyCurrency {

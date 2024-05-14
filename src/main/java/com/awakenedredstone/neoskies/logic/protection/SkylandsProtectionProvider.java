@@ -1,24 +1,21 @@
 package com.awakenedredstone.neoskies.logic.protection;
 
+import com.awakenedredstone.neoskies.api.SkylandsAPI;
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
 import com.awakenedredstone.neoskies.logic.settings.IslandSettings;
-import com.awakenedredstone.neoskies.util.ServerUtils;
+import com.awakenedredstone.neoskies.util.WorldProtection;
 import com.mojang.authlib.GameProfile;
 import eu.pb4.common.protection.api.ProtectionProvider;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.util.WorldProtection;
 
 import java.util.Map;
 

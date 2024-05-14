@@ -1,12 +1,11 @@
 package com.awakenedredstone.neoskies.event;
 
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-//import nota.player.SongPlayer;
 import com.awakenedredstone.neoskies.api.SkylandsAPI;
 import com.awakenedredstone.neoskies.logic.Member;
 import com.awakenedredstone.neoskies.logic.Skylands;
 import com.awakenedredstone.neoskies.util.Texts;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 @SuppressWarnings("unused")
 public class PlayerConnectEvent {

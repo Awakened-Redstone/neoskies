@@ -1,9 +1,9 @@
 package com.awakenedredstone.neoskies.logic.economy;
 
+import com.awakenedredstone.neoskies.SkylandsMain;
 import eu.pb4.common.economy.api.CommonEconomy;
 import eu.pb4.common.economy.api.EconomyCurrency;
 import net.minecraft.util.Identifier;
-import com.awakenedredstone.neoskies.SkylandsMain;
 
 public class Economy {
     public Economy() {

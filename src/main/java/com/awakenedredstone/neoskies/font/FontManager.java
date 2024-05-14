@@ -1,5 +1,7 @@
 package com.awakenedredstone.neoskies.font;
 
+import com.awakenedredstone.neoskies.SkylandsMain;
+import com.awakenedredstone.neoskies.util.PreInitData;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -8,8 +10,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.ApiStatus;
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.util.PreInitData;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

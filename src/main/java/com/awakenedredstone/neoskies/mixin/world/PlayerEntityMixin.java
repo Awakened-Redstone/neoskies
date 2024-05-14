@@ -1,5 +1,9 @@
 package com.awakenedredstone.neoskies.mixin.world;
 
+import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.logic.Island;
+import com.awakenedredstone.neoskies.mixin.block.accessor.WorldBorderAccessor;
+import com.awakenedredstone.neoskies.util.Worlds;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,10 +18,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.mixin.block.accessor.WorldBorderAccessor;
-import com.awakenedredstone.neoskies.util.Worlds;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity {

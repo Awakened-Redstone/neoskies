@@ -7,9 +7,9 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Language;
 
-import static net.minecraft.server.command.CommandManager.literal;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class HelpCommand {
 

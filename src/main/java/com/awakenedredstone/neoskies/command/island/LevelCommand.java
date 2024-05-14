@@ -1,7 +1,15 @@
 package com.awakenedredstone.neoskies.command.island;
 
+import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.duck.ExtendedChunk;
 import com.awakenedredstone.neoskies.gui.PagedGui;
+import com.awakenedredstone.neoskies.logic.Island;
+import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.util.ChunkScanQueue;
+import com.awakenedredstone.neoskies.util.FontUtils;
 import com.awakenedredstone.neoskies.util.MapBuilder;
+import com.awakenedredstone.neoskies.util.Texts;
+import com.awakenedredstone.neoskies.util.UnitConvertions;
 import com.mojang.brigadier.CommandDispatcher;
 import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.attachment.ChunkAttachment;
@@ -9,7 +17,6 @@ import eu.pb4.polymer.virtualentity.api.elements.BlockDisplayElement;
 import eu.pb4.polymer.virtualentity.api.elements.InteractionElement;
 import eu.pb4.polymer.virtualentity.api.elements.TextDisplayElement;
 import eu.pb4.polymer.virtualentity.api.elements.VirtualElement;
-import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
@@ -37,15 +44,6 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.PalettedContainer;
 import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.Nullable;
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.duck.ExtendedChunk;
-import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
-import com.awakenedredstone.neoskies.logic.util.ChunkScanQueue;
-import com.awakenedredstone.neoskies.util.FontUtils;
-import com.awakenedredstone.neoskies.util.Texts;
-import com.awakenedredstone.neoskies.util.UnitConvertions;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -53,11 +51,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.assertIsland;
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.assertPlayer;
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.requiresIsland;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class LevelCommand {

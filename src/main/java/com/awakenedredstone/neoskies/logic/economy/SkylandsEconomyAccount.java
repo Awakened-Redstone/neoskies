@@ -1,12 +1,12 @@
 package com.awakenedredstone.neoskies.logic.economy;
 
+import com.awakenedredstone.neoskies.logic.Skylands;
 import eu.pb4.common.economy.api.EconomyAccount;
 import eu.pb4.common.economy.api.EconomyCurrency;
 import eu.pb4.common.economy.api.EconomyProvider;
 import eu.pb4.common.economy.api.EconomyTransaction;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import com.awakenedredstone.neoskies.logic.Skylands;
 
 import java.math.BigInteger;
 import java.util.UUID;

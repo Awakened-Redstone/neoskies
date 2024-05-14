@@ -1,8 +1,8 @@
 package com.awakenedredstone.neoskies.util;
 
+import com.awakenedredstone.neoskies.logic.Skylands;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
-import com.awakenedredstone.neoskies.logic.Skylands;
 
 import java.util.Optional;
 

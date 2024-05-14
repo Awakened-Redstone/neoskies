@@ -1,11 +1,11 @@
 package com.awakenedredstone.neoskies.util;
 
+import com.awakenedredstone.neoskies.logic.Skylands;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.PlaceholderHandler;
 import eu.pb4.placeholders.api.PlaceholderResult;
 import eu.pb4.placeholders.api.Placeholders;
 import net.minecraft.text.Text;
-import com.awakenedredstone.neoskies.logic.Skylands;
 
 import java.util.Map;
 

@@ -1,10 +1,9 @@
 package com.awakenedredstone.neoskies.logic.registry;
 
 import com.awakenedredstone.neoskies.SkylandsMain;
-import net.minecraft.registry.Registry;
 import com.awakenedredstone.neoskies.api.island.DefaultPermissionLevel;
 import com.awakenedredstone.neoskies.api.island.PermissionLevel;
-import com.awakenedredstone.neoskies.logic.SkylandsRegistries;
+import net.minecraft.registry.Registry;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
