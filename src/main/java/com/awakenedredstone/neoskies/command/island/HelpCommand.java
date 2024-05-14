@@ -1,11 +1,23 @@
 package com.awakenedredstone.neoskies.command.island;
 
+import com.awakenedredstone.neoskies.logic.IslandLogic;
+import com.awakenedredstone.neoskies.util.Texts;
+import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
-import eu.pb4.placeholders.api.TextParserUtils;
+import com.mojang.brigadier.ParseResults;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.context.ParsedCommandNode;
+import com.mojang.brigadier.tree.CommandNode;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Language;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
@@ -18,9 +30,10 @@ public class HelpCommand {
             .then(literal("help")
                 .requires(Permissions.require("neoskies.command.help", true))
                 .executes(context -> {
+                    HelpCommand.run(context.getSource(), dispatcher);
                     ServerPlayerEntity player = context.getSource().getPlayer();
                     if (player != null) {
-                        HelpCommand.run(player);
+
                     }
                     return 1;
                 })
@@ -28,21 +41,35 @@ public class HelpCommand {
         );
     }
 
-    static void run(ServerPlayerEntity player) {
-        Language lang = Language.getInstance();
-        StringBuilder text = new StringBuilder();
-        String key = "message.neoskies.help.";
-
-        for (int i = 0; i <= 32; i++) {
-            if (lang.hasTranslation(key + i)) {
-                text.append(lang.get(key + i));
-            }
-            if (lang.hasTranslation(key + (i + 1))) {
-                text.append("\n");
-            } else {
-                break;
-            }
+    private static void run(ServerCommandSource source, CommandDispatcher<ServerCommandSource> dispatcher) {
+        ParseResults<ServerCommandSource> parseResults = dispatcher.parse(IslandLogic.getConfig().command, source);
+        if (parseResults.getContext().getNodes().isEmpty()) {
+            source.sendError(Texts.of("commands.neoskies.error.no_commands"));
+            return;
         }
-        player.sendMessage(TextParserUtils.formatText(text.toString()));
+
+        //Map<CommandNode<ServerCommandSource>, String> nodes2 = dispatcher.getSmartUsage(Iterables.getLast(parseResults.getContext().getNodes()).getNode(), source);
+
+        CommandNode<ServerCommandSource> node = Iterables.getLast(parseResults.getContext().getNodes()).getNode();
+        Collection<CommandNode<ServerCommandSource>> nodes = node.getChildren().stream().sorted().toList();
+        source.sendFeedback(() -> Texts.of("commands.neoskies.help"), false);
+        sendCommands(nodes, source, "", "");
+    }
+
+    private static boolean sendCommands(Collection<CommandNode<ServerCommandSource>> nodes, ServerCommandSource source, String parent, String parentTranslation) {
+        for (CommandNode<ServerCommandSource> node : nodes) {
+            if (node.getChildren().isEmpty() || node.getCommand() != null) {
+                String command = node.getUsageText();
+                MutableText prefix = Texts.of("commands.neoskies.help.prefix", map -> {
+                    map.put("prefix", IslandLogic.getConfig().command);
+                    map.put("command", parent + command);
+                });
+                String string = "commands.description.neoskies." + parentTranslation + command;
+                Text description = Texts.of(string.replaceAll("\\.<.*>$", ""));
+                source.sendFeedback(() -> prefix.append(description), false);
+            }
+            sendCommands(node.getChildren(), source, parent + node.getUsageText() + " ", parentTranslation + node.getUsageText() + ".");
+        }
+        return false;
     }
 }

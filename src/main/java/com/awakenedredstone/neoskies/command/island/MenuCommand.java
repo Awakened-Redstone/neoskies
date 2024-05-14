@@ -21,6 +21,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 import java.util.Optional;
@@ -104,7 +105,7 @@ public class MenuCommand {
                 boolean overrideMode = protectionBypass.contains(player);
                 Item item = overrideMode ? Items.OAK_CHEST_BOAT : Items.OAK_BOAT;
                 slotHolder.setSlot(slotHolder.getSize() - 2, new CBGuiElementBuilder(item).setName(Texts.of("item_name.neoskies.protection_bypass"))
-                    .addLoreLine(Texts.of("text.neoskies.protection_bypass", map -> map.put("value", String.valueOf(overrideMode))))
+                    .addLoreLine(Texts.loreBase(Texts.of("text.neoskies.protection_bypass", map -> map.put("value", String.valueOf(overrideMode)))))
                     .setCallback((index, type, action, gui) -> {
                         gui.getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
                         if (overrideMode) protectionBypass.remove(player);

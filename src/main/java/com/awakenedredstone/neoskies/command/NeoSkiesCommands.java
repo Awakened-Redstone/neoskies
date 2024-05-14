@@ -31,7 +31,6 @@ public class NeoSkiesCommands {
     }
 
     private static void registerPublicCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
-        //TODO: Fix soft-lock on "/help is"
         MenuCommand.init(dispatcher);
         CreateCommand.init(dispatcher);
         HubCommands.init(dispatcher);
