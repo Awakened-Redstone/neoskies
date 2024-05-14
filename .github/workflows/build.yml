@@ -1,30 +1,30 @@
-name: build
-on: [ pull_request, push ]
+name: Build
+
+on:
+  push:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        java: [ 17 ]
-        os: [ ubuntu-20.04 ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Validate gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
-      - name: Setup JDK ${{ matrix.java }}
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/loom-cache
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-
+
+      - uses: actions/checkout@v2
+      - name: Set up JDK
         uses: actions/setup-java@v1
         with:
-          java-version: ${{ matrix.java }}
-      - name: Make gradle wrapper executable
-        if: ${{ runner.os != 'Windows' }}
-        run: chmod +x ./gradlew
-      - name: build
+          java-version: 21
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
         run: ./gradlew build
-      - name: Capture build artifacts
-        if: ${{ runner.os == 'Linux' && matrix.java == '17' }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: Artifacts
-          path: build/libs/
