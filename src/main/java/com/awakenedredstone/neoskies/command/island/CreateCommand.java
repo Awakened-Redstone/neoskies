@@ -2,7 +2,7 @@ package com.awakenedredstone.neoskies.command.island;
 
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.IslandStuck;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.ServerCommandSource;
@@ -30,7 +30,7 @@ public class CreateCommand {
     }
 
     static void run(ServerPlayerEntity player) {
-        IslandStuck islands = Skylands.getInstance().islands;
+        IslandStuck islands = IslandLogic.getInstance().islands;
 
         if (islands.getByPlayer(player).isPresent()) {
             player.sendMessage(Texts.prefixed("message.neoskies.island_create.fail"));

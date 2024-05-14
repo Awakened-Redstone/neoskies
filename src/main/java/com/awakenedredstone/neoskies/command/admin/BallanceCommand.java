@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.command.admin;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.command.utils.CommandUtils;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.util.MapBuilder;
@@ -30,14 +30,14 @@ public class BallanceCommand {
                     .then(literal("get")
                         .executes(context -> {
                             String islandId = StringArgumentType.getString(context, "island");
-                            return getBalance(context.getSource(), SkylandsAPI.getIsland(UUID.fromString(islandId)).orElse(null));
+                            return getBalance(context.getSource(), NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null));
                         })
                     ).then(literal("set")
                         .then(argument("amount", LongArgumentType.longArg())
                             .executes(context -> {
                                 String islandId = StringArgumentType.getString(context, "island");
                                 long amount = LongArgumentType.getLong(context, "amount");
-                                return setBalance(context.getSource(), SkylandsAPI.getIsland(UUID.fromString(islandId)).orElse(null), amount);
+                                return setBalance(context.getSource(), NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null), amount);
                             })
                         )
                     ).then(literal("add")
@@ -45,7 +45,7 @@ public class BallanceCommand {
                             .executes(context -> {
                                 String islandId = StringArgumentType.getString(context, "island");
                                 long amount = LongArgumentType.getLong(context, "amount");
-                                return addBalance(context.getSource(), SkylandsAPI.getIsland(UUID.fromString(islandId)).orElse(null), amount);
+                                return addBalance(context.getSource(), NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null), amount);
                             })
                         )
                     ).then(literal("remove")
@@ -53,7 +53,7 @@ public class BallanceCommand {
                             .executes(context -> {
                                 String islandId = StringArgumentType.getString(context, "island");
                                 long amount = LongArgumentType.getLong(context, "amount");
-                                return removeBalance(context.getSource(), SkylandsAPI.getIsland(UUID.fromString(islandId)).orElse(null), amount);
+                                return removeBalance(context.getSource(), NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null), amount);
                             })
                         )
                     )
@@ -67,7 +67,7 @@ public class BallanceCommand {
             source.sendError(Texts.of("message.neoskies.error.island_not_found"));
             return null;
         }
-        EconomyAccount islandWallet = SkylandsAPI.getIslandWallet(island);
+        EconomyAccount islandWallet = NeoSkiesAPI.getIslandWallet(island);
         if (islandWallet == null) {
             source.sendError(Texts.of("message.neoskies.error.island_wallet_not_found"));
             return null;

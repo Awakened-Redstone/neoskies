@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.mixin.world;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.logic.Island;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -23,9 +23,9 @@ public class PortalForcerMixin {
 
     @Inject(method = "createPortal", at = @At("HEAD"), cancellable = true)
     private void fixPortals(BlockPos pos, Direction.Axis axis, CallbackInfoReturnable<Optional<BlockLocating.Rectangle>> cir) {
-        if (SkylandsAPI.isIsland(world)) {
-            Island island = SkylandsAPI.getIsland(world).get();
-            if (!island.isWithinBorder(pos) || SkylandsAPI.isEnd(world.getRegistryKey())) {
+        if (NeoSkiesAPI.isIsland(world)) {
+            Island island = NeoSkiesAPI.getIsland(world).get();
+            if (!island.isWithinBorder(pos) || NeoSkiesAPI.isEnd(world.getRegistryKey())) {
                 cir.setReturnValue(Optional.empty());
             }
         }

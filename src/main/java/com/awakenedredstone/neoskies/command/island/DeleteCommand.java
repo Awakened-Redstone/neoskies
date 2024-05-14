@@ -1,7 +1,7 @@
 package com.awakenedredstone.neoskies.command.island;
 
 import com.awakenedredstone.neoskies.logic.IslandStuck;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -39,14 +39,14 @@ public class DeleteCommand {
     static void run(ServerPlayerEntity player, String confirmWord) {
 
         if (confirmWord.equals("CONFIRM")) {
-            IslandStuck islands = Skylands.getInstance().islands;
+            IslandStuck islands = IslandLogic.getInstance().islands;
 
             islands.getByPlayer(player).ifPresentOrElse(island -> {
                 var created = island.getCreated();
                 var now = Instant.now();
                 var seconds = ChronoUnit.SECONDS.between(created, now);
 
-                if (seconds >= Skylands.getConfig().deletionCooldown) {
+                if (seconds >= IslandLogic.getConfig().deletionCooldown) {
                     islands.delete(player);
                     player.sendMessage(Texts.prefixed("message.neoskies.island_delete.success"));
                 } else {
@@ -62,14 +62,14 @@ public class DeleteCommand {
     }
 
     static void warn(ServerPlayerEntity player) {
-        IslandStuck islands = Skylands.getInstance().islands;
+        IslandStuck islands = IslandLogic.getInstance().islands;
 
         islands.getByPlayer(player).ifPresentOrElse(island -> {
             var created = island.getCreated();
             var now = Instant.now();
             var seconds = ChronoUnit.SECONDS.between(created, now);
 
-            if (seconds >= Skylands.getConfig().deletionCooldown) {
+            if (seconds >= IslandLogic.getConfig().deletionCooldown) {
                 player.sendMessage(Texts.prefixed("message.neoskies.island_delete.warning"));
             } else {
                 player.sendMessage(Texts.prefixed("message.neoskies.island_delete.too_often"));

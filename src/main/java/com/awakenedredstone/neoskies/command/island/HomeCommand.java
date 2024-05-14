@@ -1,9 +1,9 @@
 package com.awakenedredstone.neoskies.command.island;
 
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.NeoSkies;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.ServerCommandSource;
@@ -31,10 +31,10 @@ public class HomeCommand {
     }
 
     static void run(ServerPlayerEntity player) {
-        Skylands.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
-            Optional<Island> currentIsland = SkylandsAPI.getIsland(player.getWorld());
+        IslandLogic.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
+            Optional<Island> currentIsland = NeoSkiesAPI.getIsland(player.getWorld());
             boolean isHome = currentIsland.isPresent() && currentIsland.get().equals(island);
-            if (isHome && !Skylands.getConfig().allowVisitCurrentIsland) {
+            if (isHome && !IslandLogic.getConfig().allowVisitCurrentIsland) {
                 player.sendMessage(Texts.prefixed("message.neoskies.home.fail"));
             } else {
                 player.sendMessage(Texts.prefixed("message.neoskies.home.success"));
@@ -44,8 +44,8 @@ public class HomeCommand {
     }
 
     static void run(ServerPlayerEntity visitor, String islandOwner) {
-        Skylands.getInstance().islands.getByPlayer(islandOwner).ifPresentOrElse(island -> {
-            if (visitor.getWorld().getRegistryKey().getValue().equals(SkylandsMain.id(island.owner.uuid.toString())) && !Skylands.getConfig().allowVisitCurrentIsland) {
+        IslandLogic.getInstance().islands.getByPlayer(islandOwner).ifPresentOrElse(island -> {
+            if (visitor.getWorld().getRegistryKey().getValue().equals(NeoSkies.id(island.owner.uuid.toString())) && !IslandLogic.getConfig().allowVisitCurrentIsland) {
                 visitor.sendMessage(Texts.prefixed("message.neoskies.visit_home.fail", map -> map.put("owner", islandOwner)));
             } else {
                 if (island.isMember(visitor)) {

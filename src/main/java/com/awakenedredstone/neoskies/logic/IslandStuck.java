@@ -26,7 +26,7 @@ public class IslandStuck {
     }
 
     public void delete(Island island) {
-        MinecraftServer server = Skylands.getServer();
+        MinecraftServer server = IslandLogic.getServer();
 
         island.getOverworldHandler().delete();
         island.getNetherHandler().delete();
@@ -41,22 +41,22 @@ public class IslandStuck {
             }
         });
 
-        if (Skylands.getConfig().resetPlayerWithIsland) {
+        if (IslandLogic.getConfig().resetPlayerWithIsland) {
             Member owner = island.owner;
             deletePlayer(owner);
 
             island.members.forEach(this::deletePlayer);
         }
 
-        island.getOverworld().getPlayers().forEach(player -> Skylands.syncWithTick(() -> Skylands.getInstance().hub.visit(player, true)));
-        island.getNether().getPlayers().forEach(player -> Skylands.syncWithTick(() -> Skylands.getInstance().hub.visit(player, true)));
-        island.getEnd().getPlayers().forEach(player -> Skylands.syncWithTick(() -> Skylands.getInstance().hub.visit(player, true)));
+        island.getOverworld().getPlayers().forEach(player -> IslandLogic.syncWithTick(() -> IslandLogic.getInstance().hub.visit(player, true)));
+        island.getNether().getPlayers().forEach(player -> IslandLogic.syncWithTick(() -> IslandLogic.getInstance().hub.visit(player, true)));
+        island.getEnd().getPlayers().forEach(player -> IslandLogic.syncWithTick(() -> IslandLogic.getInstance().hub.visit(player, true)));
 
         stuck.remove(island);
     }
 
     private void deletePlayer(Member member) {
-        MinecraftServer server = Skylands.getServer();
+        MinecraftServer server = IslandLogic.getServer();
         PlayerManager playerManager = server.getPlayerManager();
         Path playerDataDir = server.saveHandler.playerDataDir.toPath();
 
@@ -66,7 +66,7 @@ public class IslandStuck {
             ServerPlayerEntity newPlayer = ((ExtendedPlayerManager) playerManager).resetPlayer(player);
             player.networkHandler.player = newPlayer;
             server.saveHandler.savePlayerData(newPlayer);
-            Skylands.getInstance().hub.visit(newPlayer, true);
+            IslandLogic.getInstance().hub.visit(newPlayer, true);
         }
     }
 

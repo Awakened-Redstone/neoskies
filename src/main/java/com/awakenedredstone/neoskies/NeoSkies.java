@@ -1,11 +1,11 @@
 package com.awakenedredstone.neoskies;
 
-import com.awakenedredstone.neoskies.command.SkylandsCommands;
+import com.awakenedredstone.neoskies.command.NeoSkiesCommands;
 import com.awakenedredstone.neoskies.font.FontManager;
-import com.awakenedredstone.neoskies.logic.Skylands;
-import com.awakenedredstone.neoskies.logic.SkylandsEventListeners;
+import com.awakenedredstone.neoskies.logic.EventListeners;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
-import com.awakenedredstone.neoskies.logic.registry.SkylandsPermissionLevels;
+import com.awakenedredstone.neoskies.logic.registry.NeoSkiesPermissionLevels;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.fabricmc.api.ModInitializer;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SkylandsMain implements ModInitializer {
+public class NeoSkies implements ModInitializer {
     public static final String MOD_ID = "neoskies";
     public static final Logger LOGGER = LoggerFactory.getLogger("NeoSkies");
     public static final Set<PlayerEntity> PROTECTION_BYPASS = new HashSet<>();
@@ -30,12 +30,12 @@ public class SkylandsMain implements ModInitializer {
     @Override
     public void onInitialize() {
         NeoSkiesIslandSettings.init();
-        SkylandsPermissionLevels.init();
-        SkylandsEventListeners.registerEvents();
-        SkylandsCommands.init();
+        NeoSkiesPermissionLevels.init();
+        EventListeners.registerEvents();
+        NeoSkiesCommands.init();
         FontManager.init();
 
-        Skylands.getConfig().load();
+        IslandLogic.getConfig().load();
     }
 
     public static Identifier id(String path) {

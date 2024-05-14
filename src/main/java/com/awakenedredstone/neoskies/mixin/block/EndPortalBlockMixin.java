@@ -1,8 +1,8 @@
 package com.awakenedredstone.neoskies.mixin.block;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.EndPortalBlock;
 import net.minecraft.entity.Entity;
@@ -22,15 +22,15 @@ public class EndPortalBlockMixin {
 
     @Inject(method = "onEntityCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;moveToWorld(Lnet/minecraft/server/world/ServerWorld;)Lnet/minecraft/entity/Entity;"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
     public void resourceKey(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo ci) {
-        if (SkylandsAPI.isIsland(world)) {
-            if (!Skylands.getConfig().enableEndIsland) {
+        if (NeoSkiesAPI.isIsland(world)) {
+            if (!IslandLogic.getConfig().enableEndIsland) {
                 ci.cancel();
                 return;
             }
-            Optional<Island> island = SkylandsAPI.getIsland(world);
+            Optional<Island> island = NeoSkiesAPI.getIsland(world);
             if (island.isPresent()) {
                 ServerWorld targetWorld;
-                if (SkylandsAPI.isEnd(world.getRegistryKey())) {
+                if (NeoSkiesAPI.isEnd(world.getRegistryKey())) {
                     targetWorld = island.get().getOverworld();
                 } else {
                     targetWorld = island.get().getEnd();

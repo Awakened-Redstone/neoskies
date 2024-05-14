@@ -1,10 +1,10 @@
 package com.awakenedredstone.neoskies.logic;
 
-import com.awakenedredstone.neoskies.SkylandsMain;
+import com.awakenedredstone.neoskies.NeoSkies;
 import com.awakenedredstone.neoskies.config.IslandRanking;
 import com.awakenedredstone.neoskies.config.MainConfig;
 import com.awakenedredstone.neoskies.logic.economy.Economy;
-import com.awakenedredstone.neoskies.logic.protection.SkylandsProtectionProvider;
+import com.awakenedredstone.neoskies.logic.protection.NeoSkiesProtectionProvider;
 import com.awakenedredstone.neoskies.util.NbtMigrator;
 import com.awakenedredstone.neoskies.util.PreInitData;
 import com.awakenedredstone.neoskies.util.Scheduler;
@@ -14,9 +14,9 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import xyz.nucleoid.fantasy.Fantasy;
 
-public class Skylands {
+public class IslandLogic {
     private int format = 1;
-    private static Skylands instance;
+    private static IslandLogic instance;
     private final MinecraftServer server;
     public final Fantasy fantasy;
     public final IslandStuck islands;
@@ -24,11 +24,11 @@ public class Skylands {
     public final Invites invites;
     public final Economy economy;
     public final Scheduler scheduler;
-    private final SkylandsProtectionProvider protectionProvider;
+    private final NeoSkiesProtectionProvider protectionProvider;
     private static final MainConfig CONFIG = new MainConfig();
     private static final IslandRanking RANKING_CONFIG = new IslandRanking();
 
-    public Skylands(MinecraftServer server) {
+    public IslandLogic(MinecraftServer server) {
         this.scheduler = new Scheduler();
         this.server = server;
         this.fantasy = Fantasy.get(server);
@@ -36,11 +36,11 @@ public class Skylands {
         this.hub = new Hub();
         this.invites = new Invites();
         this.economy = new Economy();
-        this. protectionProvider = new SkylandsProtectionProvider();
-        CommonProtection.register(SkylandsMain.id("neoskies"), protectionProvider);
+        this. protectionProvider = new NeoSkiesProtectionProvider();
+        CommonProtection.register(NeoSkies.id("neoskies"), protectionProvider);
     }
 
-    public static Skylands getInstance() {
+    public static IslandLogic getInstance() {
         return instance;
     }
 
@@ -49,30 +49,30 @@ public class Skylands {
     }
 
     public void readFromNbt(NbtCompound nbt) {
-        NbtCompound skylandsNbt = nbt.getCompound("neoskies");
-        if (skylandsNbt.isEmpty()) return;
+        NbtCompound neoskiesNbt = nbt.getCompound("neoskies");
+        if (neoskiesNbt.isEmpty()) return;
 
-        NbtMigrator.update(skylandsNbt);
+        NbtMigrator.update(neoskiesNbt);
 
-        this.format = skylandsNbt.getInt("format");
-        this.hub.readFromNbt(skylandsNbt);
-        this.islands.readFromNbt(skylandsNbt);
+        this.format = neoskiesNbt.getInt("format");
+        this.hub.readFromNbt(neoskiesNbt);
+        this.islands.readFromNbt(neoskiesNbt);
     }
 
     public void writeToNbt(NbtCompound nbt) {
-        NbtCompound skylandsNbt = new NbtCompound();
+        NbtCompound neoskiesNbt = new NbtCompound();
 
-        skylandsNbt.putInt("format", this.format);
-        this.islands.writeToNbt(skylandsNbt);
-        this.hub.writeToNbt(skylandsNbt);
+        neoskiesNbt.putInt("format", this.format);
+        this.islands.writeToNbt(neoskiesNbt);
+        this.hub.writeToNbt(neoskiesNbt);
 
-        nbt.put("neoskies", skylandsNbt);
+        nbt.put("neoskies", neoskiesNbt);
     }
 
     //Lock the instance so noone can possibly change it
     public static void init(MinecraftServer server) {
-        if (Skylands.instance != null) throw new IllegalStateException("Skylands already has been initialized!");
-        Skylands.instance = new Skylands(server);
+        if (IslandLogic.instance != null) throw new IllegalStateException("NeoSkies already has been initialized!");
+        IslandLogic.instance = new IslandLogic(server);
     }
 
     public void onTick(MinecraftServer server) {
@@ -81,9 +81,9 @@ public class Skylands {
     }
 
     public void close() {
-        Skylands.instance = null;
+        IslandLogic.instance = null;
         this.scheduler.close();
-        CommonProtection.remove(SkylandsMain.id("neoskies"));
+        CommonProtection.remove(NeoSkies.id("neoskies"));
     }
 
     public static MinecraftServer getServer() {
@@ -95,7 +95,7 @@ public class Skylands {
     }
 
     public static ResourceManager getResourceManager() {
-        return instance == null ? PreInitData.getInstance().getResourceManager() : Skylands.getServer().getResourceManager();
+        return instance == null ? PreInitData.getInstance().getResourceManager() : IslandLogic.getServer().getResourceManager();
     }
 
     public static MainConfig getConfig() {
@@ -107,6 +107,6 @@ public class Skylands {
     }
 
     public static void syncWithTick(Runnable runnable) {
-        Skylands.getScheduler().schedule(0, runnable);
+        IslandLogic.getScheduler().schedule(0, runnable);
     }
 }

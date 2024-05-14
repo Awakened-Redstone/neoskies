@@ -1,8 +1,8 @@
 package com.awakenedredstone.neoskies.command.island;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.logic.Member;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -43,7 +43,7 @@ public class BanCommands {
                         var player = context.getSource().getPlayer();
 
                         if (player != null) {
-                            var island = Skylands.getInstance().islands.getByPlayer(player);
+                            var island = IslandLogic.getInstance().islands.getByPlayer(player);
                             if (island.isPresent()) {
                                 var bans = island.get().bans;
 
@@ -73,7 +73,7 @@ public class BanCommands {
     }
 
     static void ban(ServerPlayerEntity player, ServerPlayerEntity banned) {
-        Skylands.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
+        IslandLogic.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
             if (player.getName().getString().equals(banned.getName().getString())) {
                 player.sendMessage(Texts.prefixed("message.neoskies.ban_player.yourself"));
             } else {
@@ -87,9 +87,9 @@ public class BanCommands {
                         player.sendMessage(Texts.prefixed("message.neoskies.ban_player.success", map -> map.put("player", banned.getName().getString())));
                         banned.sendMessage(Texts.prefixed("message.neoskies.ban_player.ban", map -> map.put("owner", island.owner.name)));
 
-                        SkylandsAPI.getIsland(banned.getWorld()).ifPresent(isl -> {
+                        NeoSkiesAPI.getIsland(banned.getWorld()).ifPresent(isl -> {
                             if (isl.owner.uuid.equals(island.owner.uuid)) {
-                                Skylands.getInstance().hub.visit(banned);
+                                IslandLogic.getInstance().hub.visit(banned);
                             }
                         });
                     }
@@ -99,7 +99,7 @@ public class BanCommands {
     }
 
     static void unban(ServerPlayerEntity player, String unbanned) {
-        Skylands.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
+        IslandLogic.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
             if (!island.isBanned(unbanned)) {
                 player.sendMessage(Texts.prefixed("message.neoskies.unban_player.fail"));
             } else {

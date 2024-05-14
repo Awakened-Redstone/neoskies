@@ -226,7 +226,7 @@
   "text.neoskies.nyi": "<red>Not yet implemented</red>",
   "text.neoskies.protection_bypass": "<dark_gray>Bypass status: %value%</dark_gray>",
 
-  "gui.neoskies.menu": "Skylands menu",
+  "gui.neoskies.menu": "NeoSkies menu",
   "gui.neoskies.island_settings": "Island settings",
   "gui.neoskies.close": "<red>Close",
   "item_name.neoskies.hub": "<red>Go to hub",

@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.data;
 
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.world.World;
@@ -12,14 +12,14 @@ public record WorldComponent(World world) implements ComponentV3 {
     @Override
     public void readFromNbt(@NotNull NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         if (world.getRegistryKey().equals(World.OVERWORLD)) {
-            Skylands.getInstance().readFromNbt(nbt);
+            IslandLogic.getInstance().readFromNbt(nbt);
         }
     }
 
     @Override
     public void writeToNbt(@NotNull NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         if (world.getRegistryKey().equals(World.OVERWORLD)) {
-            Skylands.getInstance().writeToNbt(nbt);
+            IslandLogic.getInstance().writeToNbt(nbt);
         }
     }
 }

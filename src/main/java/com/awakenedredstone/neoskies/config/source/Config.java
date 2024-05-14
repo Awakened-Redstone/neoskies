@@ -3,7 +3,7 @@ package com.awakenedredstone.neoskies.config.source;
 import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonGrammar;
 import blue.endless.jankson.api.SyntaxError;
-import com.awakenedredstone.neoskies.SkylandsMain;
+import com.awakenedredstone.neoskies.NeoSkies;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public abstract class Config {
             this.getFileLocation().getParent().toFile().mkdirs();
             Files.writeString(this.getFileLocation(), this.interpreter.toJson(this).toJson(JsonGrammar.JANKSON), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            SkylandsMain.LOGGER.warn("Could not save config!", e);
+            NeoSkies.LOGGER.warn("Could not save config!", e);
         }
     }
 
@@ -70,7 +70,7 @@ public abstract class Config {
             }
 
         } catch (IOException | SyntaxError | IllegalAccessException e) {
-            SkylandsMain.LOGGER.warn("Could not load config!", e);
+            NeoSkies.LOGGER.warn("Could not load config!", e);
         } finally {
             this.loading = false;
         }

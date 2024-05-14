@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.logic.economy;
 
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import eu.pb4.common.economy.api.EconomyAccount;
 import eu.pb4.common.economy.api.EconomyCurrency;
 import eu.pb4.common.economy.api.EconomyProvider;
@@ -11,16 +11,16 @@ import net.minecraft.util.Identifier;
 import java.math.BigInteger;
 import java.util.UUID;
 
-public class SkylandsEconomyAccount implements EconomyAccount {
+public class NeoSkiesEconomyAccount implements EconomyAccount {
     private final UUID islandUuid;
     private final Identifier id;
     private long balance;
 
-    public SkylandsEconomyAccount(UUID islandUuid, Identifier id) {
+    public NeoSkiesEconomyAccount(UUID islandUuid, Identifier id) {
         this(islandUuid, id, 0);
     }
 
-    public SkylandsEconomyAccount(UUID islandUuid, Identifier id, long balance) {
+    public NeoSkiesEconomyAccount(UUID islandUuid, Identifier id, long balance) {
         this.islandUuid = islandUuid;
         this.id = id;
         this.balance = balance;
@@ -64,12 +64,12 @@ public class SkylandsEconomyAccount implements EconomyAccount {
 
     @Override
     public EconomyProvider provider() {
-        return Skylands.getInstance().economy.PROVIDER;
+        return IslandLogic.getInstance().economy.PROVIDER;
     }
 
     @Override
     public EconomyCurrency currency() {
-        return Skylands.getInstance().economy.CURRENCY;
+        return IslandLogic.getInstance().economy.CURRENCY;
     }
 
     private EconomyTransaction failure(long transactionAmount) {

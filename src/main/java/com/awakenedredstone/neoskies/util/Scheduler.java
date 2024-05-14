@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.util;
 
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 
@@ -20,7 +20,7 @@ public class Scheduler {
         Event event;
         while ((event = this.events.peek()) != null && event.triggerTime <= server.getOverworld().getTime()) {
             this.events.remove();
-            Skylands.getServer().execute(event.callback);
+            IslandLogic.getServer().execute(event.callback);
         }
     }
 

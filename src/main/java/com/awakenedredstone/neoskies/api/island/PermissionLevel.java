@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.api.island;
 
-import com.awakenedredstone.neoskies.logic.registry.SkylandsRegistries;
+import com.awakenedredstone.neoskies.logic.registry.NeoSkiesRegistries;
 import net.minecraft.util.Identifier;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,14 +25,14 @@ public abstract class PermissionLevel {
     }
 
     private Identifier getIdentifierFromRegistry() {
-        return SkylandsRegistries.PERMISSION_LEVELS.getId(this);
+        return NeoSkiesRegistries.PERMISSION_LEVELS.getId(this);
     }
 
     public static PermissionLevel fromValue(Identifier id) {
-        return SkylandsRegistries.PERMISSION_LEVELS.get(id);
+        return NeoSkiesRegistries.PERMISSION_LEVELS.get(id);
     }
 
     public static PermissionLevel fromValue(String id) {
-        return SkylandsRegistries.PERMISSION_LEVELS.get(new Identifier(id));
+        return NeoSkiesRegistries.PERMISSION_LEVELS.get(new Identifier(id));
     }
 }

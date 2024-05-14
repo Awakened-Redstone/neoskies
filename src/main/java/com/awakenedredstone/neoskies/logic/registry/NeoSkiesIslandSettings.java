@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.logic.registry;
 
-import com.awakenedredstone.neoskies.SkylandsMain;
+import com.awakenedredstone.neoskies.NeoSkies;
 import com.awakenedredstone.neoskies.logic.settings.IslandSettings;
 import com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags;
 import com.awakenedredstone.neoskies.logic.tags.NeoSkiesEntityTags;
@@ -126,7 +126,7 @@ public class NeoSkiesIslandSettings {
     }
 
     private static IslandSettings register(String id, Item icon) {
-        return new IslandSettings(SkylandsMain.id(id), icon);
+        return new IslandSettings(NeoSkies.id(id), icon);
     }
 
     public static void init() {
@@ -141,13 +141,13 @@ public class NeoSkiesIslandSettings {
 
                 if (field.getType() == IslandSettings.class) {
                     settings = (IslandSettings) field.get(null);
-                    SkylandsMain.LOGGER.info("Registering {}", settings.getIdentifier());
-                    Registry.register(SkylandsRegistries.ISLAND_SETTINGS, settings.getIdentifier(), settings);
+                    NeoSkies.LOGGER.info("Registering {}", settings.getIdentifier());
+                    Registry.register(NeoSkiesRegistries.ISLAND_SETTINGS, settings.getIdentifier(), settings);
                 }
 
                 if (!access) field.setAccessible(false);
             } catch (IllegalAccessException e) {
-                SkylandsMain.LOGGER.error("Failed to register island settings", e);
+                NeoSkies.LOGGER.error("Failed to register island settings", e);
             }
         }
     }

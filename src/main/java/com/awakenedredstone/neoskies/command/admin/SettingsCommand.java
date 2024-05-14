@@ -21,7 +21,7 @@ public class SettingsCommand {
                         return 0;
                     }
 
-                    //new ConfigScreen(source.getPlayer(), SkylandsMain.MAIN_CONFIG, null, null);
+                    //new ConfigScreen(source.getPlayer(), NeoSkies.MAIN_CONFIG, null, null);
                     source.sendFeedback(() -> Text.literal("In development, they will likely require the client mod"), false);
 
                     return 1;

@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.command.admin;
 
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -20,10 +20,10 @@ public class DeleteIslandCommand {
                 .then(argument("player", word())
                     .executes(context -> {
                         var playerName = StringArgumentType.getString(context, "player");
-                        var island = Skylands.getInstance().islands.getByPlayer(playerName);
+                        var island = IslandLogic.getInstance().islands.getByPlayer(playerName);
 
                         if (island.isPresent()) {
-                            Skylands.getInstance().islands.delete(playerName);
+                            IslandLogic.getInstance().islands.delete(playerName);
                             context.getSource().sendFeedback(() -> Texts.of("message.neoskies.force_delete.success", map -> map.put("player", playerName)), true);
                         } else {
                             context.getSource().sendFeedback(() -> Texts.of("message.neoskies.force_delete.fail", map -> map.put("player", playerName)), true);

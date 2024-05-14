@@ -1,9 +1,9 @@
 package com.awakenedredstone.neoskies.util;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.logic.Hub;
 import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -21,8 +21,8 @@ public class Worlds {
 
         player.stopRiding();
 
-        if (SkylandsAPI.isIsland(player.getWorld())) {
-            Optional<Island> islandOptional = SkylandsAPI.getIsland(player.getWorld());
+        if (NeoSkiesAPI.isIsland(player.getWorld())) {
+            Optional<Island> islandOptional = NeoSkiesAPI.getIsland(player.getWorld());
             if (islandOptional.isPresent()) {
                 Island island = islandOptional.get();
                 if (island.isMember(player)) {
@@ -34,20 +34,20 @@ public class Worlds {
                 }
             }
         } else {
-            Hub hub = Skylands.getInstance().hub;
-            if (!Skylands.getConfig().safeVoidFallDamage) player.fallDistance = 0;
+            Hub hub = IslandLogic.getInstance().hub;
+            if (!IslandLogic.getConfig().safeVoidFallDamage) player.fallDistance = 0;
             hub.visit(player, true);
         }
     }
 
     public static RegistryKey<World> redirect(RegistryKey<World> registryKey) {
-        if (SkylandsAPI.isOverworld(registryKey)) {
+        if (NeoSkiesAPI.isOverworld(registryKey)) {
             return World.OVERWORLD;
         }
-        if (SkylandsAPI.isEnd(registryKey)) {
+        if (NeoSkiesAPI.isEnd(registryKey)) {
             return World.END;
         }
-        if (SkylandsAPI.isNether(registryKey)) {
+        if (NeoSkiesAPI.isNether(registryKey)) {
             return World.NETHER;
         }
         return registryKey;

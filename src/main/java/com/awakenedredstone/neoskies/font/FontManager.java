@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.font;
 
-import com.awakenedredstone.neoskies.SkylandsMain;
+import com.awakenedredstone.neoskies.NeoSkies;
 import com.awakenedredstone.neoskies.util.PreInitData;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
@@ -32,7 +32,7 @@ public class FontManager implements SimpleSynchronousResourceReloadListener {
 
     @Override
     public Identifier getFabricId() {
-        return SkylandsMain.id("fonts");
+        return NeoSkies.id("fonts");
     }
 
     @Override
@@ -41,9 +41,9 @@ public class FontManager implements SimpleSynchronousResourceReloadListener {
             if (PreInitData.open()) PreInitData.getInstance().setResourceManager(manager);
             for (Identifier id : manager.findResources("font", path -> path.getPath().endsWith(".glyphs.json")).keySet()) {
                 try (InputStream stream = manager.getResource(id).get().getInputStream(); Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8)) {
-                    fontProviders = FontProvider.LIST_CODEC.parse(JsonOps.INSTANCE, SkylandsMain.GSON.fromJson(reader, JsonElement.class)).resultOrPartial(SkylandsMain.LOGGER::error).orElseThrow();
+                    fontProviders = FontProvider.LIST_CODEC.parse(JsonOps.INSTANCE, NeoSkies.GSON.fromJson(reader, JsonElement.class)).resultOrPartial(NeoSkies.LOGGER::error).orElseThrow();
                 } catch (Exception e) {
-                    SkylandsMain.LOGGER.error("Error occurred while loading the fonts data for " + id.toString(), e);
+                    NeoSkies.LOGGER.error("Error occurred while loading the fonts data for " + id.toString(), e);
                 }
             }
         }

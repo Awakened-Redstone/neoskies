@@ -1,9 +1,9 @@
 package com.awakenedredstone.neoskies.command;
 
-import com.awakenedredstone.neoskies.SkylandsMain;
+import com.awakenedredstone.neoskies.NeoSkies;
 import com.awakenedredstone.neoskies.command.admin.*;
 import com.awakenedredstone.neoskies.command.island.*;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -18,14 +18,14 @@ import java.util.Set;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.adminNode;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.registerAdmin;
 
-public class SkylandsCommands {
+public class NeoSkiesCommands {
 
     public static void init() {
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> SkylandsCommands.register(dispatcher));
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> NeoSkiesCommands.register(dispatcher));
     }
 
     private static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        SkylandsMain.LOGGER.debug("Registering commands...");
+        NeoSkies.LOGGER.debug("Registering commands...");
         registerPublicCommands(dispatcher);
         registerAdminCommands(dispatcher);
     }
@@ -58,7 +58,7 @@ public class SkylandsCommands {
           .then(CommandManager.literal("reload")
             .executes(context -> {
                 context.getSource().sendFeedback(() -> Texts.prefixed(Text.translatable("commands.neoskies.reload")), true);
-                Skylands.getConfig().load();
+                IslandLogic.getConfig().load();
                 return 1;
             })
           )
@@ -75,7 +75,7 @@ public class SkylandsCommands {
 
                 ServerPlayerEntity player = source.getPlayer();
 
-                Set<PlayerEntity> protectionBypass = SkylandsMain.PROTECTION_BYPASS;
+                Set<PlayerEntity> protectionBypass = NeoSkies.PROTECTION_BYPASS;
                 boolean overrideMode = protectionBypass.contains(player);
                 if (overrideMode) {
                     protectionBypass.remove(player);

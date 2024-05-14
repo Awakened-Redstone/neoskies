@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.command.island;
 
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Players;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
@@ -40,13 +40,13 @@ public class AcceptCommand {
             return;
         }
 
-        var island = Skylands.getInstance().islands.getByPlayer(inviter.get());
+        var island = IslandLogic.getInstance().islands.getByPlayer(inviter.get());
         if (island.isEmpty()) {
             player.sendMessage(Texts.prefixed("message.neoskies.accept.no_island"));
             return;
         }
 
-        var invite = Skylands.getInstance().invites.get(island.get(), player);
+        var invite = IslandLogic.getInstance().invites.get(island.get(), player);
         if (invite.isEmpty()) {
             player.sendMessage(Texts.prefixed("message.neoskies.accept.fail"));
             return;

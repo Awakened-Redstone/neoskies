@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.mixin.entity;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.duck.ExtendedServerPlayerEntity;
 import com.awakenedredstone.neoskies.event.PlayerEvents;
 import com.awakenedredstone.neoskies.util.Worlds;
@@ -52,14 +52,14 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Ex
 
     @Inject(method = "createEndSpawnPlatform", at = @At("HEAD"), cancellable = true)
     public void blockEndPlatform(CallbackInfo ci) {
-        if (SkylandsAPI.isIsland(getWorld())) {
+        if (NeoSkiesAPI.isIsland(getWorld())) {
             ci.cancel();
         }
     }
 
     @ModifyExpressionValue(method = "getPortalRect", at = @At(value = "INVOKE", target = "Ljava/util/Optional;isEmpty()Z"))
     public boolean skipErrorMessage(boolean original) {
-        if (SkylandsAPI.isIsland(getWorld())) {
+        if (NeoSkiesAPI.isIsland(getWorld())) {
             return false;
         }
 

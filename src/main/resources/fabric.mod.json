@@ -13,7 +13,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.awakenedredstone.neoskies.SkylandsMain"
+        "com.awakenedredstone.neoskies.NeoSkies"
     ],
     "fabric-datagen": [
       "com.awakenedredstone.neoskies.datagen.NeoSkiesDatagen"

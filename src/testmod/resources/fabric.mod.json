@@ -9,7 +9,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.awakenedredstone.neoskies.test.SkylandsTestMain"
+      "com.awakenedredstone.neoskies.test.NeoSkiesTestMain"
     ]
   }
 }

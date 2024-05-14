@@ -1,16 +1,16 @@
 package com.awakenedredstone.neoskies.logic.economy;
 
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import eu.pb4.common.economy.api.EconomyCurrency;
 import eu.pb4.common.economy.api.EconomyProvider;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @SuppressWarnings("ClassCanBeRecord")
-public class SkylandsEconomyCurrency implements EconomyCurrency {
+public class NeoSkiesEconomyCurrency implements EconomyCurrency {
     private final Identifier id;
 
-    public SkylandsEconomyCurrency(Identifier id) {
+    public NeoSkiesEconomyCurrency(Identifier id) {
         this.id = id;
     }
 
@@ -37,6 +37,6 @@ public class SkylandsEconomyCurrency implements EconomyCurrency {
 
     @Override
     public EconomyProvider provider() {
-        return Skylands.getInstance().economy.PROVIDER;
+        return IslandLogic.getInstance().economy.PROVIDER;
     }
 }

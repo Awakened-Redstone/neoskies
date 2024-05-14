@@ -1,7 +1,7 @@
 package com.awakenedredstone.neoskies.api;
 
 import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Constants;
 import eu.pb4.common.economy.api.EconomyAccount;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
-public class SkylandsAPI {
-    public static final Skylands SKYLANDS = Skylands.getInstance();
+public class NeoSkiesAPI {
+    public static final IslandLogic NEO_SKIES_LOGIC = IslandLogic.getInstance();
 
     public static boolean isHub(World world) {
         return world.getRegistryKey() == World.OVERWORLD;
@@ -48,19 +48,19 @@ public class SkylandsAPI {
     }
 
     public static Optional<Island> getIslandByPlayer(PlayerEntity player) {
-        return SKYLANDS.islands.getFromMember(player);
+        return NEO_SKIES_LOGIC.islands.getFromMember(player);
     }
 
     public static Optional<Island> getIslandByPlayer(String playerName) {
-        return SKYLANDS.islands.getByPlayer(playerName);
+        return NEO_SKIES_LOGIC.islands.getByPlayer(playerName);
     }
 
     public static Optional<Island> getIslandByPlayer(UUID playerUuid) {
-        return SKYLANDS.islands.getByPlayer(playerUuid);
+        return NEO_SKIES_LOGIC.islands.getByPlayer(playerUuid);
     }
 
     public static Optional<Island> getIsland(UUID islandId) {
-        return SKYLANDS.islands.get(islandId);
+        return NEO_SKIES_LOGIC.islands.get(islandId);
     }
 
     public static Optional<Island> getIsland(World world) {
@@ -68,8 +68,8 @@ public class SkylandsAPI {
     }
 
     public static Optional<Island> getIsland(RegistryKey<World> registryKey) {
-        if (SkylandsAPI.isIsland(registryKey)) {
-            return SKYLANDS.islands.getByPlayer(UUID.fromString(registryKey.getValue().getPath()));
+        if (NeoSkiesAPI.isIsland(registryKey)) {
+            return NEO_SKIES_LOGIC.islands.getByPlayer(UUID.fromString(registryKey.getValue().getPath()));
         }
         return Optional.empty();
     }

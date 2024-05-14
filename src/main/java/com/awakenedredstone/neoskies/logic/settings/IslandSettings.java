@@ -4,8 +4,8 @@ import com.awakenedredstone.neoskies.api.island.PermissionLevel;
 import com.awakenedredstone.neoskies.gui.polymer.CBGuiElement;
 import com.awakenedredstone.neoskies.gui.polymer.CBGuiElementBuilder;
 import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.registry.SkylandsPermissionLevels;
-import com.awakenedredstone.neoskies.logic.registry.SkylandsRegistries;
+import com.awakenedredstone.neoskies.logic.registry.NeoSkiesPermissionLevels;
+import com.awakenedredstone.neoskies.logic.registry.NeoSkiesRegistries;
 import com.awakenedredstone.neoskies.util.MapBuilder;
 import com.awakenedredstone.neoskies.util.Texts;
 import net.minecraft.item.Item;
@@ -33,7 +33,7 @@ public class IslandSettings {
     }
 
     public IslandSettings(Identifier identifier, CBGuiElement icon) {
-        this(identifier, icon, SkylandsPermissionLevels.MEMBER);
+        this(identifier, icon, NeoSkiesPermissionLevels.MEMBER);
     }
 
     public IslandSettings(Identifier identifier, Item icon) {
@@ -78,7 +78,7 @@ public class IslandSettings {
         lore.add(Text.empty());
         int value = island.getSettings().get(identifier).getPermissionLevel().getLevel();
         List<Integer> levels = new ArrayList<>();
-        for (Map.Entry<RegistryKey<PermissionLevel>, PermissionLevel> entry : SkylandsRegistries.PERMISSION_LEVELS.getEntrySet()) {
+        for (Map.Entry<RegistryKey<PermissionLevel>, PermissionLevel> entry : NeoSkiesRegistries.PERMISSION_LEVELS.getEntrySet()) {
             levels.add(entry.getValue().getLevel());
         }
         if (!levels.contains(value)) levels.add(value);

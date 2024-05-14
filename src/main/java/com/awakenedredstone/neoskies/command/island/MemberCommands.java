@@ -1,7 +1,7 @@
 package com.awakenedredstone.neoskies.command.island;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -39,7 +39,7 @@ public class MemberCommands {
                         var player = context.getSource().getPlayer();
 
                         if (player != null) {
-                            var island = Skylands.getInstance().islands.getByPlayer(player);
+                            var island = IslandLogic.getInstance().islands.getByPlayer(player);
                             if (island.isPresent()) {
                                 var members = island.get().members;
 
@@ -68,18 +68,18 @@ public class MemberCommands {
     }
 
     static void invite(ServerPlayerEntity inviter, ServerPlayerEntity newcomer) {
-        if (SkylandsAPI.getIslandByPlayer(newcomer).isPresent()) {
+        if (NeoSkiesAPI.getIslandByPlayer(newcomer).isPresent()) {
             inviter.sendMessage(Texts.prefixed("message.neoskies.invite_member.already_has_island"));
             return;
         }
 
-        Skylands.getInstance().islands.getByPlayer(inviter).ifPresentOrElse(island -> {
+        IslandLogic.getInstance().islands.getByPlayer(inviter).ifPresentOrElse(island -> {
             if (island.isMember(newcomer)) {
                 inviter.sendMessage(Texts.prefixed("message.neoskies.invite_member.already_member"));
                 return;
             }
 
-            if (Skylands.getInstance().invites.hasInvite(island, newcomer)) {
+            if (IslandLogic.getInstance().invites.hasInvite(island, newcomer)) {
                 inviter.sendMessage(Texts.prefixed("message.neoskies.invite_member.already_invited"));
             } else {
                 inviter.sendMessage(Texts.prefixed("message.neoskies.invite_member.success", (map) -> map.put("newcomer", newcomer.getName().getString())));
@@ -92,13 +92,13 @@ public class MemberCommands {
 
                 newcomer.sendMessage(inviteText.getWithStyle(style).get(0));
                 newcomer.sendMessage(Texts.prefixed("message.neoskies.invite_member.accept").getWithStyle(style).get(0));
-                Skylands.getInstance().invites.create(island, newcomer);
+                IslandLogic.getInstance().invites.create(island, newcomer);
             }
         }, () -> inviter.sendMessage(Texts.prefixed("message.neoskies.invite_member.no_island")));
     }
 
     static void remove(ServerPlayerEntity player, String removed) {
-        Skylands.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
+        IslandLogic.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
             if (player.getName().getString().equals(removed)) {
                 player.sendMessage(Texts.prefixed("message.neoskies.remove_member.yourself"));
             } else {

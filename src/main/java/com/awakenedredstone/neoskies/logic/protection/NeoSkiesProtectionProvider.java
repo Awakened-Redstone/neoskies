@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.logic.protection;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
 import com.awakenedredstone.neoskies.logic.settings.IslandSettings;
 import com.awakenedredstone.neoskies.util.WorldProtection;
@@ -19,15 +19,15 @@ import net.minecraft.world.World;
 
 import java.util.Map;
 
-public class SkylandsProtectionProvider implements ProtectionProvider {
+public class NeoSkiesProtectionProvider implements ProtectionProvider {
     @Override
     public boolean isProtected(World world, BlockPos pos) {
-        return SkylandsAPI.isProtectedArea(world);
+        return NeoSkiesAPI.isProtectedArea(world);
     }
 
     @Override
     public boolean isAreaProtected(World world, Box area) {
-        return SkylandsAPI.isProtectedArea(world);
+        return NeoSkiesAPI.isProtectedArea(world);
     }
 
     @Override

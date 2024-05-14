@@ -1,10 +1,10 @@
 package com.awakenedredstone.neoskies.mixin.entity;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.duck.ExtendedPlayerManager;
 import com.awakenedredstone.neoskies.duck.ExtendedServerPlayerEntity;
 import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.entity.Entity;
@@ -62,33 +62,33 @@ public abstract class PlayerManagerMixin implements ExtendedPlayerManager {
 
     @Inject(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getWorld(Lnet/minecraft/registry/RegistryKey;)Lnet/minecraft/server/world/ServerWorld;", shift = At.Shift.BEFORE))
     private void loadIsland(ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData, CallbackInfo ci, @Local RegistryKey<World> registryKey) {
-        if (SkylandsAPI.isIsland(registryKey)) {
-            Optional<Island> islandOptional = SkylandsAPI.getIsland(registryKey);
+        if (NeoSkiesAPI.isIsland(registryKey)) {
+            Optional<Island> islandOptional = NeoSkiesAPI.getIsland(registryKey);
             if (islandOptional.isPresent()) {
                 Island island = islandOptional.get();
 
                 //Load the proper island dimension
-                if (SkylandsAPI.isOverworld(registryKey)) {
+                if (NeoSkiesAPI.isOverworld(registryKey)) {
                     LOGGER.debug("Loading overworld for {}", registryKey.getValue());
                     island.getOverworld();
-                } else if (SkylandsAPI.isNether(registryKey)) {
+                } else if (NeoSkiesAPI.isNether(registryKey)) {
                     LOGGER.debug("Loading nether for {}", registryKey.getValue());
                     island.getNether();
-                } else if (SkylandsAPI.isEnd(registryKey)) {
+                } else if (NeoSkiesAPI.isEnd(registryKey)) {
                     LOGGER.debug("Loading end for {}", registryKey.getValue());
                     island.getEnd();
                 }
             } else {
                 LOGGER.warn("Unknown island {}, defaulting to hub", registryKey.getValue());
-                Skylands.getInstance().hub.positionInto(player);
+                IslandLogic.getInstance().hub.positionInto(player);
             }
         }
     }
 
     @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getSpawnPointPosition()Lnet/minecraft/util/math/BlockPos;"))
-    private BlockPos skylands$respawnOnIsland(ServerPlayerEntity player) {
-        if (SkylandsAPI.isIsland(player.getWorld())) {
-            Optional<Island> islandOptional = SkylandsAPI.getIsland(player.getWorld());
+    private BlockPos neoskies$respawnOnIsland(ServerPlayerEntity player) {
+        if (NeoSkiesAPI.isIsland(player.getWorld())) {
+            Optional<Island> islandOptional = NeoSkiesAPI.getIsland(player.getWorld());
             if (islandOptional.isPresent()) {
                 Island island = islandOptional.get();
                 if (island.isMember(player)) {
@@ -98,16 +98,16 @@ public abstract class PlayerManagerMixin implements ExtendedPlayerManager {
                 }
             }
         }
-        return BlockPos.ofFloored(Skylands.getInstance().hub.pos);
+        return BlockPos.ofFloored(IslandLogic.getInstance().hub.pos);
     }
 
     @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getSpawnPointDimension()Lnet/minecraft/registry/RegistryKey;"))
-    private RegistryKey<World> skylands$fixRespawnDimension(ServerPlayerEntity player) {
+    private RegistryKey<World> neoskies$fixRespawnDimension(ServerPlayerEntity player) {
         return player.getWorld().getRegistryKey();
     }
 
     @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;findRespawnPosition(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;FZZ)Ljava/util/Optional;"))
-    private Optional<Vec3d> skylands$respawnOnIsland(ServerWorld world, BlockPos pos, float angle, boolean forced, boolean alive) {
+    private Optional<Vec3d> neoskies$respawnOnIsland(ServerWorld world, BlockPos pos, float angle, boolean forced, boolean alive) {
         return Optional.of(pos.toCenterPos());
     }
 
@@ -135,7 +135,7 @@ public abstract class PlayerManagerMixin implements ExtendedPlayerManager {
 
         this.players.remove(player);
         player.getServerWorld().removePlayer(player, Entity.RemovalReason.DISCARDED);
-        BlockPos blockPos = BlockPos.ofFloored(Skylands.getInstance().hub.pos);
+        BlockPos blockPos = BlockPos.ofFloored(IslandLogic.getInstance().hub.pos);
         float f = player.getSpawnAngle();
         boolean bl = player.isSpawnForced();
         ServerWorld serverWorld = this.server.getOverworld();

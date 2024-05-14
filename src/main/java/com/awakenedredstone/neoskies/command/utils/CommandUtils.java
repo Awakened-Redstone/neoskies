@@ -1,8 +1,8 @@
 package com.awakenedredstone.neoskies.command.utils;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -21,7 +21,7 @@ import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 
 public class CommandUtils {
     public static final SuggestionProvider<ServerCommandSource> ISLAND_SUGGESTIONS = (context, builder) -> {
-        List<Island> islands = Skylands.getInstance().islands.stuck;
+        List<Island> islands = IslandLogic.getInstance().islands.stuck;
         for (Island island : islands) {
             builder.suggest(island.getIslandId().toString());
         }
@@ -51,29 +51,29 @@ public class CommandUtils {
     }
 
     public static Predicate<ServerCommandSource> requiresIsland(@NotNull String permission, boolean defaultValue) {
-        return source -> playerOnly(permission, defaultValue).test(source) && SkylandsAPI.hasIsland(source.getPlayer());
+        return source -> playerOnly(permission, defaultValue).test(source) && NeoSkiesAPI.hasIsland(source.getPlayer());
     }
 
     public static Predicate<ServerCommandSource> requiresNoIsland(@NotNull String permission, boolean defaultValue) {
-        return source -> playerOnly(permission, defaultValue).test(source) && !SkylandsAPI.hasIsland(source.getPlayer());
+        return source -> playerOnly(permission, defaultValue).test(source) && !NeoSkiesAPI.hasIsland(source.getPlayer());
     }
 
     public static Predicate<ServerCommandSource> mustBeIslandOwner(@NotNull String permission, boolean defaultValue) {
-        return source -> requiresIsland(permission, defaultValue).test(source) && SkylandsAPI.isIslandOwner(source.getPlayer());
+        return source -> requiresIsland(permission, defaultValue).test(source) && NeoSkiesAPI.isIslandOwner(source.getPlayer());
     }
 
     public static LiteralArgumentBuilder<ServerCommandSource> node() {
-        return literal(Skylands.getConfig().command);
+        return literal(IslandLogic.getConfig().command);
     }
 
     public static LiteralArgumentBuilder<ServerCommandSource> adminNode() {
-        return literal(Skylands.getConfig().adminCommand);
+        return literal(IslandLogic.getConfig().adminCommand);
     }
 
     public static LiteralCommandNode<ServerCommandSource> register(CommandDispatcher<ServerCommandSource> dispatcher, final LiteralArgumentBuilder<ServerCommandSource> command) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(command);
 
-        for (String alias : Skylands.getConfig().commandAliases) {
+        for (String alias : IslandLogic.getConfig().commandAliases) {
             dispatcher.register(CommandManager.literal(alias).redirect(node));
         }
 
@@ -83,7 +83,7 @@ public class CommandUtils {
     public static LiteralCommandNode<ServerCommandSource> registerAdmin(CommandDispatcher<ServerCommandSource> dispatcher, final LiteralArgumentBuilder<ServerCommandSource> command) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(command);
 
-        for (String alias : Skylands.getConfig().adminCommandAliases) {
+        for (String alias : IslandLogic.getConfig().adminCommandAliases) {
             dispatcher.register(CommandManager.literal(alias).redirect(node));
         }
 

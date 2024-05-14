@@ -1,7 +1,7 @@
 package com.awakenedredstone.neoskies.command.island;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -34,19 +34,19 @@ public class KickCommand {
     }
 
     static void run(ServerPlayerEntity player, ServerPlayerEntity kicked) {
-        Skylands.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
+        IslandLogic.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
             if (player.getName().getString().equals(kicked.getName().getString())) {
                 player.sendMessage(Texts.prefixed("message.neoskies.kick_visitor.yourself"));
             } else {
                 if (island.isMember(kicked)) {
                     player.sendMessage(Texts.prefixed("message.neoskies.kick_visitor.member"));
                 } else {
-                    SkylandsAPI.getIsland(kicked.getWorld()).ifPresent(isl -> {
+                    NeoSkiesAPI.getIsland(kicked.getWorld()).ifPresent(isl -> {
                         if (isl.owner.uuid.equals(island.owner.uuid)) {
                             player.sendMessage(Texts.prefixed("message.neoskies.kick_visitor.success", map -> map.put("player", kicked.getName().getString())));
 
                             kicked.sendMessage(Texts.prefixed("message.neoskies.kick_visitor.kick", map -> map.put("owner", player.getName().getString())));
-                            Skylands.getInstance().hub.visit(kicked);
+                            IslandLogic.getInstance().hub.visit(kicked);
                         } else {
                             player.sendMessage(Texts.prefixed("message.neoskies.kick_visitor.fail", map -> map.put("player", kicked.getName().getString())));
                         }

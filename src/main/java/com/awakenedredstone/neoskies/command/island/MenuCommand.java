@@ -1,12 +1,12 @@
 package com.awakenedredstone.neoskies.command.island;
 
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.NeoSkies;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.gui.IslandSettingsGui;
 import com.awakenedredstone.neoskies.gui.polymer.CBGuiElementBuilder;
 import com.awakenedredstone.neoskies.gui.polymer.CBSimpleGuiBuilder;
 import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.awakenedredstone.neoskies.util.UIUtils;
 import com.mojang.brigadier.CommandDispatcher;
@@ -39,7 +39,7 @@ public class MenuCommand {
             )
         );
 
-        for (String alias : Skylands.getConfig().commandAliases) {
+        for (String alias : IslandLogic.getConfig().commandAliases) {
             dispatcher.register(CommandManager.literal(alias).executes(context -> MenuCommand.execute(context.getSource())));
         }
     }
@@ -61,13 +61,13 @@ public class MenuCommand {
             boolean dirty = false;
         };
         final Consumer<SlotHolder> consumer = slotHolder -> {
-            Optional<Island> islandOptional = SkylandsAPI.getIslandByPlayer(player);
+            Optional<Island> islandOptional = NeoSkiesAPI.getIslandByPlayer(player);
             UIUtils.fillGui(slotHolder, new CBGuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE).setName(Text.empty()).hideTooltip().build());
             if (Permissions.check(player, "neoskies.teleport.hub", true)) {
                 slotHolder.setSlot(10, new CBGuiElementBuilder(Items.BEACON).setName(Texts.of("item_name.neoskies.hub"))
                     .setCallback((index, type, action, gui) -> {
                         //gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.3f, 1);
-                        Skylands.getInstance().hub.visit(player);
+                        IslandLogic.getInstance().hub.visit(player);
                         gui.close();
                     })
                     .build());
@@ -100,7 +100,7 @@ public class MenuCommand {
                     .build());
             }
             if (Permissions.check(player, "neoskies.admin.protection.bypass", 4)) {
-                Set<PlayerEntity> protectionBypass = SkylandsMain.PROTECTION_BYPASS;
+                Set<PlayerEntity> protectionBypass = NeoSkies.PROTECTION_BYPASS;
                 boolean overrideMode = protectionBypass.contains(player);
                 Item item = overrideMode ? Items.OAK_CHEST_BOAT : Items.OAK_BOAT;
                 slotHolder.setSlot(slotHolder.getSize() - 2, new CBGuiElementBuilder(item).setName(Texts.of("item_name.neoskies.protection_bypass"))
@@ -116,7 +116,7 @@ public class MenuCommand {
                 slotHolder.setSlot(slotHolder.getSize() - 1, new CBGuiElementBuilder(Items.COMMAND_BLOCK_MINECART).setName(Texts.of("item_name.neoskies.mod_settings"))
                     .setCallback((index, type, action, gui) -> {
                         gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
-                        new ConfigScreen(source.getPlayer(), SkylandsMain.MAIN_CONFIG, null, null);
+                        new ConfigScreen(source.getPlayer(), NeoSkies.MAIN_CONFIG, null, null);
                     })
                     .build());
             }*/
@@ -128,7 +128,7 @@ public class MenuCommand {
                 ref.dirty = false;
                 consumer.accept(gui);
                 if (!Permissions.check(player, "neoskies.admin.protection.bypass", 4)) {
-                    SkylandsMain.PROTECTION_BYPASS.remove(player);
+                    NeoSkies.PROTECTION_BYPASS.remove(player);
                 }
             }
         });

@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.util;
 
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import eu.pb4.placeholders.api.TextParserUtils;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
@@ -19,7 +19,7 @@ public class Texts {
 
     public static String getTextString(Text text) {
         if (text.getContent() instanceof TranslatableTextContent tanslatable) {
-            return Localization.text(text, ServerLanguage.getLanguage(Skylands.getConfig().language)).getString();
+            return Localization.text(text, ServerLanguage.getLanguage(IslandLogic.getConfig().language)).getString();
         } else return text.getString();
     }
 

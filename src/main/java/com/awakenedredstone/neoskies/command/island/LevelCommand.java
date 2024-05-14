@@ -1,10 +1,10 @@
 package com.awakenedredstone.neoskies.command.island;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.duck.ExtendedChunk;
 import com.awakenedredstone.neoskies.gui.PagedGui;
 import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.logic.util.ChunkScanQueue;
 import com.awakenedredstone.neoskies.util.FontUtils;
 import com.awakenedredstone.neoskies.util.MapBuilder;
@@ -76,7 +76,7 @@ public class LevelCommand {
         if (!assertPlayer(source)) return 0;
         ServerPlayerEntity player = source.getPlayer();
 
-        Island island = SkylandsAPI.getIslandByPlayer(player).orElse(null);
+        Island island = NeoSkiesAPI.getIslandByPlayer(player).orElse(null);
         if (!assertIsland(source, island)) return 0;
         if (island.isScanning()) {
             source.sendError(Texts.of("message.neoskies.island.error.scanning"));
@@ -86,7 +86,7 @@ public class LevelCommand {
         List<GuiElementInterface> elements = new ArrayList<>();
 
         island.getBlocks().forEach((block, count) -> {
-            Integer points = Skylands.getRankingConfig().points.getOrDefault(block, 1);
+            Integer points = IslandLogic.getRankingConfig().points.getOrDefault(block, 1);
             sum.addAndGet(points * count);
 
             Block block1 = Registries.BLOCK.get(block);
@@ -115,7 +115,7 @@ public class LevelCommand {
         if (!assertPlayer(source)) return 0;
         ServerPlayerEntity player = source.getPlayer();
 
-        Island island = SkylandsAPI.getIslandByPlayer(player).orElse(null);
+        Island island = NeoSkiesAPI.getIslandByPlayer(player).orElse(null);
         if (!assertIsland(source, island)) return 0;
         if (island.isScanning()) {
             source.sendError(Texts.of("message.neoskies.island.error.scanning"));
@@ -156,13 +156,13 @@ public class LevelCommand {
             textDisplay.setTranslation(new Vec3d(0, 0.25 * (lines / 2d) + 0.0625, 0).toVector3f());
             textDisplay.startInterpolation();
 
-            Skylands.getInstance().scheduler.scheduleDelayed(Skylands.getServer(), 8, () -> {
+            IslandLogic.getInstance().scheduler.scheduleDelayed(IslandLogic.getServer(), 8, () -> {
                 textDisplay.setInterpolationDuration(7);
                 textDisplay.setScale(new Vec3d(0, 0.1, 1).toVector3f());
                 textDisplay.startInterpolation();
             });
 
-            Skylands.getInstance().scheduler.scheduleDelayed(Skylands.getServer(), 15, () -> {
+            IslandLogic.getInstance().scheduler.scheduleDelayed(IslandLogic.getServer(), 15, () -> {
                 holder.destroy();
                 holder = null;
             });
@@ -212,7 +212,7 @@ public class LevelCommand {
                       .putAny("progress", current)
                       .putAny("total", total)
                       .build());
-                    Skylands.getInstance().scheduler.schedule(new Identifier("neoskies", "island-scan/" + island.getIslandId().toString()), 0, () -> display.setText(progress));
+                    IslandLogic.getInstance().scheduler.schedule(new Identifier("neoskies", "island-scan/" + island.getIslandId().toString()), 0, () -> display.setText(progress));
                     return;
                 }
 
@@ -226,9 +226,9 @@ public class LevelCommand {
                     }
                     visualization.append(Text.of("\n"));
                 }
-                Skylands.getInstance().scheduler.schedule(new Identifier("neoskies", "island-scan/" + island.getIslandId().toString()), 0, () -> display.setText(visualization));
+                IslandLogic.getInstance().scheduler.schedule(new Identifier("neoskies", "island-scan/" + island.getIslandId().toString()), 0, () -> display.setText(visualization));
             }, (timeTaken, scannedBlocks) -> {
-                Skylands.syncWithTick(() -> {
+                IslandLogic.syncWithTick(() -> {
                     source.sendFeedback(() -> Texts.of("message.neoskies.island.level.scan.time_taken", new MapBuilder.StringMap()
                       .put("time", UnitConvertions.formatTimings(timeTaken))
                       .build()), false);
@@ -270,7 +270,7 @@ public class LevelCommand {
                         closeBackground.run();
                     }), yaw);
 
-                    Skylands.getScheduler().scheduleDelayed(Skylands.getServer(), 600, () -> {
+                    IslandLogic.getScheduler().scheduleDelayed(IslandLogic.getServer(), 600, () -> {
                         if (holder == null) return;
                         removeBlocksView.run();
                         closeBackground.run();
@@ -287,25 +287,25 @@ public class LevelCommand {
         });
 
         textDisplay.setInterpolationDuration(7);
-        Skylands.getInstance().scheduler.scheduleDelayed(Skylands.getServer(), 0, () -> {
+        IslandLogic.getInstance().scheduler.scheduleDelayed(IslandLogic.getServer(), 0, () -> {
             textDisplay.setScale(new Vec3d(1, 0.1, 1).toVector3f());
             textDisplay.startInterpolation();
         });
 
-        Skylands.getInstance().scheduler.scheduleDelayed(Skylands.getServer(), 10, () -> {
+        IslandLogic.getInstance().scheduler.scheduleDelayed(IslandLogic.getServer(), 10, () -> {
             textDisplay.setInterpolationDuration(5);
             textDisplay.setScale(new Vec3d(1, 1, 1).toVector3f());
             textDisplay.setTranslation(new Vec3d(0, 0, 0).toVector3f());
             textDisplay.startInterpolation();
         });
 
-        Skylands.getInstance().scheduler.scheduleDelayed(Skylands.getServer(), 15, () -> {
+        IslandLogic.getInstance().scheduler.scheduleDelayed(IslandLogic.getServer(), 15, () -> {
             message.set(createDisplay(Texts.of("message.neoskies.island.level.scan.confirm"), yaw, new Vec3d(0, 0.25 * (lines / 2d) + 0.0625 + 0.5, 0)));
             startScanPair.set(createInteraction(startScanText, startScan, yaw, new Vec3d(-2 + getTextWidth(startScanText), 0.25 * (lines / 2d) + 0.0625, 0)));
             cancalScanPair.set(createInteraction(cancelText, cancelScan, yaw, new Vec3d(2 - getTextWidth(startScanText), 0.25 * (lines / 2d) + 0.0625, 0)));
         });
 
-        Skylands.getScheduler().scheduleDelayed(Skylands.getServer(), 600, () -> {
+        IslandLogic.getScheduler().scheduleDelayed(IslandLogic.getServer(), 600, () -> {
             if (holder != null && holder.getElements().contains(message.get())) {
                 removeDisplay(message.get());
                 removeInteraction(startScanPair.get());

@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.logic;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.event.GenericEntityDamageEvent;
 import com.awakenedredstone.neoskies.event.PlayerConnectEvent;
 import com.awakenedredstone.neoskies.event.PlayerEvents;
@@ -36,7 +36,7 @@ import xyz.nucleoid.stimuli.event.entity.EntityUseEvent;
 
 import java.util.Map;
 
-public class SkylandsEventListeners {
+public class EventListeners {
     public static void registerEvents() {
         ServerLifecycleEvents.SERVER_STARTING.register(ServerEventListener::onStart);
         ServerLifecycleEvents.SERVER_STOPPED.register(ServerEventListener::onStop);
@@ -45,9 +45,9 @@ public class SkylandsEventListeners {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PlayerConnectEvent.onLeave(server, handler.player));
 
         PlayerEvents.TICK.register(player -> {
-            if (player.getY() < player.getWorld().getBottomY() - Skylands.getConfig().safeVoidBlocksBelow) {
-                if ((Skylands.getConfig().safeVoid && SkylandsAPI.getIsland(player.getWorld()).isPresent()) || SkylandsAPI.isHub(player.getWorld())) {
-                    player.server.execute(() -> Worlds.returnToIslandSpawn(player, Skylands.getConfig().safeVoidFallDamage || !SkylandsAPI.isHub(player.getWorld())));
+            if (player.getY() < player.getWorld().getBottomY() - IslandLogic.getConfig().safeVoidBlocksBelow) {
+                if ((IslandLogic.getConfig().safeVoid && NeoSkiesAPI.getIsland(player.getWorld()).isPresent()) || NeoSkiesAPI.isHub(player.getWorld())) {
+                    player.server.execute(() -> Worlds.returnToIslandSpawn(player, IslandLogic.getConfig().safeVoidFallDamage || !NeoSkiesAPI.isHub(player.getWorld())));
                 }
             }
         });
@@ -113,7 +113,7 @@ public class SkylandsEventListeners {
             return ActionResult.PASS;
         });
 
-        Stimuli.global().listen(GenericEntityDamageEvent.EVENT, SkylandsEventListeners::onEntityDamage);
+        Stimuli.global().listen(GenericEntityDamageEvent.EVENT, EventListeners::onEntityDamage);
 
         Stimuli.global().listen(EntityShearEvent.EVENT, (entity, player, hand, pos) -> {
             if (!WorldProtection.canModify(player.getWorld(), pos, player, NeoSkiesIslandSettings.SHEAR_ENTITY)) {

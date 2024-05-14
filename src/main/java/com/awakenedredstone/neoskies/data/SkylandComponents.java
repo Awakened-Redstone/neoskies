@@ -1,14 +1,14 @@
 package com.awakenedredstone.neoskies.data;
 
-import com.awakenedredstone.neoskies.SkylandsMain;
+import com.awakenedredstone.neoskies.NeoSkies;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistryV3;
 import org.ladysnake.cca.api.v3.world.WorldComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.world.WorldComponentInitializer;
 
 public class SkylandComponents implements WorldComponentInitializer/*, EntityComponentInitializer*/ {
-    public static final ComponentKey<WorldComponent> WORLD_DATA = ComponentRegistryV3.INSTANCE.getOrCreate(SkylandsMain.id("world_data"), WorldComponent.class);
-    //public static final ComponentKey<PlayerComponent> PLAYER_DATA = ComponentRegistryV3.INSTANCE.getOrCreate(SkylandsMain.id("player_data"), PlayerComponent.class);
+    public static final ComponentKey<WorldComponent> WORLD_DATA = ComponentRegistryV3.INSTANCE.getOrCreate(NeoSkies.id("world_data"), WorldComponent.class);
+    //public static final ComponentKey<PlayerComponent> PLAYER_DATA = ComponentRegistryV3.INSTANCE.getOrCreate(NeoSkies.id("player_data"), PlayerComponent.class);
 
     @Override
     public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {

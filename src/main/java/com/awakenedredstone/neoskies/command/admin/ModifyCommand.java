@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.command.admin;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.command.utils.CommandUtils;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.util.MapBuilder;
@@ -35,14 +35,14 @@ public class ModifyCommand {
                   .then(literal(key.getName())
                     .executes(context -> {
                         String islandId = StringArgumentType.getString(context, "island");
-                        Island island = SkylandsAPI.getIsland(UUID.fromString(islandId)).orElse(null);
+                        Island island = NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null);
 
                         return getGamerule(context.getSource(), key, island);
                     })
                     .then(type.argument("value")
                       .executes(context -> {
                           String islandId = StringArgumentType.getString(context, "island");
-                          Island island = SkylandsAPI.getIsland(UUID.fromString(islandId)).orElse(null);
+                          Island island = NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null);
 
                           return setGamerule(context, key, island);
                       })
@@ -60,7 +60,7 @@ public class ModifyCommand {
                   .executes(context -> {
                       String islandId = StringArgumentType.getString(context, "island");
                       int size = IntegerArgumentType.getInteger(context, "size");
-                      return modifyIslandSize(context.getSource(), SkylandsAPI.getIsland(UUID.fromString(islandId)).orElse(null), size);
+                      return modifyIslandSize(context.getSource(), NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null), size);
                   })
                 )
               ).then(gameruleArgumentBuilder)

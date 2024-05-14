@@ -1,9 +1,9 @@
 package com.awakenedredstone.neoskies.command.admin;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.command.utils.CommandUtils;
 import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.MapBuilder;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
@@ -29,7 +29,7 @@ public class IslandDataCommand {
                     .requires(Permissions.require("neoskies.admin.island.data.find", 4))
                     .then(argument("player", StringArgumentType.word())
                         .suggests((context, builder) -> {
-                            List<Island> islands = Skylands.getInstance().islands.stuck;
+                            List<Island> islands = IslandLogic.getInstance().islands.stuck;
                             for (Island island : islands) {
                                 builder.suggest(island.owner.name);
                                 island.members.forEach(member -> {
@@ -39,7 +39,7 @@ public class IslandDataCommand {
                             return builder.buildFuture();
                         }).executes(context -> {
                             String playerName = StringArgumentType.getString(context, "player");
-                            Optional<Island> islandOptional = SkylandsAPI.getIslandByPlayer(playerName);
+                            Optional<Island> islandOptional = NeoSkiesAPI.getIslandByPlayer(playerName);
                             return getIslandData(context.getSource(), islandOptional.orElse(null));
                         })
                     )
@@ -48,7 +48,7 @@ public class IslandDataCommand {
                         .suggests(CommandUtils.ISLAND_SUGGESTIONS)
                         .executes(context -> {
                             String islandId = StringArgumentType.getString(context, "id");
-                            Optional<Island> islandOptional = SkylandsAPI.getIsland(UUID.fromString(islandId));
+                            Optional<Island> islandOptional = NeoSkiesAPI.getIsland(UUID.fromString(islandId));
                             return getIslandData(context.getSource(), islandOptional.orElse(null));
                         })
                     )

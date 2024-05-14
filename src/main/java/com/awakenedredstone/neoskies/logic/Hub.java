@@ -19,7 +19,7 @@ public class Hub {
     }
 
     public void visit(PlayerEntity player, boolean silent) {
-        var world = Skylands.getServer().getOverworld();
+        var world = IslandLogic.getServer().getOverworld();
         if (!silent) player.sendMessage(Texts.prefixed("message.neoskies.hub_visit"));
         FabricDimensions.teleport(player, world, new TeleportTarget(this.pos, new Vec3d(0, 0, 0), 0, 0));
         IslandEvents.ON_HUB_VISIT.invoker().invoke(player, world);
@@ -35,7 +35,7 @@ public class Hub {
     /*public void initSongPlayer(MinecraftServer server) {
         PositionSongPlayer sp = new PositionSongPlayer(SongsData.INSTANCE.playlist, server.getOverworld());
         sp.setDistance(256);
-        sp.setId(SkylandsMain.id("hub_song_player"));
+        sp.setId(NeoSkies.id("hub_song_player"));
         sp.setBlockPos(BlockPos.ofFloored(pos));
         this.songPlayer = sp;
     }*/

@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.mixin.entity;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.util.Worlds;
 import net.minecraft.entity.Entity;
@@ -39,14 +39,14 @@ public abstract class EntityMixin {
 
     @ModifyVariable(method = "tickPortal", at = @At("STORE"), ordinal = 0)
     public RegistryKey<World> tickPortal_modifyRegistryKey(RegistryKey<World> instance) {
-        if (SkylandsAPI.isIsland(world) && !SkylandsAPI.isNether(world.getRegistryKey())) {
-            Optional<Island> island = SkylandsAPI.getIsland(world);
+        if (NeoSkiesAPI.isIsland(world) && !NeoSkiesAPI.isNether(world.getRegistryKey())) {
+            Optional<Island> island = NeoSkiesAPI.getIsland(world);
             if (island.isPresent()) {
                 return island.get().getNether().getRegistryKey();
             }
         }
-        if (SkylandsAPI.isIsland(world) && SkylandsAPI.isNether(world.getRegistryKey())) {
-            Optional<Island> island = SkylandsAPI.getIsland(world);
+        if (NeoSkiesAPI.isIsland(world) && NeoSkiesAPI.isNether(world.getRegistryKey())) {
+            Optional<Island> island = NeoSkiesAPI.getIsland(world);
             if (island.isPresent()) {
                 return island.get().getOverworld().getRegistryKey();
             }
@@ -66,8 +66,8 @@ public abstract class EntityMixin {
 
     @Inject(method = "getTeleportTarget", at = @At(value = "RETURN", ordinal = 0), cancellable = true)
     public void fixEndTeleportTarget(ServerWorld destination, CallbackInfoReturnable<TeleportTarget> cir) {
-        if (SkylandsAPI.isIsland(world)) {
-            Island island = SkylandsAPI.getIsland(world).get();
+        if (NeoSkiesAPI.isIsland(world)) {
+            Island island = NeoSkiesAPI.getIsland(world).get();
             Vec3d spawnPos = island.spawnPos;
             cir.setReturnValue(new TeleportTarget(spawnPos, getVelocity(), getYaw(), getPitch()));
         }
@@ -76,8 +76,8 @@ public abstract class EntityMixin {
     @SuppressWarnings("InvalidInjectorMethodSignature")
     @Inject(method = "getTeleportTarget", at = @At(value = "RETURN", ordinal = 2), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
     public void teleportProtection(ServerWorld destination, CallbackInfoReturnable<TeleportTarget> cir, boolean bl, WorldBorder worldBorder, double d, BlockPos blockPos2) {
-        if (SkylandsAPI.isIsland(world)) {
-            Island island = SkylandsAPI.getIsland(world).get();
+        if (NeoSkiesAPI.isIsland(world)) {
+            Island island = NeoSkiesAPI.getIsland(world).get();
             if (!island.isWithinBorder(blockPos2)) {
                 Vec3d spawnPos = island.spawnPos;
                 cir.setReturnValue(new TeleportTarget(spawnPos, getVelocity(), getYaw(), getPitch()));

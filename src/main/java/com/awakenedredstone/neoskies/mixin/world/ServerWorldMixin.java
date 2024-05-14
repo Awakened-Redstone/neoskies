@@ -1,7 +1,7 @@
 package com.awakenedredstone.neoskies.mixin.world;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.WorldProtection;
 import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
@@ -54,7 +54,7 @@ public abstract class ServerWorldMixin extends World implements StructureWorldAc
 
     @ModifyExpressionValue(method = "tickChunk", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/random/Random;nextInt(I)I", ordinal = 0))
     private int disableLightningOnHub(int original) {
-        if (SkylandsAPI.isHub(this) && Skylands.getConfig().disableLightningOnHub) {
+        if (NeoSkiesAPI.isHub(this) && IslandLogic.getConfig().disableLightningOnHub) {
             return 1;
         }
         return original;
@@ -62,7 +62,7 @@ public abstract class ServerWorldMixin extends World implements StructureWorldAc
 
     @Inject(method = "spawnEntity", at = @At("HEAD"), cancellable = true)
     private void spawnEntity(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (!Skylands.getConfig().disableEntitiesOutsideIslands) return;
+        if (!IslandLogic.getConfig().disableEntitiesOutsideIslands) return;
         if (entity instanceof ItemEntity || entity instanceof ProjectileEntity) return;
         World world = entity.getWorld();
         BlockPos blockPos = entity.getBlockPos();
@@ -74,15 +74,15 @@ public abstract class ServerWorldMixin extends World implements StructureWorldAc
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void skylands$fixSpawning(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionOptions dimensionOptions, WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld, long seed, List<SpecialSpawner> spawners, boolean shouldTickTime, RandomSequencesState randomSequencesState, CallbackInfo ci) {
-        if (SkylandsAPI.isIsland(worldKey)) {
+    private void neoskies$fixSpawning(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionOptions dimensionOptions, WorldGenerationProgressListener worldGenerationProgressListener, boolean debugWorld, long seed, List<SpecialSpawner> spawners, boolean shouldTickTime, RandomSequencesState randomSequencesState, CallbackInfo ci) {
+        if (NeoSkiesAPI.isIsland(worldKey)) {
             this.spawners = ImmutableList.of(new PhantomSpawner(), new PatrolSpawner(), new CatSpawner(), new ZombieSiegeManager(), new WanderingTraderManager(properties));
         }
     }
 
     @Inject(method = "createEndSpawnPlatform", at = @At("HEAD"), cancellable = true)
-    private static void skylands$fixEndSpawn(ServerWorld world, CallbackInfo ci) {
-        if (SkylandsAPI.isIsland(world.getRegistryKey())) {
+    private static void neoskies$fixEndSpawn(ServerWorld world, CallbackInfo ci) {
+        if (NeoSkiesAPI.isIsland(world.getRegistryKey())) {
             ci.cancel();
         }
     }

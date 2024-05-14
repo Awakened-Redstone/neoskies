@@ -1,7 +1,7 @@
 package com.awakenedredstone.neoskies.font;
 
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.NeoSkies;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Identifier;
@@ -44,11 +44,11 @@ public class FontProvider {
         this.chars = chars;
 
         if (StringUtils.isNotBlank(sizes)) {
-            try (InputStream inputStream = Skylands.getResourceManager().open(Identifier.tryParse(this.sizes))) {
+            try (InputStream inputStream = IslandLogic.getResourceManager().open(Identifier.tryParse(this.sizes))) {
                 fontSizes = inputStream.readNBytes(65536);
             } catch (IOException e) {
-                SkylandsMain.LOGGER.error("Cannot load {}, unicode glyphs may not be calcualted correctly", sizes);
-                SkylandsMain.LOGGER.error("Failed to load font sizes", e);
+                NeoSkies.LOGGER.error("Cannot load {}, unicode glyphs may not be calcualted correctly", sizes);
+                NeoSkies.LOGGER.error("Failed to load font sizes", e);
             }
         }
         this.glyphSizes = fontSizes;

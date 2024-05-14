@@ -1,11 +1,11 @@
 package com.awakenedredstone.neoskies.util;
 
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.NeoSkies;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.api.island.PermissionLevel;
 import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
-import com.awakenedredstone.neoskies.logic.registry.SkylandsPermissionLevels;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
+import com.awakenedredstone.neoskies.logic.registry.NeoSkiesPermissionLevels;
 import com.awakenedredstone.neoskies.logic.settings.IslandSettings;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,17 +22,17 @@ public class WorldProtection {
      **/
     @Deprecated
     public static boolean canModify(@NotNull World world, @NotNull PlayerEntity player) {
-        if (SkylandsMain.PROTECTION_BYPASS.contains(player)) {
+        if (NeoSkies.PROTECTION_BYPASS.contains(player)) {
             if (Permissions.check(player, "neoskies.admin.protection.bypass", 4)) return true;
-            else SkylandsMain.PROTECTION_BYPASS.remove(player);
+            else NeoSkies.PROTECTION_BYPASS.remove(player);
         }
-        Optional<Island> island = SkylandsAPI.getIsland(world);
+        Optional<Island> island = NeoSkiesAPI.getIsland(world);
         if (island.isPresent() && !island.get().isMember(player)) {
             return false;
         }
 
         if (world.getRegistryKey().equals(World.OVERWORLD)) {
-            return !Skylands.getInstance().hub.hasProtection;
+            return !IslandLogic.getInstance().hub.hasProtection;
         }
 
         return true;
@@ -43,14 +43,14 @@ public class WorldProtection {
      **/
     @Deprecated
     public static boolean canModify(@NotNull World world, @NotNull BlockPos pos, @NotNull PlayerEntity player) {
-        if (SkylandsMain.PROTECTION_BYPASS.contains(player)) {
+        if (NeoSkies.PROTECTION_BYPASS.contains(player)) {
             if (Permissions.check(player, "neoskies.admin.protection.bypass", 4)) {
                 return true;
             } else {
-                SkylandsMain.PROTECTION_BYPASS.remove(player);
+                NeoSkies.PROTECTION_BYPASS.remove(player);
             }
         }
-        Optional<Island> island = SkylandsAPI.getIsland(world);
+        Optional<Island> island = NeoSkiesAPI.getIsland(world);
         if (island.isPresent()) {
             if (!island.get().isWithinBorder(pos)) {
                 return false;
@@ -60,7 +60,7 @@ public class WorldProtection {
         }
 
         if (world.getRegistryKey().equals(World.OVERWORLD)) {
-            return !Skylands.getInstance().hub.hasProtection;
+            return !IslandLogic.getInstance().hub.hasProtection;
         }
 
         return false;
@@ -78,15 +78,15 @@ public class WorldProtection {
     }
 
     public static <T extends IslandSettings> boolean canModify(@NotNull World world, @NotNull BlockPos pos, @NotNull PlayerEntity player, @NotNull T setting) {
-        if (SkylandsMain.PROTECTION_BYPASS.contains(player)) {
+        if (NeoSkies.PROTECTION_BYPASS.contains(player)) {
             if (Permissions.check(player, "neoskies.admin.protection.bypass", 4)) {
                 return true;
             } else {
-                SkylandsMain.PROTECTION_BYPASS.remove(player);
+                NeoSkies.PROTECTION_BYPASS.remove(player);
             }
         }
 
-        Optional<Island> island = SkylandsAPI.getIsland(world);
+        Optional<Island> island = NeoSkiesAPI.getIsland(world);
         if (island.isPresent()) {
             if (!island.get().isWithinBorder(pos)) {
                 return false;
@@ -96,7 +96,7 @@ public class WorldProtection {
             }
         }
 
-        if (world.getRegistryKey().equals(World.OVERWORLD) && Skylands.getInstance().hub.hasProtection) {
+        if (world.getRegistryKey().equals(World.OVERWORLD) && IslandLogic.getInstance().hub.hasProtection) {
             return false;
         }
 
@@ -104,22 +104,22 @@ public class WorldProtection {
     }
 
     public static <T extends IslandSettings> boolean canModify(@NotNull World world, @NotNull PlayerEntity player, @NotNull T setting) {
-        if (SkylandsMain.PROTECTION_BYPASS.contains(player)) {
+        if (NeoSkies.PROTECTION_BYPASS.contains(player)) {
             if (Permissions.check(player, "neoskies.admin.protection.bypass", 4)) {
                 return true;
             } else {
-                SkylandsMain.PROTECTION_BYPASS.remove(player);
+                NeoSkies.PROTECTION_BYPASS.remove(player);
             }
         }
 
-        Optional<Island> island = SkylandsAPI.getIsland(world);
+        Optional<Island> island = NeoSkiesAPI.getIsland(world);
         if (island.isPresent()) {
             if (island.get().isInteractionAllowed(setting.getIdentifier(), getPlayerPermissionLevel(world, player))) {
                 return true;
             }
         }
 
-        if (world.getRegistryKey().equals(World.OVERWORLD) && Skylands.getInstance().hub.hasProtection) {
+        if (world.getRegistryKey().equals(World.OVERWORLD) && IslandLogic.getInstance().hub.hasProtection) {
             return false;
         }
 
@@ -127,23 +127,23 @@ public class WorldProtection {
     }
 
     public static @NotNull PermissionLevel getPlayerPermissionLevel(@NotNull World world, @NotNull PlayerEntity player) {
-        Optional<Island> island = SkylandsAPI.getIsland(world);
+        Optional<Island> island = NeoSkiesAPI.getIsland(world);
         if (island.isPresent() && island.get().isMember(player)) {
             if (island.get().owner.uuid == player.getUuid()) {
-                return SkylandsPermissionLevels.OWNER;
+                return NeoSkiesPermissionLevels.OWNER;
             }
             else {
-                return SkylandsPermissionLevels.MEMBER;
+                return NeoSkiesPermissionLevels.MEMBER;
             }
         }
 
-        return SkylandsPermissionLevels.VISITOR;
+        return NeoSkiesPermissionLevels.VISITOR;
     }
 
     public static boolean isWithinIsland(@NotNull World world, @NotNull BlockPos pos) {
-        Optional<Island> island = SkylandsAPI.getIsland(world);
+        Optional<Island> island = NeoSkiesAPI.getIsland(world);
 
-        if (SkylandsAPI.isHub(world)) {
+        if (NeoSkiesAPI.isHub(world)) {
             return true;
         }
 
@@ -152,7 +152,7 @@ public class WorldProtection {
         }
 
         if (world.getRegistryKey().equals(World.OVERWORLD)) {
-            return !Skylands.getInstance().hub.hasProtection;
+            return !IslandLogic.getInstance().hub.hasProtection;
         }
 
         return true;

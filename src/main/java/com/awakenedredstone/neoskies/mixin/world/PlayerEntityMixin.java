@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.mixin.world;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.mixin.block.accessor.WorldBorderAccessor;
 import com.awakenedredstone.neoskies.util.Worlds;
@@ -32,9 +32,9 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     // TODO: Add other visual ways to show the limit
     @Inject(method = "travel", at = @At("HEAD"))
     private void increaseTravelMotionStats(Vec3d movementInput, CallbackInfo ci) {
-        if (((PlayerEntity) (Object) this) instanceof ServerPlayerEntity serverPlayer && SkylandsAPI.isIsland(getWorld()) && !lastPos.equals(getPos())) {
+        if (((PlayerEntity) (Object) this) instanceof ServerPlayerEntity serverPlayer && NeoSkiesAPI.isIsland(getWorld()) && !lastPos.equals(getPos())) {
             WorldBorder defaultWorldBorder = getWorld().getWorldBorder();
-            Island island = SkylandsAPI.getIsland(getWorld()).get();
+            Island island = NeoSkiesAPI.getIsland(getWorld()).get();
             if (island.radius <= 0) {
                 if (lastSize != -1) {
                     WorldBorder border = new WorldBorder();

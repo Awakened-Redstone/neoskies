@@ -1,9 +1,9 @@
 package com.awakenedredstone.neoskies.command.island;
 
-import com.awakenedredstone.neoskies.api.SkylandsAPI;
+import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.gui.IslandSettingsGui;
 import com.awakenedredstone.neoskies.logic.Island;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.command.argument.BlockPosArgumentType;
@@ -69,7 +69,7 @@ public class SettingCommands {
     }
 
     static void toggleVisits(ServerPlayerEntity player) {
-        Skylands.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
+        IslandLogic.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
             if (island.locked) {
                 player.sendMessage(Texts.prefixed("message.neoskies.settings.unlock"));
                 island.locked = false;
@@ -82,7 +82,7 @@ public class SettingCommands {
     }
 
     static void setSpawnPos(ServerPlayerEntity player, BlockPos pos) {
-        Skylands.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
+        IslandLogic.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
             island.spawnPos = new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
             String posText = pos.getX() + " " + pos.getY() + " " + pos.getZ();
             player.sendMessage(Texts.prefixed("message.neoskies.settings.spawn_pos_change", map -> map.put("pos", posText)));
@@ -91,7 +91,7 @@ public class SettingCommands {
     }
 
     static void setVisitsPos(ServerPlayerEntity player, BlockPos pos) {
-        Skylands.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
+        IslandLogic.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
             island.visitsPos = new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
             String posText = pos.getX() + " " + pos.getY() + " " + pos.getZ();
             player.sendMessage(Texts.prefixed("message.neoskies.settings.visits_pos_change", map -> map.put("pos", posText)));
@@ -107,7 +107,7 @@ public class SettingCommands {
 
         ServerPlayerEntity player = source.getPlayer();
 
-        Optional<Island> optionalIsland = SkylandsAPI.getIslandByPlayer(player);
+        Optional<Island> optionalIsland = NeoSkiesAPI.getIslandByPlayer(player);
         optionalIsland.ifPresentOrElse(island -> {
             //noinspection DataFlowIssue
             player.playSoundToPlayer(SoundEvents.ENTITY_HORSE_SADDLE, SoundCategory.MASTER, 0.4f, 1);

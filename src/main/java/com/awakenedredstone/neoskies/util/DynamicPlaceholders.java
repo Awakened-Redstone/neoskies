@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.util;
 
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.PlaceholderHandler;
 import eu.pb4.placeholders.api.PlaceholderResult;
@@ -18,7 +18,7 @@ public class DynamicPlaceholders {
     public static Text parseText(Text inputText, Map<String, Text> placeholders) {
 
         return Placeholders.parseText(Text.literal(Texts.getTextString(inputText)),
-                PlaceholderContext.of(Skylands.getServer()),
+                PlaceholderContext.of(IslandLogic.getServer()),
                 Placeholders.PLACEHOLDER_PATTERN_CUSTOM,
                 id -> getPlaceholder(id, placeholders));
     }

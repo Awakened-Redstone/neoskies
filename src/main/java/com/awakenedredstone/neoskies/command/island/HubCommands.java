@@ -1,6 +1,6 @@
 package com.awakenedredstone.neoskies.command.island;
 
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -58,17 +58,17 @@ public class HubCommands {
     }
 
     static void visit(ServerPlayerEntity player, MinecraftServer server) {
-        Skylands.getInstance().hub.visit(player);
+        IslandLogic.getInstance().hub.visit(player);
     }
 
     static void setPos(BlockPos pos, ServerCommandSource source) {
-        Skylands.getInstance().hub.pos = new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        IslandLogic.getInstance().hub.pos = new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
         String posText = pos.getX() + " " + pos.getY() + " " + pos.getZ();
         source.sendFeedback(() -> Texts.prefixed("message.neoskies.hub_pos_change", map -> map.put("pos", posText)), true);
     }
 
     static void toggleProtection(ServerCommandSource source) {
-        var hub = Skylands.getInstance().hub;
+        var hub = IslandLogic.getInstance().hub;
         if (hub.hasProtection) {
             hub.hasProtection = false;
             source.sendFeedback(() -> Texts.prefixed("message.neoskies.hub_protection.disable"), true);

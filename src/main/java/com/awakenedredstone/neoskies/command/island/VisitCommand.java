@@ -1,7 +1,7 @@
 package com.awakenedredstone.neoskies.command.island;
 
-import com.awakenedredstone.neoskies.SkylandsMain;
-import com.awakenedredstone.neoskies.logic.Skylands;
+import com.awakenedredstone.neoskies.NeoSkies;
+import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import me.lucko.fabric.api.permissions.v0.Permissions;
@@ -38,12 +38,12 @@ public class VisitCommand {
     static void run(ServerPlayerEntity visitor, ServerPlayerEntity owner) {
         String ownerName = owner.getName().getString();
 
-        Skylands.getInstance().islands.getByPlayer(owner).ifPresentOrElse(island -> {
+        IslandLogic.getInstance().islands.getByPlayer(owner).ifPresentOrElse(island -> {
             if (!island.isMember(visitor) && island.isBanned(visitor)) {
                 visitor.sendMessage(Texts.prefixed("message.neoskies.island_visit.ban", map -> map.put("owner", ownerName)));
             } else {
                 if (!island.locked) {
-                    if (visitor.getWorld().getRegistryKey().getValue().equals(SkylandsMain.id(island.owner.uuid.toString())) && !Skylands.getConfig().allowVisitCurrentIsland) {
+                    if (visitor.getWorld().getRegistryKey().getValue().equals(NeoSkies.id(island.owner.uuid.toString())) && !IslandLogic.getConfig().allowVisitCurrentIsland) {
                         visitor.sendMessage(Texts.prefixed("message.neoskies.island_visit.fail", map -> map.put("owner", ownerName)));
                     } else {
                         visitor.sendMessage(Texts.prefixed("message.neoskies.island_visit.success", map -> map.put("owner", ownerName)));

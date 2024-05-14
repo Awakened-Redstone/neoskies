@@ -1,11 +1,11 @@
 package com.awakenedredstone.neoskies.logic;
 
-import com.awakenedredstone.neoskies.SkylandsMain;
+import com.awakenedredstone.neoskies.NeoSkies;
 import com.awakenedredstone.neoskies.api.events.IslandEvents;
 import com.awakenedredstone.neoskies.api.island.CurrentSettings;
 import com.awakenedredstone.neoskies.api.island.PermissionLevel;
-import com.awakenedredstone.neoskies.logic.economy.SkylandsEconomyAccount;
-import com.awakenedredstone.neoskies.logic.registry.SkylandsRegistries;
+import com.awakenedredstone.neoskies.logic.economy.NeoSkiesEconomyAccount;
+import com.awakenedredstone.neoskies.logic.registry.NeoSkiesRegistries;
 import com.awakenedredstone.neoskies.logic.settings.IslandSettings;
 import com.awakenedredstone.neoskies.logic.settings.IslandSettingsUtil;
 import com.awakenedredstone.neoskies.util.Constants;
@@ -42,7 +42,7 @@ import java.util.*;
 //TODO: Island levels
 //TODO: Advanced island settings
 public class Island {
-    protected final Fantasy fantasy = Skylands.getInstance().fantasy;
+    protected final Fantasy fantasy = IslandLogic.getInstance().fantasy;
     protected final Map<Identifier, CurrentSettings> settings = new HashMap<>();
     public final Member owner;
     private UUID islandId = UUID.randomUUID();
@@ -51,13 +51,13 @@ public class Island {
     protected RuntimeWorldConfig endConfig = null;
     public final List<Member> members = new ArrayList<>();
     public final List<Member> bans = new ArrayList<>();
-    public int radius = Skylands.getConfig().defaultIslandRadius;
+    public int radius = IslandLogic.getConfig().defaultIslandRadius;
     private EconomyAccount wallet;
     boolean freshCreated = false;
 
     public boolean locked = false;
-    public Vec3d spawnPos = Skylands.getConfig().defaultIslandLocation;
-    public Vec3d visitsPos = Skylands.getConfig().defaultIslandLocation;
+    public Vec3d spawnPos = IslandLogic.getConfig().defaultIslandLocation;
+    public Vec3d visitsPos = IslandLogic.getConfig().defaultIslandLocation;
     //TODO: not store hundreds of blocks in memory
     protected Map<Identifier, Integer> blocks = new LinkedHashMap<>();
     private long points = 0;
@@ -78,8 +78,8 @@ public class Island {
 
     public Island(Member owner) {
         this.owner = owner;
-        this.wallet = new SkylandsEconomyAccount(islandId, new Identifier(owner.uuid.toString(), islandId.toString()));
-        Skylands.getInstance().economy.PROVIDER.getAccounts().computeIfAbsent(islandId, id -> wallet);
+        this.wallet = new NeoSkiesEconomyAccount(islandId, new Identifier(owner.uuid.toString(), islandId.toString()));
+        IslandLogic.getInstance().economy.PROVIDER.getAccounts().computeIfAbsent(islandId, id -> wallet);
     }
 
     public static Island fromNbt(NbtCompound nbt) {
@@ -95,8 +95,8 @@ public class Island {
         NbtCompound walletNbt = nbt.getCompound("wallet");
         Identifier id = new Identifier(walletNbt.getString("id"));
         long balance = walletNbt.getLong("balance");
-        island.wallet = new SkylandsEconomyAccount(island.islandId, id, balance);
-        Skylands.getInstance().economy.PROVIDER.getAccounts().computeIfAbsent(island.islandId, id1 -> island.wallet);
+        island.wallet = new NeoSkiesEconomyAccount(island.islandId, id, balance);
+        IslandLogic.getInstance().economy.PROVIDER.getAccounts().computeIfAbsent(island.islandId, id1 -> island.wallet);
 
         NbtCompound spawnPosNbt = nbt.getCompound("spawnPos");
         double spawnPosX = spawnPosNbt.getDouble("x");
@@ -124,7 +124,7 @@ public class Island {
             island.bans.add(Member.fromNbt(member));
         }
 
-        for (IslandSettings islandSetting : SkylandsRegistries.ISLAND_SETTINGS) {
+        for (IslandSettings islandSetting : NeoSkiesRegistries.ISLAND_SETTINGS) {
             CurrentSettings currentSettings = new CurrentSettings(islandSetting, islandSetting.getDefaultLevel());
             island.settings.put(islandSetting.getIdentifier(), currentSettings);
         }
@@ -134,7 +134,7 @@ public class Island {
             Identifier identifier = new Identifier(key);
             NbtCompound settingsDataNbt = settingsNbt.getCompound(key);
             PermissionLevel level = PermissionLevel.fromValue(settingsDataNbt.getString("permission"));
-            IslandSettings islandSettings = SkylandsRegistries.ISLAND_SETTINGS.get(identifier);
+            IslandSettings islandSettings = NeoSkiesRegistries.ISLAND_SETTINGS.get(identifier);
             if (level != null) {
                 CurrentSettings currentSettings = new CurrentSettings(islandSettings, level);
                 island.settings.put(identifier, currentSettings);
@@ -199,7 +199,7 @@ public class Island {
         }
         nbt.put("bans", bansNbt);
 
-        for (IslandSettings islandSetting : SkylandsRegistries.ISLAND_SETTINGS) {
+        for (IslandSettings islandSetting : NeoSkiesRegistries.ISLAND_SETTINGS) {
             CurrentSettings currentSettings = new CurrentSettings(islandSetting, islandSetting.getDefaultLevel());
             this.settings.put(islandSetting.getIdentifier(), currentSettings);
         }
@@ -308,11 +308,11 @@ public class Island {
         if (this.islandConfig == null) {
             this.islandConfig = createIslandConfig();
         }
-        return this.fantasy.getOrOpenPersistentWorld(SkylandsMain.id(this.owner.uuid.toString()), this.islandConfig);
+        return this.fantasy.getOrOpenPersistentWorld(NeoSkies.id(this.owner.uuid.toString()), this.islandConfig);
     }
 
     private RuntimeWorldConfig createIslandConfig() {
-        var biome = Skylands.getServer().getRegistryManager().get(RegistryKeys.BIOME).getEntry(Skylands.getServer().getRegistryManager().get(RegistryKeys.BIOME).getOrThrow(BiomeKeys.PLAINS));
+        var biome = IslandLogic.getServer().getRegistryManager().get(RegistryKeys.BIOME).getEntry(IslandLogic.getServer().getRegistryManager().get(RegistryKeys.BIOME).getOrThrow(BiomeKeys.PLAINS));
         FlatChunkGeneratorConfig flat = new FlatChunkGeneratorConfig(Optional.empty(), biome, List.of());
         FlatChunkGenerator generator = new FlatChunkGenerator(flat);
 
@@ -333,7 +333,7 @@ public class Island {
     }
 
     private RuntimeWorldConfig createNetherConfig() {
-        var biome = Skylands.getServer().getRegistryManager().get(RegistryKeys.BIOME).getEntry(Skylands.getServer().getRegistryManager().get(RegistryKeys.BIOME).getOrThrow(BiomeKeys.NETHER_WASTES));
+        var biome = IslandLogic.getServer().getRegistryManager().get(RegistryKeys.BIOME).getEntry(IslandLogic.getServer().getRegistryManager().get(RegistryKeys.BIOME).getOrThrow(BiomeKeys.NETHER_WASTES));
         FlatChunkGeneratorConfig flat = new FlatChunkGeneratorConfig(Optional.empty(), biome, List.of());
         FlatChunkGenerator generator = new FlatChunkGenerator(flat);
 
@@ -353,7 +353,7 @@ public class Island {
     }
 
     private RuntimeWorldConfig createEndConfig() {
-        var biome = Skylands.getServer().getRegistryManager().get(RegistryKeys.BIOME).getEntry(Skylands.getServer().getRegistryManager().get(RegistryKeys.BIOME).getOrThrow(BiomeKeys.THE_END));
+        var biome = IslandLogic.getServer().getRegistryManager().get(RegistryKeys.BIOME).getEntry(IslandLogic.getServer().getRegistryManager().get(RegistryKeys.BIOME).getOrThrow(BiomeKeys.THE_END));
         FlatChunkGeneratorConfig flat = new FlatChunkGeneratorConfig(Optional.empty(), biome, List.of());
         FlatChunkGenerator generator = new FlatChunkGenerator(flat);
 
@@ -391,7 +391,7 @@ public class Island {
         if (blocks != null) this.blocks = blocks;
         this.points = 0;
         this.blocks.forEach((block, integer) -> {
-            Integer points = Skylands.getConfig().blockPoints.getOrDefault(block, 1);
+            Integer points = IslandLogic.getConfig().blockPoints.getOrDefault(block, 1);
             this.points += (long) integer * points;
         });
     }
@@ -426,7 +426,7 @@ public class Island {
 
     public void onFirstLoad(PlayerEntity player) {
         ServerWorld world = this.getOverworld();
-        StructureTemplate structure = Skylands.getServer().getStructureTemplateManager().getTemplateOrBlank(SkylandsMain.id("start_island"));
+        StructureTemplate structure = IslandLogic.getServer().getStructureTemplateManager().getTemplateOrBlank(NeoSkies.id("start_island"));
         StructurePlacementData data = new StructurePlacementData().setMirror(BlockMirror.NONE).setIgnoreEntities(true);
         structure.place(world, new BlockPos(-7, 65, -7), new BlockPos(0, 0, 0), data, world.getRandom(), Block.NOTIFY_ALL);
         IslandEvents.ON_ISLAND_FIRST_LOAD.invoker().invoke(player, world, this);
@@ -437,7 +437,7 @@ public class Island {
 
         MinecraftServer server = world.getServer();
 
-        StructureTemplate structure = server.getStructureTemplateManager().getTemplateOrBlank(SkylandsMain.id("nether_island"));
+        StructureTemplate structure = server.getStructureTemplateManager().getTemplateOrBlank(NeoSkies.id("nether_island"));
         StructurePlacementData data = new StructurePlacementData().setMirror(BlockMirror.NONE).setIgnoreEntities(true);
         structure.place(world, new BlockPos(-7, 65, -7), new BlockPos(0, 0, 0), data, world.getRandom(), Block.NOTIFY_ALL);
         IslandEvents.ON_NETHER_FIRST_LOAD.invoker().onLoad(world, this);
@@ -450,7 +450,7 @@ public class Island {
 
         MinecraftServer server = world.getServer();
 
-        StructureTemplate structure = server.getStructureTemplateManager().getTemplateOrBlank(SkylandsMain.id("end_island"));
+        StructureTemplate structure = server.getStructureTemplateManager().getTemplateOrBlank(NeoSkies.id("end_island"));
         StructurePlacementData data = new StructurePlacementData().setMirror(BlockMirror.NONE).setIgnoreEntities(true);
         structure.place(world, new BlockPos(-7, 65, -7), new BlockPos(0, 0, 0), data, world.getRandom(), Block.NOTIFY_ALL);
         IslandEvents.ON_END_FIRST_LOAD.invoker().onLoad(world, this);
@@ -464,7 +464,7 @@ public class Island {
 
     public EconomyAccount getWallet() {
         if (wallet == null) {
-            wallet = new SkylandsEconomyAccount(islandId, new Identifier(owner.uuid.toString(), islandId.toString()));
+            wallet = new NeoSkiesEconomyAccount(islandId, new Identifier(owner.uuid.toString(), islandId.toString()));
         }
         return wallet;
     }
