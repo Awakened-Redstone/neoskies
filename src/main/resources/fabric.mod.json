@@ -3,7 +3,7 @@
   "id": "neoskies",
   "version": "${version}",
   "name": "NeoSkies",
-  "description": "",
+  "description": "A customizable skyblock mod, with full island protection and dedicated worlds for islands",
   "authors": [
     "Awakened Redstone"
   ],
