@@ -1,5 +1,10 @@
 package com.awakenedredstone.neoskies;
 
+/*
+Credits:
+ - Skylands, the mod this is based on, responsible for most of the island generation code
+*/
+
 import com.awakenedredstone.neoskies.command.NeoSkiesCommands;
 import com.awakenedredstone.neoskies.font.FontManager;
 import com.awakenedredstone.neoskies.logic.EventListeners;
