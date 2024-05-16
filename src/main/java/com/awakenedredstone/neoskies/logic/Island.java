@@ -43,7 +43,7 @@ import java.util.*;
 //TODO: Advanced island settings
 public class Island {
     protected final Fantasy fantasy = IslandLogic.getInstance().fantasy;
-    protected final Map<Identifier, CurrentSettings> settings = new HashMap<>();
+    protected final Map<Identifier, CurrentSettings> settings = new LinkedHashMap<>();
     public final Member owner;
     private UUID islandId = UUID.randomUUID();
     protected RuntimeWorldConfig islandConfig = null;
@@ -58,7 +58,6 @@ public class Island {
     public boolean locked = false;
     public Vec3d spawnPos = IslandLogic.getConfig().defaultIslandLocation;
     public Vec3d visitsPos = IslandLogic.getConfig().defaultIslandLocation;
-    //TODO: not store hundreds of blocks in memory
     protected Map<Identifier, Integer> blocks = new LinkedHashMap<>();
     private long points = 0;
     public boolean hasNether = false;
@@ -148,7 +147,12 @@ public class Island {
             island.blocks.put(new Identifier(key), amount);
         });
 
-        //TODO: Load gamerules into island
+        //Sort island block count
+        List<Map.Entry<Identifier, Integer>> entries = new LinkedList<>(island.blocks.entrySet());
+        entries.sort(Comparator.comparingInt(Map.Entry::getValue));
+        Collections.reverse(entries);
+        island.blocks.clear();
+        entries.forEach(entry -> island.blocks.put(entry.getKey(), entry.getValue()));
 
         return island;
     }
@@ -391,7 +395,7 @@ public class Island {
         if (blocks != null) this.blocks = blocks;
         this.points = 0;
         this.blocks.forEach((block, integer) -> {
-            Integer points = IslandLogic.getConfig().blockPoints.getOrDefault(block, 1);
+            int points = IslandLogic.getRankingConfig().getPoints(block);
             this.points += (long) integer * points;
         });
     }

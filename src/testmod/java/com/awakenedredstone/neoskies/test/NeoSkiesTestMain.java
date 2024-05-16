@@ -7,18 +7,24 @@ import eu.pb4.polymer.core.api.item.PolymerBlockItem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Blocks;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BlockStateComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -29,7 +35,21 @@ public final class NeoSkiesTestMain implements ModInitializer {
     @Override
     public void onInitialize() {
         TestBlock testBlock = Registry.register(Registries.BLOCK, new Identifier("neoskies", "test_block"), new TestBlock(AbstractBlock.Settings.create().dropsNothing().solid().strength(999, 999)));
-        Registry.register(Registries.ITEM, new Identifier("neoskies", "test_block"), new PolymerBlockItem(testBlock, new Item.Settings(), Items.RED_CONCRETE));
+        Registry.register(Registries.ITEM, new Identifier("neoskies", "test_block"), new PolymerBlockItem(testBlock, new Item.Settings(), Items.RED_CONCRETE) {
+            @Override
+            public Item getPolymerItem(ItemStack itemStack, @Nullable ServerPlayerEntity player) {
+                BlockStateComponent stateComponent = itemStack.getComponents().get(DataComponentTypes.BLOCK_STATE);
+                if (stateComponent == null) {
+                    return Items.RED_CONCRETE;
+                }
+                return switch (stateComponent.getValue(TestBlock.TEST_STATE)) {
+                    case NOT_WORKING -> Items.RED_CONCRETE;
+                    case PARTIAL -> Items.YELLOW_CONCRETE;
+                    case WORKING -> Items.LIME_CONCRETE;
+                    case null -> Items.RED_CONCRETE;
+                };
+            }
+        });
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(literal("discard").requires(source -> source.hasPermissionLevel(2))

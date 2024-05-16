@@ -81,7 +81,7 @@ public abstract class PagedGui extends SimpleGui {
             var navElement = this.getNavElement(i);
 
             if (navElement == null) {
-                navElement = DisplayElement.EMPTY;
+                navElement = DisplayElement.FILLER; //Empty
             }
 
             if (navElement.element != null) {
@@ -113,11 +113,10 @@ public abstract class PagedGui extends SimpleGui {
     }
 
     public record DisplayElement(@Nullable GuiElementInterface element, @Nullable Slot slot) {
-        private static final DisplayElement EMPTY = DisplayElement.of(new GuiElement(ItemStack.EMPTY, GuiElementInterface.EMPTY_CALLBACK));
         private static final DisplayElement FILLER = DisplayElement.of(
-            new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE)
+            new GuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE)
                 .setName(Text.empty())
-                .hideDefaultTooltip()
+                .hideTooltip()
         );
 
         public static DisplayElement of(GuiElementInterface element) {
@@ -174,7 +173,7 @@ public abstract class PagedGui extends SimpleGui {
         }
 
         public static DisplayElement empty() {
-            return EMPTY;
+            return FILLER;
         }
     }
 

@@ -113,7 +113,7 @@ public class JanksonBuilder {
               if (object instanceof Number number) {
                   boolean minValid = annotation.minInclusive() ? number.doubleValue() >= annotation.min() : number.doubleValue() > annotation.min();
                   boolean maxValid = annotation.maxInclusive() ? number.doubleValue() <= annotation.max() : number.doubleValue() < annotation.max();
-                  boolean minusOneValid = !annotation.minusOne() || number.doubleValue() != -1;
+                  boolean minusOneValid = !annotation.allowMinusOne() || number.doubleValue() != -1;
                   return minValid && maxValid && minusOneValid;
               } else {
                   throw new IllegalStateException("The field " + fieldName + " must be a number to use the " + annotation.annotationType().getSimpleName());

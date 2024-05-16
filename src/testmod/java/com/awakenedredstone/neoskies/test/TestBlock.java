@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.StringIdentifiable;
@@ -42,14 +41,10 @@ public class TestBlock extends SimplePolymerBlock {
     }
 
     @Override
-    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-        world.setBlockState(pos, state.cycle(TEST_STATE), 0);
-        return ActionResult.SUCCESS;
-    }
-
-    @Override
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (!stack.isEmpty()) {
+        if (stack.isEmpty() && hand == Hand.MAIN_HAND) {
+            world.setBlockState(pos, state.cycle(TEST_STATE), 0);
+            player.swingHand(hand);
             return ItemActionResult.SUCCESS;
         }
         return super.onUseWithItem(stack, state, world, pos, player, hand, hit);

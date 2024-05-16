@@ -141,7 +141,6 @@ public class NeoSkiesIslandSettings {
 
                 if (field.getType() == IslandSettings.class) {
                     settings = (IslandSettings) field.get(null);
-                    NeoSkies.LOGGER.info("Registering {}", settings.getIdentifier());
                     Registry.register(NeoSkiesRegistries.ISLAND_SETTINGS, settings.getIdentifier(), settings);
                 }
 

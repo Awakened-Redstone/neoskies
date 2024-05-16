@@ -41,6 +41,7 @@ public class NeoSkies implements ModInitializer {
         FontManager.init();
 
         IslandLogic.getConfig().load();
+        IslandLogic.getRankingConfig().load();
     }
 
     public static Identifier id(String path) {

@@ -6,13 +6,19 @@ import com.awakenedredstone.neoskies.command.island.*;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
+import java.util.Map;
 import java.util.Set;
 
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.adminNode;
@@ -55,16 +61,15 @@ public class NeoSkiesCommands {
 
         registerAdmin(dispatcher, adminNode()
           .then(CommandManager.literal("reload")
+            .requires(Permissions.require("neoskies.admin.reload", 4))
             .executes(context -> {
                 context.getSource().sendFeedback(() -> Texts.prefixed(Text.translatable("commands.neoskies.reload")), true);
                 IslandLogic.getConfig().load();
+                IslandLogic.getRankingConfig().load();
                 return 1;
             })
-          )
-        );
-
-        registerAdmin(dispatcher, adminNode()
-          .then(CommandManager.literal("bypass")
+          ).then(CommandManager.literal("bypass")
+            .requires(Permissions.require("neoskies.admin.protection.bypass", 4))
             .executes(context -> {
                 ServerCommandSource source = context.getSource();
                 if (!source.isExecutedByPlayer()) {

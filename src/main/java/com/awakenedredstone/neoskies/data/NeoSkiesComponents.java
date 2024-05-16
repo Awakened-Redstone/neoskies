@@ -6,7 +6,7 @@ import org.ladysnake.cca.api.v3.component.ComponentRegistryV3;
 import org.ladysnake.cca.api.v3.world.WorldComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.world.WorldComponentInitializer;
 
-public class SkylandComponents implements WorldComponentInitializer/*, EntityComponentInitializer*/ {
+public class NeoSkiesComponents implements WorldComponentInitializer/*, EntityComponentInitializer*/ {
     public static final ComponentKey<WorldComponent> WORLD_DATA = ComponentRegistryV3.INSTANCE.getOrCreate(NeoSkies.id("world_data"), WorldComponent.class);
     //public static final ComponentKey<PlayerComponent> PLAYER_DATA = ComponentRegistryV3.INSTANCE.getOrCreate(NeoSkies.id("player_data"), PlayerComponent.class);
 

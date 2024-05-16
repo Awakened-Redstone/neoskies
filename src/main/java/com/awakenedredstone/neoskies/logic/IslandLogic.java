@@ -1,7 +1,7 @@
 package com.awakenedredstone.neoskies.logic;
 
 import com.awakenedredstone.neoskies.NeoSkies;
-import com.awakenedredstone.neoskies.config.IslandRanking;
+import com.awakenedredstone.neoskies.config.IslandRankingConfig;
 import com.awakenedredstone.neoskies.config.MainConfig;
 import com.awakenedredstone.neoskies.logic.economy.Economy;
 import com.awakenedredstone.neoskies.logic.protection.NeoSkiesProtectionProvider;
@@ -26,7 +26,7 @@ public class IslandLogic {
     public final Scheduler scheduler;
     private final NeoSkiesProtectionProvider protectionProvider;
     private static final MainConfig CONFIG = new MainConfig();
-    private static final IslandRanking RANKING_CONFIG = new IslandRanking();
+    private static final IslandRankingConfig RANKING_CONFIG = new IslandRankingConfig();
 
     public IslandLogic(MinecraftServer server) {
         this.scheduler = new Scheduler();
@@ -102,7 +102,7 @@ public class IslandLogic {
         return CONFIG;
     }
 
-    public static IslandRanking getRankingConfig() {
+    public static IslandRankingConfig getRankingConfig() {
         return RANKING_CONFIG;
     }
 

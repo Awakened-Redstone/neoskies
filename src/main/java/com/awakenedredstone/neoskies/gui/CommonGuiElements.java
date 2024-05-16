@@ -8,8 +8,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class CommonGuiElements {
-    private static final GuiElement PURPLE_PLATE = new GuiElementBuilder(Items.PURPLE_STAINED_GLASS_PANE).hideTooltip().setName(Text.empty()).build();
-    private static final GuiElement WHITE_PLATE = new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip().setName(Text.empty()).build();
+    private static final GuiElement PURPLE_PLATE = new GuiElementBuilder(Items.PURPLE_STAINED_GLASS_PANE).hideTooltip().setName(Text.empty()).hideTooltip().build();
+    private static final GuiElement WHITE_PLATE = new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip().setName(Text.empty()).hideTooltip().build();
     public static GuiElementBuilder nextPage() {
         return new GuiElementBuilder(Items.PLAYER_HEAD)
             .setName(Text.translatable("spectatorMenu.next_page").formatted(Formatting.WHITE))

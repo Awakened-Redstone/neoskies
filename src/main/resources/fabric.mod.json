@@ -19,7 +19,7 @@
       "com.awakenedredstone.neoskies.datagen.NeoSkiesDatagen"
     ],
     "cardinal-components": [
-      "com.awakenedredstone.neoskies.data.SkylandComponents"
+        "com.awakenedredstone.neoskies.data.NeoSkiesComponents"
     ]
   },
   "mixins": [

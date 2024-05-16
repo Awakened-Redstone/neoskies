@@ -214,7 +214,7 @@
   "message.neoskies.settings.visits_pos_change": "Visits position got changed to <color:#3fd9ff>%pos%",
   "message.neoskies.settings.no_island": "<color:#ff816a>You don't have an Island yet!",
   "message.neoskies.island.level.scan.opening": "Opening scan menu...",
-  "message.neoskies.island.level.scan.time_taken": "Scan finished in %time%",
+  "message.neoskies.island.level.scan.time_taken": "Scanned %count% blocks in %time%",
   "message.neoskies.island.level.scan.block_info": "%amount%x %block%",
   "message.neoskies.island.level.scan.preparing": "<yellow>Preparing scan...",
   "message.neoskies.island.level.scan.progress": "Scanning: <gray>%progress%<aqua>/<gray>%total% chunks",

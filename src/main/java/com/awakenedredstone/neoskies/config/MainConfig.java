@@ -72,8 +72,4 @@ public class MainConfig extends Config {
 
     @Comment("Whenever the player gets the island protection messages")
     public boolean showProtectionMessages = true;
-
-    @Deprecated
-    @Comment("The value of each block for the island ranking")
-    public Map<Identifier, Integer> blockPoints = new LinkedHashMap<>();
 }

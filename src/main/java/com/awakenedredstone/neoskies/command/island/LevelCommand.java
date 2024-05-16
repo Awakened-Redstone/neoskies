@@ -86,15 +86,15 @@ public class LevelCommand {
         List<GuiElementInterface> elements = new ArrayList<>();
 
         island.getBlocks().forEach((block, count) -> {
-            Integer points = IslandLogic.getRankingConfig().points.getOrDefault(block, 1);
+            Integer points = IslandLogic.getRankingConfig().getPoints(block);
             sum.addAndGet(points * count);
 
             Block block1 = Registries.BLOCK.get(block);
-            ItemStack stack = block1.asItem().getDefaultStack();
+            ItemStack stack = block1.getPickStack(island.getOverworld(), BlockPos.ORIGIN, block1.getDefaultState());
             GuiElementBuilder builder = GuiElementBuilder.from(stack.isEmpty() ? new ItemStack(Items.BARRIER) : stack)
               .hideDefaultTooltip()
-              .addLoreLine(Texts.of("x%d blocks".formatted(count)))
-              .addLoreLine(Texts.of("%d points".formatted(points * count)));
+              .addLoreLine(Texts.loreBase("<dark_gray>x%d blocks".formatted(count)))
+              .addLoreLine(Texts.loreBase("<dark_gray>%d points".formatted(points * count)));
 
             if (stack.isEmpty()) {
                 builder.setName(block1.getName());
@@ -229,8 +229,11 @@ public class LevelCommand {
                 IslandLogic.getInstance().scheduler.schedule(new Identifier("neoskies", "island-scan/" + island.getIslandId().toString()), 0, () -> display.setText(visualization));
             }, (timeTaken, scannedBlocks) -> {
                 IslandLogic.syncWithTick(() -> {
+                    int scanned = scannedBlocks.values().stream().mapToInt(value -> value).sum();
+
                     source.sendFeedback(() -> Texts.of("message.neoskies.island.level.scan.time_taken", new MapBuilder.StringMap()
                       .put("time", UnitConvertions.formatTimings(timeTaken))
+                      .putAny("count", scanned)
                       .build()), false);
                     removeDisplay(display);
                     float width = getTextWidth(text);

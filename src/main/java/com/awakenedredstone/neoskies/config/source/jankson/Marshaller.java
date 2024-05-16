@@ -8,6 +8,7 @@ import blue.endless.jankson.api.DeserializerFunction;
 import blue.endless.jankson.impl.POJODeserializer;
 import blue.endless.jankson.impl.serializer.DeserializerFunctionPool;
 import blue.endless.jankson.magic.TypeMagic;
+import com.awakenedredstone.neoskies.config.source.annotation.SkipThis;
 import com.awakenedredstone.neoskies.mixin.compat.POJODeserializerAccessor;
 import org.jetbrains.annotations.Nullable;
 
@@ -227,8 +228,6 @@ public class Marshaller implements blue.endless.jankson.api.Marshaller {
                 return null;
             }
         } else if (elem instanceof JsonObject obj) {
-
-
             if (clazz.isPrimitive())
                 throw new DeserializationException("Can't marshall json object into primitive type " + clazz.getCanonicalName());
             if (JsonPrimitive.class.isAssignableFrom(clazz)) {
@@ -252,7 +251,6 @@ public class Marshaller implements blue.endless.jankson.api.Marshaller {
                     return null;
                 }
             } else {
-
                 try {
                     T result = TypeMagic.createAndCast(clazz, failFast);
                     T resultDefault = TypeMagic.createAndCast(clazz, failFast);
@@ -265,7 +263,6 @@ public class Marshaller implements blue.endless.jankson.api.Marshaller {
                     return null;
                 }
             }
-
         } else if (elem instanceof JsonArray) {
             if (clazz.isPrimitive()) return null;
             if (clazz.isArray()) {
@@ -348,7 +345,6 @@ public class Marshaller implements blue.endless.jankson.api.Marshaller {
         }
 
         if (obj.getClass().isArray()) {
-
             JsonArray array = new JsonArray();
             array.setMarshaller(this);
             //Class<?> component = obj.getClass().getComponentType();
@@ -383,9 +379,9 @@ public class Marshaller implements blue.endless.jankson.api.Marshaller {
         JsonObject result = new JsonObject();
         //Pull in public fields first
         for (Field f : obj.getClass().getFields()) {
-            if (
-              Modifier.isStatic(f.getModifiers()) || // Not part of the object
-                Modifier.isTransient(f.getModifiers())) continue; //Never serialize
+            if (Modifier.isStatic(f.getModifiers()) || // Not part of the object
+              Modifier.isTransient(f.getModifiers()) ||
+              f.isAnnotationPresent(SkipThis.class)) continue; // Never serialize
             f.setAccessible(true);
 
             try {
@@ -409,7 +405,8 @@ public class Marshaller implements blue.endless.jankson.api.Marshaller {
             if (
               Modifier.isPublic(field.getModifiers()) || // Already serialized
                 Modifier.isStatic(field.getModifiers()) || // Not part of the object
-                Modifier.isTransient(field.getModifiers())) continue; //Never serialize
+                Modifier.isTransient(field.getModifiers()) ||
+                field.isAnnotationPresent(SkipThis.class)) continue; //Never serialize
             field.setAccessible(true);
 
             try {
@@ -431,7 +428,8 @@ public class Marshaller implements blue.endless.jankson.api.Marshaller {
                 } else {
                     result.put(name, serialize(child), comment.value());
                 }
-            } catch (IllegalArgumentException | IllegalAccessException ignored) {}
+            } catch (IllegalArgumentException | IllegalAccessException ignored) {
+            }
         }
 
         return result;
@@ -454,7 +452,8 @@ public class Marshaller implements blue.endless.jankson.api.Marshaller {
                         }
                     }
                 }
-            } catch (IllegalAccessException ignored) {}
+            } catch (IllegalAccessException ignored) {
+            }
         }
     }
 
