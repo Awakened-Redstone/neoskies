@@ -37,6 +37,6 @@ public class NeoSkiesEconomyCurrency implements EconomyCurrency {
 
     @Override
     public EconomyProvider provider() {
-        return IslandLogic.getInstance().economy.PROVIDER;
+        return IslandLogic.getInstance().ECONOMY.PROVIDER;
     }
 }

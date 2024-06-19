@@ -1,15 +1,10 @@
 package com.awakenedredstone.neoskies.command.island;
 
 import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
-import com.awakenedredstone.neoskies.duck.ExtendedChunk;
 import com.awakenedredstone.neoskies.gui.PagedGui;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
-import com.awakenedredstone.neoskies.logic.util.ChunkScanQueue;
-import com.awakenedredstone.neoskies.util.FontUtils;
-import com.awakenedredstone.neoskies.util.MapBuilder;
-import com.awakenedredstone.neoskies.util.Texts;
-import com.awakenedredstone.neoskies.util.UnitConvertions;
+import com.awakenedredstone.neoskies.util.*;
 import com.mojang.brigadier.CommandDispatcher;
 import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.attachment.ChunkAttachment;
@@ -21,35 +16,27 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.decoration.Brightness;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ChunkHolder;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ChunkSection;
-import net.minecraft.world.chunk.PalettedContainer;
 import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -65,6 +52,20 @@ public class LevelCommand {
               .executes(context -> LevelCommand.runScan(context.getSource()))
             ).then(literal("view")
               .executes(context -> LevelCommand.view(context.getSource()))
+            ).then(literal("top")
+              .executes(context -> {
+                  List<Island> top5 = IslandLogic.getInstance().islands.stuck.stream()
+                    .sorted(Comparator.comparingLong(Island::getPoints))
+                    .limit(5)
+                    .toList().reversed();
+
+                  LinedStringBuilder builder = new LinedStringBuilder();
+                  builder.append(top5.getFirst().owner.name).append(": ").append(top5.getFirst().getPoints());
+                  builder.appendLine(top5.getLast().owner.name).append(": ").append(top5.getLast().getPoints());
+
+                  context.getSource().sendMessage(Texts.of(builder.toString()));
+                  return 0;
+              })
             )
           )
         );
@@ -93,11 +94,17 @@ public class LevelCommand {
             ItemStack stack = block1.getPickStack(island.getOverworld(), BlockPos.ORIGIN, block1.getDefaultState());
             GuiElementBuilder builder = GuiElementBuilder.from(stack.isEmpty() ? new ItemStack(Items.BARRIER) : stack)
               .hideDefaultTooltip()
-              .addLoreLine(Texts.loreBase("<dark_gray>x%d blocks".formatted(count)))
-              .addLoreLine(Texts.loreBase("<dark_gray>%d points".formatted(points * count)));
+              .addLoreLine(Text.empty())
+              //TODO: multiline
+              .addLoreLine(Texts.loreBase("gui.level.view.item_description", placeholders -> {
+                  placeholders.put("points", String.valueOf(points * count));
+                  placeholders.put("count", String.valueOf(count));
+              }));
 
+            builder.setName(block1.getName());
             if (stack.isEmpty()) {
-                builder.setName(block1.getName());
+                //TODO: color
+                builder.setName(block1.getName().formatted(Formatting.WHITE));
             }
             elements.add(builder.build());
         });
@@ -135,6 +142,7 @@ public class LevelCommand {
         if (holder != null) holder.destroy();
         holder = new ElementHolder();
         new ChunkAttachment(holder, (WorldChunk) world.getChunk(blockPos), pos, true);
+        Identifier scanCloseTaskId = Identifier.of(island.getIslandId().toString(), "close_scan_screen");
 
         MutableText text = Texts.of("message.neoskies.island.level.scan.background").copy();
 
@@ -172,63 +180,40 @@ public class LevelCommand {
         AtomicReference<Pair<TextDisplayElement, Set<InteractionElement>>> startScanPair = new AtomicReference<>();
         AtomicReference<Pair<TextDisplayElement, Set<InteractionElement>>> cancalScanPair = new AtomicReference<>();
 
+        //TODO: Fix all 100 bugs this thing has
+        //TODO: Make this readable
         TextDisplayElement display = createDisplay(Texts.of(""), yaw, new Vec3d(0, 0, 0));
         VirtualElement.InteractionHandler startScan = createHandler((interactor, hand) -> {
             if (island.isScanning()) {
-                source.sendError(Texts.of("message.neoskies.island.level.scan.running"));
+                source.sendError(Texts.of("message.neoskies.island.error.scanning"));
                 return;
             }
-            scanChunks(island, () -> {
-                removeInteraction(startScanPair.get());
-                removeInteraction(cancalScanPair.get());
-                removeDisplay(message.get());
 
-                display.setTranslation(new Vec3d(0, 0.25 * (lines / 2d) + 0.0625 + 0.5, 0).toVector3f());
-                display.setText(Texts.of("message.neoskies.island.level.scan.preparing"));
-            }, total -> {
-                if (total > 200) {
-                    display.setText(Texts.of("message.neoskies.island.level.scan.progress", new MapBuilder.StringMap()
-                      .putAny("progress", 0)
-                      .putAny("total", total)
-                      .build()));
-                    return;
-                }
-                MutableText visualization = Text.empty();
-                int size = (int) Math.sqrt(total);
-                for (int i = 0; i < size; i++) {
-                    for (int j = 0; j < size; j++) {
-                        visualization.append(Texts.of("<gray>█"));
-                    }
-                    visualization.append(Text.of("\n"));
-                }
-                display.setText(visualization);
-                //charsWidth * scale = 3; charsWidth = (9/80d) * size; scale = ?; so I must calculate the scale
-                double scale = 1.5 / ((9 / 80d) * size);
-                display.setTranslation(new Vec3d(0, -(9 / 35d) * scale, 0).toVector3f());
-                display.setScale(new Vec3d(scale, scale, 1).toVector3f());
-            }, (total, current) -> {
-                if (total > 200) {
-                    Text progress = Texts.of("message.neoskies.island.level.scan.progress", new MapBuilder.StringMap()
-                      .putAny("progress", current)
-                      .putAny("total", total)
-                      .build());
-                    IslandLogic.getInstance().scheduler.schedule(new Identifier("neoskies", "island-scan/" + island.getIslandId().toString()), 0, () -> display.setText(progress));
-                    return;
-                }
+            removeInteraction(startScanPair.get());
+            removeInteraction(cancalScanPair.get());
+            removeDisplay(message.get());
 
-                MutableText visualization = Text.empty();
-                int size = (int) Math.sqrt(total);
-                int index = 0;
-                for (int i = 0; i < size; i++) {
-                    for (int j = 0; j < size; j++) {
-                        visualization.append(Texts.of(index < current ? "<green>█" : index == current ? "<yellow>█" : "<gray>█"));
-                        index++;
-                    }
-                    visualization.append(Text.of("\n"));
-                }
-                IslandLogic.getInstance().scheduler.schedule(new Identifier("neoskies", "island-scan/" + island.getIslandId().toString()), 0, () -> display.setText(visualization));
+            IslandLogic.getScheduler().scheduleDelayed(scanCloseTaskId, IslandLogic.getServer(), 0, () -> {});
+
+            display.setTranslation(new Vec3d(0, 0.25 * (lines / 2d) + 0.0625 + 0.5, 0).toVector3f());
+            display.setText(Texts.of("message.neoskies.island.level.scan.preparing"));
+
+            AtomicInteger toScan = new AtomicInteger();
+            IslandLogic.getInstance().islandScanner.queueScan(island, total -> {
+                toScan.set(total);
+                display.setText(Texts.of("message.neoskies.island.level.scan.progress", new MapBuilder.StringMap()
+                  .putAny("progress", 0)
+                  .putAny("total", total)
+                  .build()));
+            }, current -> {
+                int total = toScan.get();
+                Text progress = Texts.of("message.neoskies.island.level.scan.progress", new MapBuilder.StringMap()
+                  .putAny("progress", current)
+                  .putAny("total", total)
+                  .build());
+                IslandLogic.getInstance().scheduler.schedule(new Identifier("neoskies", "island-scan/" + island.getIslandId().toString()), 0, () -> display.setText(progress));
             }, (timeTaken, scannedBlocks) -> {
-                IslandLogic.syncWithTick(() -> {
+                IslandLogic.runOnNextTick(() -> {
                     int scanned = scannedBlocks.values().stream().mapToInt(value -> value).sum();
 
                     source.sendFeedback(() -> Texts.of("message.neoskies.island.level.scan.time_taken", new MapBuilder.StringMap()
@@ -273,12 +258,14 @@ public class LevelCommand {
                         closeBackground.run();
                     }), yaw);
 
-                    IslandLogic.getScheduler().scheduleDelayed(IslandLogic.getServer(), 600, () -> {
+                    IslandLogic.getScheduler().scheduleDelayed(scanCloseTaskId, IslandLogic.getServer(), 600, () -> {
                         if (holder == null) return;
                         removeBlocksView.run();
                         closeBackground.run();
                     });
                 });
+            }, () -> {
+                display.setText(Texts.of("message.neoskies.island.level.scan.error"));
             });
         });
 
@@ -287,28 +274,30 @@ public class LevelCommand {
             removeInteraction(startScanPair.get());
             removeInteraction(cancalScanPair.get());
             closeBackground.run();
+
+            IslandLogic.getScheduler().scheduleDelayed(scanCloseTaskId, IslandLogic.getServer(), 0, () -> {});
         });
 
         textDisplay.setInterpolationDuration(7);
-        IslandLogic.getInstance().scheduler.scheduleDelayed(IslandLogic.getServer(), 0, () -> {
+        IslandLogic.getScheduler().scheduleDelayed(IslandLogic.getServer(), 0, () -> {
             textDisplay.setScale(new Vec3d(1, 0.1, 1).toVector3f());
             textDisplay.startInterpolation();
         });
 
-        IslandLogic.getInstance().scheduler.scheduleDelayed(IslandLogic.getServer(), 10, () -> {
+        IslandLogic.getScheduler().scheduleDelayed(IslandLogic.getServer(), 10, () -> {
             textDisplay.setInterpolationDuration(5);
             textDisplay.setScale(new Vec3d(1, 1, 1).toVector3f());
             textDisplay.setTranslation(new Vec3d(0, 0, 0).toVector3f());
             textDisplay.startInterpolation();
         });
 
-        IslandLogic.getInstance().scheduler.scheduleDelayed(IslandLogic.getServer(), 15, () -> {
+        IslandLogic.getScheduler().scheduleDelayed(IslandLogic.getServer(), 15, () -> {
             message.set(createDisplay(Texts.of("message.neoskies.island.level.scan.confirm"), yaw, new Vec3d(0, 0.25 * (lines / 2d) + 0.0625 + 0.5, 0)));
             startScanPair.set(createInteraction(startScanText, startScan, yaw, new Vec3d(-2 + getTextWidth(startScanText), 0.25 * (lines / 2d) + 0.0625, 0)));
             cancalScanPair.set(createInteraction(cancelText, cancelScan, yaw, new Vec3d(2 - getTextWidth(startScanText), 0.25 * (lines / 2d) + 0.0625, 0)));
         });
 
-        IslandLogic.getScheduler().scheduleDelayed(IslandLogic.getServer(), 600, () -> {
+        IslandLogic.getScheduler().scheduleDelayed(scanCloseTaskId, IslandLogic.getServer(), 600, () -> {
             if (holder != null && holder.getElements().contains(message.get())) {
                 removeDisplay(message.get());
                 removeInteraction(startScanPair.get());
@@ -318,72 +307,6 @@ public class LevelCommand {
         });
         source.sendFeedback(() -> Texts.of("message.neoskies.island.level.scan.opening"), false);
         return 1;
-    }
-
-    private static void scanChunks(Island island, Runnable preparing, Consumer<Integer> informTotal, BiConsumer<Integer, Integer> updater, ScanFinish finisher) {
-        Thread scanThread = new Thread(() -> {
-            island.setScanning(true);
-            ChunkScanQueue chunks = new ChunkScanQueue();
-            int radius = island.radius;
-            preparing.run();
-            ServerWorld world = island.getOverworld();
-
-            //for islands below 200 radius we can use a slower process that looks cool, otherwise we have to use the faster process at the cost of the graph
-            if (radius <= 200 && radius > 0) {
-                //get all chunks in radius, the island center always is at 0, 0
-                BlockPos center = new BlockPos(0, 0, 0);
-                for (int x = -radius; x <= radius; x += 16) {
-                    for (int z = -radius; z <= radius; z += 16) {
-                        BlockPos pos = new BlockPos(x, 0, z);
-                        BlockPos blockPos = center.add(pos);
-                        WorldChunk chunk = (WorldChunk) world.getChunk(blockPos);
-                        if (chunk != null) {
-                            chunks.add(chunk);
-                        }
-                    }
-                }
-            } else {
-                ThreadedAnvilChunkStorage anvilChunkStorage = world.getChunkManager().threadedAnvilChunkStorage;
-                List<ChunkHolder> chunkHolders = anvilChunkStorage.chunkHolders.values().stream().filter(ChunkHolder::isAccessible).peek(ChunkHolder::updateAccessibleStatus).toList();
-                chunkHolders.forEach(chunkHolder -> chunks.add(chunkHolder.getCurrentChunk()));
-            }
-
-            informTotal.accept(chunks.size());
-
-            //scan all chunks
-            LinkedHashMap<Identifier, Integer> blocks = new LinkedHashMap<>();
-            long start = System.nanoTime() / 1000;
-            while (!chunks.finished()) {
-                updater.accept(chunks.size(), chunks.getPos());
-                Chunk chunk = chunks.poll();
-                Set<ChunkSection> nonEmptySections = ((ExtendedChunk) chunk).getNonEmptySections();
-                for (ChunkSection section : nonEmptySections) {
-                    PalettedContainer<BlockState> stateContainer = section.getBlockStateContainer();
-                    stateContainer.count((blockState, amount) -> {
-                        if (blockState.isAir()) return;
-                        Identifier id = Registries.BLOCK.getId(blockState.getBlock());
-                        blocks.compute(id, (state, count) -> count == null ? amount : count + amount);
-                    });
-                }
-            }
-
-            updater.accept(chunks.size(), chunks.getPos());
-            long end = System.nanoTime() / 1000;
-
-            List<Map.Entry<Identifier, Integer>> entries = new LinkedList<>(blocks.entrySet());
-            entries.sort(Comparator.comparingInt(Map.Entry::getValue));
-            Collections.reverse(entries);
-            blocks.clear();
-            entries.forEach(entry -> blocks.put(entry.getKey(), entry.getValue()));
-            finisher.finish(end - start, blocks);
-
-            island.updateBlocks(blocks);
-
-            island.setScanning(false);
-        });
-        scanThread.setDaemon(true);
-        scanThread.setName(island.owner.name + "'s Island Scan");
-        scanThread.start();
     }
 
     private static float getTextWidth(Text text) {

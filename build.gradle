@@ -35,6 +35,13 @@ loom {
             name = "Testmod Server"
             source sourceSets.testmod
         }
+
+        testmodClient {
+            client()
+            name = "Testmod Client"
+            runDir("run_client")
+            source sourceSets.testmod
+        }
     }
 }
 
@@ -50,6 +57,13 @@ repositories {
 	maven { url "https://maven.ladysnake.org/releases" }
     maven { url "https://maven.isxander.dev/releases" }
     maven { url "https://jitpack.io" }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 dependencies {
@@ -81,6 +95,7 @@ dependencies {
     //endregion
     //endregion
     // region Others
+    modImplementation include("maven.modrinth:particleanimationlib:0.0.2+1.20")
     modImplementation include("me.lucko:fabric-permissions-api:${project.fabric_permission_api}")
     //endregion
     // region Non mod dependencies

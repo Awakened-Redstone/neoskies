@@ -5,6 +5,7 @@ import com.awakenedredstone.neoskies.duck.ExtendedPlayerManager;
 import com.awakenedredstone.neoskies.duck.ExtendedServerPlayerEntity;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.entity.Entity;
@@ -85,8 +86,8 @@ public abstract class PlayerManagerMixin implements ExtendedPlayerManager {
         }
     }
 
-    @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getSpawnPointPosition()Lnet/minecraft/util/math/BlockPos;"))
-    private BlockPos neoskies$respawnOnIsland(ServerPlayerEntity player) {
+    @ModifyExpressionValue(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getSpawnPointPosition()Lnet/minecraft/util/math/BlockPos;"))
+    private BlockPos neoskies$respawnOnIsland(BlockPos original, ServerPlayerEntity player) {
         if (NeoSkiesAPI.isIsland(player.getWorld())) {
             Optional<Island> islandOptional = NeoSkiesAPI.getIsland(player.getWorld());
             if (islandOptional.isPresent()) {
@@ -101,8 +102,8 @@ public abstract class PlayerManagerMixin implements ExtendedPlayerManager {
         return BlockPos.ofFloored(IslandLogic.getInstance().hub.pos);
     }
 
-    @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getSpawnPointDimension()Lnet/minecraft/registry/RegistryKey;"))
-    private RegistryKey<World> neoskies$fixRespawnDimension(ServerPlayerEntity player) {
+    @ModifyExpressionValue(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getSpawnPointDimension()Lnet/minecraft/registry/RegistryKey;"))
+    private RegistryKey<World> neoskies$fixRespawnDimension(RegistryKey<World> original, ServerPlayerEntity player) {
         return player.getWorld().getRegistryKey();
     }
 

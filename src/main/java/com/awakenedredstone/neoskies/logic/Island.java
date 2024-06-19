@@ -78,7 +78,7 @@ public class Island {
     public Island(Member owner) {
         this.owner = owner;
         this.wallet = new NeoSkiesEconomyAccount(islandId, new Identifier(owner.uuid.toString(), islandId.toString()));
-        IslandLogic.getInstance().economy.PROVIDER.getAccounts().computeIfAbsent(islandId, id -> wallet);
+        IslandLogic.getInstance().ECONOMY.PROVIDER.getAccounts().computeIfAbsent(islandId, id -> wallet);
     }
 
     public static Island fromNbt(NbtCompound nbt) {
@@ -95,7 +95,7 @@ public class Island {
         Identifier id = new Identifier(walletNbt.getString("id"));
         long balance = walletNbt.getLong("balance");
         island.wallet = new NeoSkiesEconomyAccount(island.islandId, id, balance);
-        IslandLogic.getInstance().economy.PROVIDER.getAccounts().computeIfAbsent(island.islandId, id1 -> island.wallet);
+        IslandLogic.getInstance().ECONOMY.PROVIDER.getAccounts().computeIfAbsent(island.islandId, id1 -> island.wallet);
 
         NbtCompound spawnPosNbt = nbt.getCompound("spawnPos");
         double spawnPosX = spawnPosNbt.getDouble("x");
@@ -391,7 +391,7 @@ public class Island {
         return world;
     }
 
-    public void updateBlocks(@Nullable LinkedHashMap<Identifier, Integer> blocks) {
+    public void updateBlocks(@Nullable Map<Identifier, Integer> blocks) {
         if (blocks != null) this.blocks = blocks;
         this.points = 0;
         this.blocks.forEach((block, integer) -> {

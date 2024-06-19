@@ -3,6 +3,7 @@ package com.awakenedredstone.neoskies.mixin.entity;
 import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.util.Worlds;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.minecraft.entity.Entity;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
@@ -54,14 +55,14 @@ public abstract class EntityMixin {
         return instance;
     }
 
-    @Redirect(method = "getTeleportTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;"))
-    public RegistryKey<World> getTeleportTarget_redirectRegistryKey(ServerWorld instance) {
-        return Worlds.redirect(instance.getRegistryKey());
+    @ModifyExpressionValue(method = "getTeleportTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;"))
+    public RegistryKey<World> getTeleportTarget_redirectRegistryKey0(RegistryKey<World> world) {
+        return Worlds.redirect(world);
     }
 
-    @Redirect(method = "getTeleportTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getRegistryKey()Lnet/minecraft/registry/RegistryKey;"))
-    public RegistryKey<World> getTeleportTarget_redirectRegistryKey(World instance) {
-        return Worlds.redirect(instance.getRegistryKey());
+    @ModifyExpressionValue(method = "getTeleportTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getRegistryKey()Lnet/minecraft/registry/RegistryKey;"))
+    public RegistryKey<World> getTeleportTarget_redirectRegistryKey1(RegistryKey<World> world) {
+        return Worlds.redirect(world);
     }
 
     @Inject(method = "getTeleportTarget", at = @At(value = "RETURN", ordinal = 0), cancellable = true)
@@ -85,9 +86,9 @@ public abstract class EntityMixin {
         }
     }
 
-    @Redirect(method = "moveToWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;", ordinal = 0))
-    public RegistryKey<World> moveToWorld_redirectRegistryKey(ServerWorld instance) {
-        return Worlds.redirect(instance.getRegistryKey());
+    @ModifyExpressionValue(method = "moveToWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;", ordinal = 0))
+    public RegistryKey<World> moveToWorld_redirectRegistryKey(RegistryKey<World> world) {
+        return Worlds.redirect(world);
     }
 
 }

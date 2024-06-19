@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@SuppressWarnings("UnreachableCode")
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
     @Unique private double lastSize = -1;
@@ -32,7 +33,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     // TODO: Add other visual ways to show the limit
     @Inject(method = "travel", at = @At("HEAD"))
     private void increaseTravelMotionStats(Vec3d movementInput, CallbackInfo ci) {
-        if (((PlayerEntity) (Object) this) instanceof ServerPlayerEntity serverPlayer && NeoSkiesAPI.isIsland(getWorld()) && !lastPos.equals(getPos())) {
+        if (((PlayerEntity) (Object) this) instanceof ServerPlayerEntity serverPlayer && NeoSkiesAPI.isIsland(getWorld()) && !lastPos.equals(getPos()) && getWorld() != null) {
             WorldBorder defaultWorldBorder = getWorld().getWorldBorder();
             Island island = NeoSkiesAPI.getIsland(getWorld()).get();
             if (island.radius <= 0) {

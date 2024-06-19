@@ -4,6 +4,7 @@
     "package": "com.awakenedredstone.neoskies.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "accessor.RegionBasedStorageAccessor",
         "accessor.TagEntryAccessor",
         "block.EndPortalBlockMixin",
         "block.FireBlockMixin",

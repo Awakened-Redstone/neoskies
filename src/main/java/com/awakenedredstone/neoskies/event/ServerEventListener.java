@@ -23,7 +23,7 @@ public class ServerEventListener {
     public static void onStart(MinecraftServer server) {
         IslandLogic.init(server);
         PreInitData.close();
-        CommonEconomy.register("neoskies", IslandLogic.getInstance().economy.PROVIDER);
+        //CommonEconomy.register("neoskies", IslandLogic.getInstance().ECONOMY.PROVIDER);
         registerPlaceholders();
     }
 

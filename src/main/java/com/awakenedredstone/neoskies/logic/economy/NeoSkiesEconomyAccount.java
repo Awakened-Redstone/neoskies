@@ -64,12 +64,12 @@ public class NeoSkiesEconomyAccount implements EconomyAccount {
 
     @Override
     public EconomyProvider provider() {
-        return IslandLogic.getInstance().economy.PROVIDER;
+        return IslandLogic.ECONOMY.PROVIDER;
     }
 
     @Override
     public EconomyCurrency currency() {
-        return IslandLogic.getInstance().economy.CURRENCY;
+        return IslandLogic.ECONOMY.CURRENCY;
     }
 
     private EconomyTransaction failure(long transactionAmount) {

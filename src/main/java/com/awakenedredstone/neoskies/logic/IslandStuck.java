@@ -48,9 +48,9 @@ public class IslandStuck {
             island.members.forEach(this::deletePlayer);
         }
 
-        island.getOverworld().getPlayers().forEach(player -> IslandLogic.syncWithTick(() -> IslandLogic.getInstance().hub.visit(player, true)));
-        island.getNether().getPlayers().forEach(player -> IslandLogic.syncWithTick(() -> IslandLogic.getInstance().hub.visit(player, true)));
-        island.getEnd().getPlayers().forEach(player -> IslandLogic.syncWithTick(() -> IslandLogic.getInstance().hub.visit(player, true)));
+        island.getOverworld().getPlayers().forEach(player -> IslandLogic.runOnNextTick(() -> IslandLogic.getInstance().hub.visit(player, true)));
+        island.getNether().getPlayers().forEach(player -> IslandLogic.runOnNextTick(() -> IslandLogic.getInstance().hub.visit(player, true)));
+        island.getEnd().getPlayers().forEach(player -> IslandLogic.runOnNextTick(() -> IslandLogic.getInstance().hub.visit(player, true)));
 
         stuck.remove(island);
     }

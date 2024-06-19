@@ -26,31 +26,6 @@ import static net.minecraft.server.command.CommandManager.literal;
 
 public class ModifyCommand {
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
-        final LiteralArgumentBuilder<ServerCommandSource> gameruleArgumentBuilder = CommandManager.literal("gamerule").requires(source -> source.hasPermissionLevel(2));
-        GameRules.accept(new GameRules.Visitor() {
-
-            @Override
-            public <T extends GameRules.Rule<T>> void visit(GameRules.Key<T> key, GameRules.Type<T> type) {
-                gameruleArgumentBuilder
-                  .then(literal(key.getName())
-                    .executes(context -> {
-                        String islandId = StringArgumentType.getString(context, "island");
-                        Island island = NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null);
-
-                        return getGamerule(context.getSource(), key, island);
-                    })
-                    .then(type.argument("value")
-                      .executes(context -> {
-                          String islandId = StringArgumentType.getString(context, "island");
-                          Island island = NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null);
-
-                          return setGamerule(context, key, island);
-                      })
-                    )
-                  );
-            }
-        });
-
         registerAdmin(dispatcher, adminNode()
           .then(literal("modify").requires(Permissions.require("neoskies.admin.modify", 4))
             .then(argument("island", StringArgumentType.word())
@@ -63,7 +38,7 @@ public class ModifyCommand {
                       return modifyIslandSize(context.getSource(), NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null), size);
                   })
                 )
-              ).then(gameruleArgumentBuilder)
+              )
             )
           )
         );

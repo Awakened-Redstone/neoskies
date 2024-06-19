@@ -141,4 +141,8 @@ public class Texts {
     public static MutableText loreBase(String text) {
         return loreBase(Texts.of(text));
     }
+
+    public static MutableText loreBase(String text, Consumer<Map<String, String>> builder) {
+        return loreBase(Texts.of(text, builder));
+    }
 }

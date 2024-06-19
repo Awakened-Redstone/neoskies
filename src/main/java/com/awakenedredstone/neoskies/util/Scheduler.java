@@ -3,6 +3,7 @@ package com.awakenedredstone.neoskies.util;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -24,23 +25,27 @@ public class Scheduler {
         }
     }
 
-    private static <T> Comparator<Event> createEventComparator() {
-        return Comparator.comparingLong(event -> event.triggerTime);
+    private synchronized static <T> Comparator<Event> createEventComparator() {
+        return Comparator.comparingLong(event -> {
+            synchronized (ControlledQueue.class) {
+                return event.triggerTime;
+            }
+        });
     }
 
-    public void schedule(Identifier id, long executeTick, Runnable callback) {
+    public synchronized void schedule(Identifier id, long executeTick, Runnable callback) {
         events.add(new Event(id, executeTick, callback));
     }
 
-    public void schedule(long executeTick, Runnable callback) {
+    public synchronized void schedule(long executeTick, Runnable callback) {
         schedule(randomIdentifier(), executeTick, callback);
     }
 
-    public void scheduleDelayed(Identifier id, MinecraftServer server, long delay, Runnable callback) {
+    public synchronized void scheduleDelayed(Identifier id, MinecraftServer server, long delay, Runnable callback) {
         schedule(id, server.getSaveProperties().getMainWorldProperties().getTime() + delay, callback);
     }
 
-    public void scheduleDelayed(MinecraftServer server, long delay, Runnable callback) {
+    public synchronized void scheduleDelayed(MinecraftServer server, long delay, Runnable callback) {
         schedule(randomIdentifier(), server.getSaveProperties().getMainWorldProperties().getTime() + delay, callback);
     }
 
@@ -55,13 +60,13 @@ public class Scheduler {
         }
     }
 
-    class ControlledQueue extends PriorityQueue<Event> {
+    static class ControlledQueue extends PriorityQueue<Event> {
         public ControlledQueue() {
             super(createEventComparator());
         }
 
         @Override
-        public boolean add(Event event) {
+        public synchronized boolean add(@NotNull Event event) {
             this.remove(event);
             return super.add(event);
         }

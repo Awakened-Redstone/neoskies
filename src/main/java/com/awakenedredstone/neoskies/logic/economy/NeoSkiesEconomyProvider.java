@@ -49,12 +49,12 @@ public class NeoSkiesEconomyProvider implements EconomyProvider {
 
     @Override
     public @Nullable EconomyCurrency getCurrency(MinecraftServer server, String currencyId) {
-        return IslandLogic.getInstance().economy.CURRENCY;
+        return IslandLogic.ECONOMY.CURRENCY;
     }
 
     @Override
     public Collection<EconomyCurrency> getCurrencies(MinecraftServer server) {
-        return Collections.singleton(IslandLogic.getInstance().economy.CURRENCY);
+        return Collections.singleton(IslandLogic.ECONOMY.CURRENCY);
     }
 
     @Override

@@ -1,13 +1,11 @@
 package com.awakenedredstone.neoskies.gui;
 
-import eu.pb4.sgui.api.elements.GuiElement;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementBuilderInterface;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
@@ -178,7 +176,7 @@ public abstract class PagedGui extends SimpleGui {
     }
 
     public static void playSound(ServerPlayerEntity player, SoundEvent sound) {
-        player.playSoundToPlayer(sound, SoundCategory.MASTER, 1, 1);
+        player.playSoundToPlayer(sound, SoundCategory.MASTER, 0.3f, 1);
     }
 
     public static void playClickSound(ServerPlayerEntity player) {

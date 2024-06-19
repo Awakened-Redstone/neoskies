@@ -1,43 +1,35 @@
 package com.awakenedredstone.neoskies.logic;
 
-import com.awakenedredstone.neoskies.NeoSkies;
 import com.awakenedredstone.neoskies.config.IslandRankingConfig;
 import com.awakenedredstone.neoskies.config.MainConfig;
 import com.awakenedredstone.neoskies.logic.economy.Economy;
-import com.awakenedredstone.neoskies.logic.protection.NeoSkiesProtectionProvider;
+import com.awakenedredstone.neoskies.logic.level.IslandScanner;
 import com.awakenedredstone.neoskies.util.NbtMigrator;
 import com.awakenedredstone.neoskies.util.PreInitData;
 import com.awakenedredstone.neoskies.util.Scheduler;
-import eu.pb4.common.protection.api.CommonProtection;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import xyz.nucleoid.fantasy.Fantasy;
 
 public class IslandLogic {
+    public static final Economy ECONOMY = new Economy();
+    private static final MainConfig CONFIG = new MainConfig();
+    private static final IslandRankingConfig RANKING_CONFIG = new IslandRankingConfig();
+
     private int format = 1;
     private static IslandLogic instance;
     private final MinecraftServer server;
     public final Fantasy fantasy;
-    public final IslandStuck islands;
-    public final Hub hub;
-    public final Invites invites;
-    public final Economy economy;
-    public final Scheduler scheduler;
-    private final NeoSkiesProtectionProvider protectionProvider;
-    private static final MainConfig CONFIG = new MainConfig();
-    private static final IslandRankingConfig RANKING_CONFIG = new IslandRankingConfig();
+    public final IslandStuck islands = new IslandStuck();
+    public final Hub hub = new Hub();
+    public final Invites invites = new Invites();
+    public final Scheduler scheduler = new Scheduler();
+    public final IslandScanner islandScanner = new IslandScanner();
 
     public IslandLogic(MinecraftServer server) {
-        this.scheduler = new Scheduler();
         this.server = server;
         this.fantasy = Fantasy.get(server);
-        this.islands = new IslandStuck();
-        this.hub = new Hub();
-        this.invites = new Invites();
-        this.economy = new Economy();
-        this. protectionProvider = new NeoSkiesProtectionProvider();
-        CommonProtection.register(NeoSkies.id("neoskies"), protectionProvider);
     }
 
     public static IslandLogic getInstance() {
@@ -83,7 +75,7 @@ public class IslandLogic {
     public void close() {
         IslandLogic.instance = null;
         this.scheduler.close();
-        CommonProtection.remove(NeoSkies.id("neoskies"));
+
     }
 
     public static MinecraftServer getServer() {
@@ -106,7 +98,7 @@ public class IslandLogic {
         return RANKING_CONFIG;
     }
 
-    public static void syncWithTick(Runnable runnable) {
+    public static void runOnNextTick(Runnable runnable) {
         IslandLogic.getScheduler().schedule(0, runnable);
     }
 }

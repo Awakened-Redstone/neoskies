@@ -22,29 +22,17 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity implements ExtendedServerPlayerEntity {
-
-    @Shadow
-    private boolean filterText;
-
-    @Shadow
-    private @Nullable PublicPlayerSession session;
-
-    @Shadow
-    @Final
-    public ServerPlayerInteractionManager interactionManager;
-
-    @Shadow
-    private int syncedExperience;
-
-    @Shadow
-    private float syncedHealth;
-
-    @Shadow
-    private int syncedFoodLevel;
+    @Shadow private boolean filterText;
+    @Shadow private @Nullable PublicPlayerSession session;
+    @Shadow @Final public ServerPlayerInteractionManager interactionManager;
+    @Shadow private int syncedExperience;
+    @Shadow private float syncedHealth;
+    @Shadow private int syncedFoodLevel;
 
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
         super(world, pos, yaw, gameProfile);
@@ -66,28 +54,28 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Ex
         return original;
     }
 
-    @Redirect(method = "moveToWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;", ordinal = 1))
-    public RegistryKey<World> moveToWorld_blockRedirectRegistryKey(ServerWorld instance) {
-        return instance.getRegistryKey();
+    @ModifyExpressionValue(method = "moveToWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;", ordinal = 1))
+    public RegistryKey<World> moveToWorld_blockRedirectRegistryKey(RegistryKey<World> world) {
+        return world;
     }
 
-    @Redirect(method = "moveToWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;"))
-    public RegistryKey<World> moveToWorld_redirectRegistryKey(ServerWorld instance) {
-        return Worlds.redirect(instance.getRegistryKey());
+    @ModifyExpressionValue(method = "moveToWorld", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;"))
+    public RegistryKey<World> moveToWorld_redirectRegistryKey(RegistryKey<World> world) {
+        return Worlds.redirect(world);
     }
 
-    @Redirect(method = "getTeleportTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;"))
-    public RegistryKey<World> getTeleportTarget_redirectRegistryKey(ServerWorld instance) {
-        return Worlds.redirect(instance.getRegistryKey());
+    @ModifyExpressionValue(method = "getTeleportTarget", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;"))
+    public RegistryKey<World> getTeleportTarget_redirectRegistryKey(RegistryKey<World> world) {
+        return Worlds.redirect(world);
     }
 
-    @Redirect(method = "worldChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;"))
-    public RegistryKey<World> worldChanged_redirectRegistryKey(ServerWorld instance) {
-        return Worlds.redirect(instance.getRegistryKey());
+    @ModifyExpressionValue(method = "worldChanged", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;"))
+    public RegistryKey<World> worldChanged_redirectRegistryKey(RegistryKey<World> world) {
+        return Worlds.redirect(world);
     }
-    @Redirect(method = "createCommonPlayerSpawnInfo", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;"))
-    public RegistryKey<World> createCommonPlayerSpawnInfo_redirectRegistryKey(ServerWorld instance) {
-        return Worlds.redirect(instance.getRegistryKey());
+    @ModifyExpressionValue(method = "createCommonPlayerSpawnInfo", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;getRegistryKey()Lnet/minecraft/registry/RegistryKey;"))
+    public RegistryKey<World> createCommonPlayerSpawnInfo_redirectRegistryKey(RegistryKey<World> world) {
+        return Worlds.redirect(world);
     }
 
     @Inject(method = "tick", at = @At(value = "HEAD"))
