@@ -14,14 +14,17 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.PalettedContainer;
 import net.minecraft.world.chunk.ProtoChunk;
+import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.storage.RegionBasedStorage;
 import net.minecraft.world.storage.RegionFile;
 import net.minecraft.world.storage.StorageIoWorker;
+import net.minecraft.world.storage.StorageKey;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +34,7 @@ import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -38,9 +42,20 @@ import java.util.function.Consumer;
 public class IslandScanner implements AutoCloseable {
     public static final Logger LOGGER = LoggerFactory.getLogger("Island Scanner");
     private final BlockingQueue<ScanSetup> scanQueue = new LinkedBlockingQueue<>();
-    private final ExecutorService executor = Executors.newSingleThreadExecutor(runnable -> {
+    private final ExecutorService queueExecutor = Executors.newSingleThreadExecutor(runnable -> {
         Thread thread = new Thread(runnable);
-        thread.setName("Island-Scan-Worker");
+        thread.setName("Island-Scan-Queue-Worker");
+        thread.setDaemon(true); // Allow server to shut down even if scanning is in progress
+        thread.setUncaughtExceptionHandler((t, e) -> {
+            CrashReport crashReport = CrashReport.create(e, "Unhandled exception on island scan");
+            throw new CrashException(crashReport);
+        });
+        return thread;
+    });
+    private int threadCount = 0;
+    private final ExecutorService scanExecutor = Executors.newFixedThreadPool(IslandLogic.getConfig().islandScan.chunkCores, runnable -> {
+        Thread thread = new Thread(runnable);
+        thread.setName("Island-Scan-Worker-" + threadCount++);
         thread.setDaemon(true); // Allow server to shut down even if scanning is in progress
         thread.setUncaughtExceptionHandler((t, e) -> {
             CrashReport crashReport = CrashReport.create(e, "Unhandled exception on island scan");
@@ -50,7 +65,7 @@ public class IslandScanner implements AutoCloseable {
     });
 
     public IslandScanner() {
-        executor.submit(() -> {
+        queueExecutor.submit(() -> {
             try {
                 //noinspection InfiniteLoopStatement
                 while (true) {
@@ -61,6 +76,8 @@ public class IslandScanner implements AutoCloseable {
                         LOGGER.error("Failed to scan Island {}", islandToScan.island.getIslandId(), e);
                         islandToScan.errorListener().run();
                     }
+
+                    IslandLogic.scheduleDelayed(10, System::gc);
                     islandToScan.island().setScanning(false);
                 }
             } catch (InterruptedException e) {
@@ -70,7 +87,7 @@ public class IslandScanner implements AutoCloseable {
     }
 
     public void close() {
-        executor.shutdownNow();
+        queueExecutor.shutdownNow();
     }
 
     public void queueScan(@NotNull Island island, Consumer<Integer> onReady, Consumer<Integer> onProgress, ScanFinishListener onFinish, Runnable onError) {
@@ -78,9 +95,8 @@ public class IslandScanner implements AutoCloseable {
         scanQueue.add(new ScanSetup(island, onReady, onProgress, onFinish, onError));
     }
 
-    //TODO: Slowdown on large islands, to reduce CPU and I/O load, if needed
     private void scanIsland(ScanSetup setup) throws IOException, InterruptedException {
-        Object lock = new Object();
+        AtomicBoolean failed = new AtomicBoolean();
         Island island = setup.island();
 
         //ChunkScanQueue chunkQueue = new ChunkScanQueue();
@@ -122,10 +138,21 @@ public class IslandScanner implements AutoCloseable {
                     int x = i % 32;
                     int z = i / 32;
 
+                    if (x + z * 32 != i) {
+                        throw new RuntimeException("Parsed pos wrong");
+                    }
+
                     int chunkX = baseX + x;
                     int chunkZ = baseZ + z;
 
-                    positions.add((long) chunkX << 32 | chunkZ);
+                    long pos = (long) chunkX << 32 | (long) chunkZ << 32 >>> 32;
+
+                    if (positions.contains(pos)) {
+                        LOGGER.error("Chunk [{}, {} | {}, {}] ({}, {}) ({}) ({}) ({}) added to queue twice!", chunkX, chunkZ, x, z, regionX, regionZ, file.getName(), pos, world.getDimensionEntry().getIdAsString());
+                        throw new RuntimeException("Chunk added to queue twice!");
+                    }
+
+                    positions.add(pos);
                 }
 
                 regionFile.close();
@@ -141,7 +168,13 @@ public class IslandScanner implements AutoCloseable {
         AtomicInteger remaining = new AtomicInteger(chunkCount);
         final int finalChunkCount = chunkCount;
 
-        List<CompletableFuture<Optional<NbtCompound>>> futures = new ArrayList<>();
+        PointOfInterestStorage poiStorage = new PointOfInterestStorage(new StorageKey("", null, ""), null, null, false, null, null) {
+            @Override
+            public void initForPalette(ChunkSectionPos sectionPos, ChunkSection chunkSection) {
+            }
+        };
+
+        List<CompletableFuture<Void>> futures = Collections.synchronizedList(new ArrayList<>());
         for (Map.Entry<ServerWorld, List<Long>> entry : toScan.entrySet()) {
             List<Long> positions = entry.getValue();
             ServerWorld world = entry.getKey();
@@ -150,14 +183,14 @@ public class IslandScanner implements AutoCloseable {
             ThreadedAnvilChunkStorage anvilChunkStorage = world.getChunkManager().threadedAnvilChunkStorage;
             for (ChunkHolder chunkHolder : anvilChunkStorage.chunkHolders.values().stream().filter(ChunkHolder::isAccessible).peek(ChunkHolder::updateAccessibleStatus).toList()) {
                 ChunkPos pos = chunkHolder.getPos();
-                if (scannedChunks.contains((long) pos.x >> 32 | pos.z)) {
+                if (scannedChunks.contains((long) pos.x >> 32 | (long) pos.z << 32 >>> 32)) {
                     continue;
                 }
-                if (!positions.contains((long) pos.x >> 32 | pos.z)) {
+                if (!positions.contains((long) pos.x >> 32 | (long) pos.z << 32 >>> 32)) {
                     throw new RuntimeException("Chunk [%s,%s]{%s} was not in the scan queue".formatted(pos.x, pos.z, (long) pos.x >> 32 | pos.z));
                 }
-                scannedChunks.add((long) pos.x >> 32 | pos.z);
-                positions.remove((long) pos.x >> 32 | pos.z);
+                scannedChunks.add((long) pos.x >> 32 | (long) pos.z << 32 >>> 32);
+                positions.remove((long) pos.x >> 32 | (long) pos.z << 32 >>> 32);
                 scanChunk(chunkHolder.getCurrentChunk(), blocks);
 
                 remaining.decrementAndGet();
@@ -169,51 +202,94 @@ public class IslandScanner implements AutoCloseable {
                 }
             }
             scannedChunks.clear();
-            scannedChunks = null; //Make sure GC gets this, if it runs while this runs than this won't be wasting RAM
 
             for (Long position : positions) {
                 int x = (int) (position >> 32);
                 int z = position.intValue(); //Same as (int) (position & 0xffffffffL)
                 ChunkPos pos = new ChunkPos(x, z);
 
+                CompletableFuture<Void> future = new CompletableFuture<>();
+                futures.add(future);
+
                 CompletableFuture<Optional<NbtCompound>> nbt = anvilChunkStorage.getNbt(pos);
-                CompletableFuture<Optional<NbtCompound>> future = nbt.whenCompleteAsync((compound, throwable) -> {
-                    if (throwable != null) {
-                        LOGGER.error("Error on {}, failed to get chunk data", pos);
+                scanExecutor.submit(() -> {
+                    Optional<NbtCompound> compound;
+                    try {
+                        compound = nbt.join();
+                    } catch (Exception e) {
+                        LOGGER.error("Error on {}, failed to get chunk data", pos, e);
                         return;
                     }
+
+                    if (failed.get()) {
+                        future.complete(null);
+                        return;
+                    }
+                    if (scannedChunks.contains(position)) {
+                        LOGGER.error("Tried to scan {} twice, giving up!", pos);
+                        throw new RuntimeException("Scanned chunk twice");
+                    }
+                    scannedChunks.add(position);
                     if (compound.isEmpty()) {
                         LOGGER.warn("Missing chunk data for chunk {}", pos);
                         return;
                     }
 
-                    ProtoChunk chunk = ChunkSerializer.deserialize(world, anvilChunkStorage.getPointOfInterestStorage(), pos, compound.get());
-                    scanChunk(chunk, blocks);
-                    chunk = null; //Make sure GC gets this, if it runs while this runs than this won't be wasting RAM
+                    NbtCompound nbtData = compound.get();
 
+                    try {
+                        if (failed.get()) {
+                            future.complete(null);
+                            return;
+                        }
+                        ProtoChunk chunk = ChunkSerializer.deserialize(world, poiStorage, pos, nbtData);
+                        if (failed.get()) {
+                            future.complete(null);
+                            return;
+                        }
+                        scanChunk(chunk, blocks);
+                        chunk = null; //Make sure GC can get this earlier, if it runs while this runs than this won't be wasting RAM
+                    } catch (Throwable e) {
+                        LOGGER.error("Failed to deserialize chunk {} with data of size {}", pos, nbtData.getSize());
+                        failed.set(true);
+                        future.completeExceptionally(e);
+                        throw e;
+                    }
+
+                    if (failed.get()) {
+                        future.complete(null);
+                        return;
+                    }
                     int threadSafeRemaining = remaining.decrementAndGet();
 
                     long now = System.nanoTime() / 1000;
                     if (now - lastUpdate.get() >= 100_000) {
+                        if (failed.get()) {
+                            future.complete(null);
+                            return;
+                        }
                         lastUpdate.set(now);
                         int scanned = finalChunkCount - threadSafeRemaining;
-                        IslandLogic.runOnNextTick(() -> setup.progressListener.accept(scanned));
+                        IslandLogic.runOnNextTick(() -> {
+                            if (failed.get()) return;
+                            setup.progressListener.accept(scanned);
+                        });
                     }
 
-
-                    /*if (threadSafeRemaining < 300 && (threadSafeRemaining % 20 == 0 || threadSafeRemaining < 50)) {
-                        System.out.println(threadSafeRemaining);
-                    }*/
-
-                    /*if (threadSafeRemaining == 0) {
-
-                    }*/
+                    future.complete(null);
                 });
-                futures.add(future);
             }
         }
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        try {
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        } catch (Throwable e) {
+            failed.set(true);
+            LOGGER.error("Scan crashed", e);
+            throw new RuntimeException(e);
+        } finally {
+            poiStorage.close();
+        }
 
         long end = System.nanoTime() / 1000;
 

@@ -9,7 +9,6 @@ import com.awakenedredstone.neoskies.command.NeoSkiesCommands;
 import com.awakenedredstone.neoskies.font.FontManager;
 import com.awakenedredstone.neoskies.logic.EventListeners;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
-import com.awakenedredstone.neoskies.logic.level.IslandScanner;
 import com.awakenedredstone.neoskies.logic.protection.NeoSkiesProtectionProvider;
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesPermissionLevels;

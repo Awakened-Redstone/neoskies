@@ -15,7 +15,6 @@ accessible method net/minecraft/server/network/ServerPlayerInteractionManager se
 accessible method net/minecraft/entity/Entity refreshPosition ()V
 accessible method net/minecraft/entity/player/PlayerEntity dropShoulderEntities ()V
 accessible method net/minecraft/server/network/ServerPlayerEntity forgiveMobAnger ()V
-
 accessible method net/minecraft/server/world/ThreadedAnvilChunkStorage getPointOfInterestStorage ()Lnet/minecraft/world/poi/PointOfInterestStorage;
 
 # Fields
@@ -23,6 +22,5 @@ accessible field net/minecraft/text/TranslatableTextContent translations Ljava/u
 accessible field net/minecraft/server/world/ThreadedAnvilChunkStorage chunkHolders Lit/unimi/dsi/fastutil/longs/Long2ObjectLinkedOpenHashMap;
 accessible field net/minecraft/world/WorldSaveHandler playerDataDir Ljava/io/File;
 accessible field net/minecraft/server/MinecraftServer saveHandler Lnet/minecraft/world/WorldSaveHandler;
-
 accessible field net/minecraft/world/storage/StorageIoWorker storage Lnet/minecraft/world/storage/RegionBasedStorage;
 accessible field net/minecraft/world/storage/RegionFile sectorData Ljava/nio/IntBuffer;

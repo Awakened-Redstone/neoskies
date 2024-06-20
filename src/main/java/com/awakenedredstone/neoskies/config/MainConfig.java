@@ -3,13 +3,10 @@ package com.awakenedredstone.neoskies.config;
 import blue.endless.jankson.Comment;
 import com.awakenedredstone.neoskies.config.source.Config;
 import com.awakenedredstone.neoskies.config.source.JanksonBuilder;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainConfig extends Config {
     public MainConfig() {
@@ -19,17 +16,8 @@ public class MainConfig extends Config {
     @Comment("The mod language")
     public String language = "en_us";
 
-    @Comment("The mod main command")
-    public String command = "sb";
-
-    @Comment("The mod main command aliases")
-    public List<String> commandAliases = new ArrayList<>(List.of("skyblock"));
-
-    @Comment("The mod admin command")
-    public String adminCommand = "sba";
-
-    @Comment("The mod admin command aliases")
-    public List<String> adminCommandAliases = new ArrayList<>(List.of("skyblockadmin"));
+    public Commands commands = new Commands();
+    public IslandScan islandScan = new IslandScan();
 
     @Comment("Disables spawning lightning and horse traps in the hub")
     public boolean disableLightningOnHub = true;
@@ -72,4 +60,23 @@ public class MainConfig extends Config {
 
     @Comment("Whenever the player gets the island protection messages")
     public boolean showProtectionMessages = true;
+
+    public static class Commands {
+        @Comment("The mod main command")
+        public String command = "sb";
+
+        @Comment("The mod main command aliases")
+        public List<String> commandAliases = new ArrayList<>(List.of("skyblock"));
+
+        @Comment("The mod admin command")
+        public String adminCommand = "sba";
+
+        @Comment("The mod admin command aliases")
+        public List<String> adminCommandAliases = new ArrayList<>(List.of("skyblockadmin"));
+    }
+
+    public static class IslandScan {
+        @Comment("The amount of cores dedicated for processing the chunk data on an island scan")
+        public byte chunkCores = 4;
+    }
 }

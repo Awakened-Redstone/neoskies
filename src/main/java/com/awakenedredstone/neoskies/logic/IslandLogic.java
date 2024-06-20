@@ -101,4 +101,7 @@ public class IslandLogic {
     public static void runOnNextTick(Runnable runnable) {
         IslandLogic.getScheduler().schedule(0, runnable);
     }
+    public static void scheduleDelayed(long delay, Runnable runnable) {
+        IslandLogic.getScheduler().scheduleDelayed(getServer(), delay, runnable);
+    }
 }

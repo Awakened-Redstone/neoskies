@@ -4,6 +4,7 @@ import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.gui.PagedGui;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
+import com.awakenedredstone.neoskies.mixin.accessor.FluidBlockAccessor;
 import com.awakenedredstone.neoskies.util.*;
 import com.mojang.brigadier.CommandDispatcher;
 import eu.pb4.polymer.virtualentity.api.ElementHolder;
@@ -16,7 +17,9 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import net.minecraft.block.Block;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.entity.decoration.Brightness;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -86,12 +89,22 @@ public class LevelCommand {
 
         List<GuiElementInterface> elements = new ArrayList<>();
 
-        island.getBlocks().forEach((block, count) -> {
-            Integer points = IslandLogic.getRankingConfig().getPoints(block);
+        island.getBlocks().forEach((blockId, count) -> {
+            Integer points = IslandLogic.getRankingConfig().getPoints(blockId);
             sum.addAndGet(points * count);
 
-            Block block1 = Registries.BLOCK.get(block);
-            ItemStack stack = block1.getPickStack(island.getOverworld(), BlockPos.ORIGIN, block1.getDefaultState());
+            Block block = Registries.BLOCK.get(blockId);
+            ItemStack stack;
+            if (block instanceof FluidBlockAccessor fluid) {
+                stack = fluid.getFluid().getBucketItem().getDefaultStack();
+            } else {
+                ItemStack item = block.asItem().getDefaultStack();
+                if (!item.isEmpty()) {
+                    stack = item;
+                } else {
+                    stack = block.getPickStack(island.getOverworld(), BlockPos.ORIGIN, block.getDefaultState());
+                }
+            }
             GuiElementBuilder builder = GuiElementBuilder.from(stack.isEmpty() ? new ItemStack(Items.BARRIER) : stack)
               .hideDefaultTooltip()
               .addLoreLine(Text.empty())
@@ -101,10 +114,10 @@ public class LevelCommand {
                   placeholders.put("count", String.valueOf(count));
               }));
 
-            builder.setName(block1.getName());
+            builder.setName(block.getName());
             if (stack.isEmpty()) {
                 //TODO: color
-                builder.setName(block1.getName().formatted(Formatting.WHITE));
+                builder.setName(block.getName().formatted(Formatting.WHITE));
             }
             elements.add(builder.build());
         });
@@ -203,13 +216,13 @@ public class LevelCommand {
                 toScan.set(total);
                 display.setText(Texts.of("message.neoskies.island.level.scan.progress", new MapBuilder.StringMap()
                   .putAny("progress", 0)
-                  .putAny("total", total)
+                  .putAny("total", UnitConvertions.readableNumber(total))
                   .build()));
             }, current -> {
                 int total = toScan.get();
                 Text progress = Texts.of("message.neoskies.island.level.scan.progress", new MapBuilder.StringMap()
-                  .putAny("progress", current)
-                  .putAny("total", total)
+                  .putAny("progress", UnitConvertions.readableNumber(current))
+                  .putAny("total", UnitConvertions.readableNumber(total))
                   .build());
                 IslandLogic.getInstance().scheduler.schedule(new Identifier("neoskies", "island-scan/" + island.getIslandId().toString()), 0, () -> display.setText(progress));
             }, (timeTaken, scannedBlocks) -> {
@@ -218,31 +231,33 @@ public class LevelCommand {
 
                     source.sendFeedback(() -> Texts.of("message.neoskies.island.level.scan.time_taken", new MapBuilder.StringMap()
                       .put("time", UnitConvertions.formatTimings(timeTaken))
-                      .putAny("count", scanned)
+                      .putAny("count", UnitConvertions.readableNumber(scanned))
                       .build()), false);
                     removeDisplay(display);
                     float width = getTextWidth(text);
-                    AtomicInteger i = new AtomicInteger();
                     List<BlockDisplayElement> blockDisplays = new ArrayList<>();
                     List<TextDisplayElement> labels = new ArrayList<>();
-                    scannedBlocks.forEach((id, amount) -> {
-                        if (i.get() > 8) return;
+                    List<Map.Entry<Identifier, Integer>> list = scannedBlocks.entrySet().stream().toList();
+                    for (int i = 0; i < Math.min(8, list.size()); i++) {
+                        Map.Entry<Identifier, Integer> entry = list.get(i);
+                        Identifier id = entry.getKey();
+                        Integer amount = entry.getValue();
+
                         Block block = Registries.BLOCK.get(id);
                         BlockDisplayElement blockDisplay = new BlockDisplayElement();
                         blockDisplay.setBlockState(block.getDefaultState());
                         blockDisplay.setYaw(yaw + 180);
                         blockDisplay.setScale(new Vec3d(0.25, 0.25, 0.01).toVector3f());
-                        blockDisplay.setTranslation(new Vec3d(-width + 0.3, 0.25 * (lines) + 0.0625 - (i.get()) * 0.3, 0).toVector3f());
+                        blockDisplay.setTranslation(new Vec3d(-width + 0.3, 0.25 * (lines) + 0.0625 - i * 0.3, 0).toVector3f());
                         blockDisplay.setBrightness(Brightness.FULL);
                         holder.addElement(blockDisplay);
                         blockDisplays.add(blockDisplay);
                         Text amountText = Texts.of("message.neoskies.island.level.scan.block_info", new MapBuilder.StringMap()
-                          .putAny("amount", amount)
+                          .putAny("amount", UnitConvertions.readableNumber(amount))
                           .put("block", block.getName().getString())
                           .build());
-                        labels.add(createDisplay(amountText, yaw, new Vec3d(-width + 0.7 + (getTextWidth(amountText)), 0.25 * (lines) + 0.0625 - (i.get()) * 0.3 - 0.03125, 0)));
-                        i.getAndIncrement();
-                    });
+                        labels.add(createDisplay(amountText, yaw, new Vec3d(-width + 0.7 + (getTextWidth(amountText)), 0.25 * (lines) + 0.0625 - i * 0.3 - 0.03125, 0)));
+                    }
 
                     var ref = new Object() {
                         Pair<TextDisplayElement, Set<InteractionElement>> closeButton = null;

@@ -63,17 +63,17 @@ public class CommandUtils {
     }
 
     public static LiteralArgumentBuilder<ServerCommandSource> node() {
-        return literal(IslandLogic.getConfig().command);
+        return literal(IslandLogic.getConfig().commands.command);
     }
 
     public static LiteralArgumentBuilder<ServerCommandSource> adminNode() {
-        return literal(IslandLogic.getConfig().adminCommand);
+        return literal(IslandLogic.getConfig().commands.adminCommand);
     }
 
     public static LiteralCommandNode<ServerCommandSource> register(CommandDispatcher<ServerCommandSource> dispatcher, final LiteralArgumentBuilder<ServerCommandSource> command) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(command);
 
-        for (String alias : IslandLogic.getConfig().commandAliases) {
+        for (String alias : IslandLogic.getConfig().commands.commandAliases) {
             dispatcher.register(CommandManager.literal(alias).redirect(node));
         }
 
@@ -83,7 +83,7 @@ public class CommandUtils {
     public static LiteralCommandNode<ServerCommandSource> registerAdmin(CommandDispatcher<ServerCommandSource> dispatcher, final LiteralArgumentBuilder<ServerCommandSource> command) {
         LiteralCommandNode<ServerCommandSource> node = dispatcher.register(command);
 
-        for (String alias : IslandLogic.getConfig().adminCommandAliases) {
+        for (String alias : IslandLogic.getConfig().commands.adminCommandAliases) {
             dispatcher.register(CommandManager.literal(alias).redirect(node));
         }
 

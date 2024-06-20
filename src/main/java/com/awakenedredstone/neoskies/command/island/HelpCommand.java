@@ -42,7 +42,7 @@ public class HelpCommand {
     }
 
     private static void run(ServerCommandSource source, CommandDispatcher<ServerCommandSource> dispatcher) {
-        ParseResults<ServerCommandSource> parseResults = dispatcher.parse(IslandLogic.getConfig().command, source);
+        ParseResults<ServerCommandSource> parseResults = dispatcher.parse(IslandLogic.getConfig().commands.command, source);
         if (parseResults.getContext().getNodes().isEmpty()) {
             source.sendError(Texts.of("commands.neoskies.error.no_commands"));
             return;
@@ -61,7 +61,7 @@ public class HelpCommand {
             if (node.getChildren().isEmpty() || node.getCommand() != null) {
                 String command = node.getUsageText();
                 MutableText prefix = Texts.of("commands.neoskies.help.prefix", map -> {
-                    map.put("prefix", IslandLogic.getConfig().command);
+                    map.put("prefix", IslandLogic.getConfig().commands.command);
                     map.put("command", parent + command);
                 });
                 String string = "commands.description.neoskies." + parentTranslation + command;

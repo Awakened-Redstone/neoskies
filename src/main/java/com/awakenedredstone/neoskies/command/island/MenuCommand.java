@@ -40,7 +40,7 @@ public class MenuCommand {
             )
         );
 
-        for (String alias : IslandLogic.getConfig().commandAliases) {
+        for (String alias : IslandLogic.getConfig().commands.commandAliases) {
             dispatcher.register(CommandManager.literal(alias).executes(context -> MenuCommand.execute(context.getSource())));
         }
     }

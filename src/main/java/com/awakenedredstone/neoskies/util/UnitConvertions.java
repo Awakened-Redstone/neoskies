@@ -14,29 +14,31 @@ public class UnitConvertions {
         double convertedTime = time * timeUnitScale(origin);
 
         String metric = "ns";
-        if (time > 1000) {
+        if (convertedTime > 1000) {
             convertedTime /= 1000;
             metric = "µs";
         }
-        if (time > 1000) {
+        if (convertedTime > 1000) {
             convertedTime /= 1000;
             metric = "ms";
         }
-        if (time > 1000) {
+        if (convertedTime > 1000) {
             convertedTime /= 1000;
             metric = "s";
-        }
-        if (time > 60) {
-            convertedTime /= 60;
-            metric = "m";
-        }
-        if (time > 60) {
-            convertedTime /= 60;
-            metric = "h";
-        }
-        if (time > 24) {
-            convertedTime /= 24;
-            metric = "d";
+
+            if (convertedTime > 60) {
+                convertedTime /= 60;
+                metric = "m";
+            }
+            if (convertedTime > 60) {
+                convertedTime /= 60;
+                metric = "h";
+
+                if (convertedTime > 24) {
+                    convertedTime /= 24;
+                    metric = "d";
+                }
+            }
         }
         return String.format("%.2f", convertedTime) + metric;
     }
