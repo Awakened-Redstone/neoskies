@@ -104,7 +104,11 @@ public abstract class PlayerManagerMixin implements ExtendedPlayerManager {
 
     @ModifyExpressionValue(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getSpawnPointDimension()Lnet/minecraft/registry/RegistryKey;"))
     private RegistryKey<World> neoskies$fixRespawnDimension(RegistryKey<World> original, ServerPlayerEntity player) {
-        return player.getWorld().getRegistryKey();
+        World playerWorld = player.getWorld();
+        if (NeoSkiesAPI.isIsland(playerWorld)) {
+            return NeoSkiesAPI.getIsland(playerWorld).get().getOverworldKey();
+        }
+        return IslandLogic.getServer().getOverworld().getRegistryKey();
     }
 
     @Redirect(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;findRespawnPosition(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;FZZ)Ljava/util/Optional;"))

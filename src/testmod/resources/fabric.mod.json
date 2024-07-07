@@ -3,9 +3,11 @@
   "id": "neoskies-test",
   "version": "${version}",
   "name": "NeoSkies TestMod",
-  "description": "Library to work with server-side events with the ability to filter by event source",
-  "authors": ["Nucleoid Contributors"],
-  "license": "LGPLv3",
+  "description": "The testmod for NeoSkies | Also includes devtools",
+  "authors": [
+    "Awakened Redstone"
+  ],
+  "license": "LGPL-3.0",
   "environment": "*",
   "entrypoints": {
     "main": [

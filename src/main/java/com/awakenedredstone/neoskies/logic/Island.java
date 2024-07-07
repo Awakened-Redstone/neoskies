@@ -11,12 +11,15 @@ import com.awakenedredstone.neoskies.logic.settings.IslandSettingsUtil;
 import com.awakenedredstone.neoskies.util.Constants;
 import com.awakenedredstone.neoskies.util.Players;
 import com.awakenedredstone.neoskies.util.Texts;
+import com.awakenedredstone.neoskies.util.Worlds;
 import eu.pb4.common.economy.api.EconomyAccount;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
@@ -27,6 +30,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.RandomSeed;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
@@ -308,14 +312,7 @@ public class Island {
         return source.getLevel() >= settings.getPermissionLevel().getLevel();
     }
 
-    public RuntimeWorldHandle getOverworldHandler() {
-        if (this.islandConfig == null) {
-            this.islandConfig = createIslandConfig();
-        }
-        return this.fantasy.getOrOpenPersistentWorld(NeoSkies.id(this.owner.uuid.toString()), this.islandConfig);
-    }
-
-    private RuntimeWorldConfig createIslandConfig() {
+    private RuntimeWorldConfig createOverworldConfig() {
         var biome = IslandLogic.getServer().getRegistryManager().get(RegistryKeys.BIOME).getEntry(IslandLogic.getServer().getRegistryManager().get(RegistryKeys.BIOME).getOrThrow(BiomeKeys.PLAINS));
         FlatChunkGeneratorConfig flat = new FlatChunkGeneratorConfig(Optional.empty(), biome, List.of());
         FlatChunkGenerator generator = new FlatChunkGenerator(flat);
@@ -327,13 +324,6 @@ public class Island {
           .setMirrorOverworldGameRules(true)
           .setShouldTickTime(true)
           .setSeed(0L);
-    }
-
-    public RuntimeWorldHandle getNetherHandler() {
-        if (this.netherConfig == null) {
-            this.netherConfig = createNetherConfig();
-        }
-        return this.fantasy.getOrOpenPersistentWorld(new Identifier(Constants.NAMESPACE_NETHER, this.owner.uuid.toString()), this.netherConfig);
     }
 
     private RuntimeWorldConfig createNetherConfig() {
@@ -349,13 +339,6 @@ public class Island {
           .setSeed(RandomSeed.getSeed());
     }
 
-    public RuntimeWorldHandle getEndHandler() {
-        if (this.endConfig == null) {
-            this.endConfig = createEndConfig();
-        }
-        return this.fantasy.getOrOpenPersistentWorld(new Identifier(Constants.NAMESPACE_END, this.owner.uuid.toString()), this.endConfig);
-    }
-
     private RuntimeWorldConfig createEndConfig() {
         var biome = IslandLogic.getServer().getRegistryManager().get(RegistryKeys.BIOME).getEntry(IslandLogic.getServer().getRegistryManager().get(RegistryKeys.BIOME).getOrThrow(BiomeKeys.THE_END));
         FlatChunkGeneratorConfig flat = new FlatChunkGeneratorConfig(Optional.empty(), biome, List.of());
@@ -367,6 +350,27 @@ public class Island {
           .setDifficulty(Difficulty.NORMAL)
           .setShouldTickTime(false)
           .setSeed(RandomSeed.getSeed());
+    }
+
+    public RuntimeWorldHandle getOverworldHandler() {
+        if (this.islandConfig == null) {
+            this.islandConfig = createOverworldConfig();
+        }
+        return this.fantasy.getOrOpenPersistentWorld(NeoSkies.id(this.owner.uuid.toString()), this.islandConfig);
+    }
+
+    public RuntimeWorldHandle getNetherHandler() {
+        if (this.netherConfig == null) {
+            this.netherConfig = createNetherConfig();
+        }
+        return this.fantasy.getOrOpenPersistentWorld(new Identifier(Constants.NAMESPACE_NETHER, this.owner.uuid.toString()), this.netherConfig);
+    }
+
+    public RuntimeWorldHandle getEndHandler() {
+        if (this.endConfig == null) {
+            this.endConfig = createEndConfig();
+        }
+        return this.fantasy.getOrOpenPersistentWorld(new Identifier(Constants.NAMESPACE_END, this.owner.uuid.toString()), this.endConfig);
     }
 
     public ServerWorld getOverworld() {
@@ -391,6 +395,18 @@ public class Island {
         return world;
     }
 
+    public RegistryKey<World> getOverworldKey() {
+        return getOverworld().getRegistryKey();
+    }
+
+    public RegistryKey<World> getNetherKey() {
+        return getNether().getRegistryKey();
+    }
+
+    public RegistryKey<World> getEndKey() {
+        return getEnd().getRegistryKey();
+    }
+
     public void updateBlocks(@Nullable Map<Identifier, Integer> blocks) {
         if (blocks != null) this.blocks = blocks;
         this.points = 0;
@@ -400,9 +416,9 @@ public class Island {
         });
     }
 
-    public void visit(PlayerEntity player, Vec3d pos) {
+    public void visit(ServerPlayerEntity player, Vec3d pos) {
         ServerWorld world = this.getOverworld();
-        player.teleport(world, pos.getX(), pos.getY(), pos.getZ(), Set.of(), 0, 0);
+        Worlds.teleport(player, world, pos.getX(), pos.getY(), pos.getZ(), 0, 0);
 
         if (!isMember(player)) {
             Players.get(this.owner.name).ifPresent(owner -> {
@@ -420,11 +436,11 @@ public class Island {
         }
     }
 
-    public void visitAsMember(PlayerEntity player) {
+    public void visitAsMember(ServerPlayerEntity player) {
         this.visit(player, this.spawnPos);
     }
 
-    public void visitAsVisitor(PlayerEntity player) {
+    public void visitAsVisitor(ServerPlayerEntity player) {
         this.visit(player, this.visitsPos);
     }
 

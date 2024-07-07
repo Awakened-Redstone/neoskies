@@ -99,6 +99,17 @@ public class IslandStuck {
         return Optional.empty();
     }
 
+    public Optional<Island> getById(String islandId) {
+        return getById(UUID.fromString(islandId));
+    }
+
+    public Optional<Island> getById(UUID islandId) {
+        for (var island : this.stuck) {
+            if (island.getIslandId().equals(islandId)) return Optional.of(island);
+        }
+        return Optional.empty();
+    }
+
     public Optional<Island> get(UUID islandId) {
         for (var island : this.stuck) {
             if (island.getIslandId().equals(islandId)) return Optional.of(island);

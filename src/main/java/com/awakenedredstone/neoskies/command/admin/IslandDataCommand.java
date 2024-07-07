@@ -24,36 +24,38 @@ import static net.minecraft.server.command.CommandManager.literal;
 public class IslandDataCommand {
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         registerAdmin(dispatcher, adminNode()
-            .then(literal("island-data")
-                .then(literal("find")
-                    .requires(Permissions.require("neoskies.admin.island.data.find", 4))
-                    .then(argument("player", StringArgumentType.word())
-                        .suggests((context, builder) -> {
-                            List<Island> islands = IslandLogic.getInstance().islands.stuck;
-                            for (Island island : islands) {
-                                builder.suggest(island.owner.name);
-                                island.members.forEach(member -> {
-                                    builder.suggest(member.name);
-                                });
-                            }
-                            return builder.buildFuture();
-                        }).executes(context -> {
-                            String playerName = StringArgumentType.getString(context, "player");
-                            Optional<Island> islandOptional = NeoSkiesAPI.getIslandByPlayer(playerName);
-                            return getIslandData(context.getSource(), islandOptional.orElse(null));
-                        })
-                    )
-                ).then(literal("get")
-                    .then(argument("id", StringArgumentType.word())
-                        .suggests(CommandUtils.ISLAND_SUGGESTIONS)
-                        .executes(context -> {
-                            String islandId = StringArgumentType.getString(context, "id");
-                            Optional<Island> islandOptional = NeoSkiesAPI.getIsland(UUID.fromString(islandId));
-                            return getIslandData(context.getSource(), islandOptional.orElse(null));
-                        })
-                    )
-                )
+          .then(literal("island-data")
+            .requires(Permissions.require("neoskies.admin.island.data", 4))
+            .then(literal("find")
+              .requires(Permissions.require("neoskies.admin.island.data.find", 4))
+              .then(argument("player", StringArgumentType.word())
+                .suggests((context, builder) -> {
+                    List<Island> islands = IslandLogic.getInstance().islands.stuck;
+                    for (Island island : islands) {
+                        builder.suggest(island.owner.name);
+                        island.members.forEach(member -> {
+                            builder.suggest(member.name);
+                        });
+                    }
+                    return builder.buildFuture();
+                }).executes(context -> {
+                    String playerName = StringArgumentType.getString(context, "player");
+                    Optional<Island> islandOptional = NeoSkiesAPI.getIslandByPlayer(playerName);
+                    return getIslandData(context.getSource(), islandOptional.orElse(null));
+                })
+              )
+            ).then(literal("get")
+              .requires(Permissions.require("neoskies.admin.island.data.get", 4))
+              .then(argument("id", StringArgumentType.word())
+                .suggests(CommandUtils.ISLAND_SUGGESTIONS)
+                .executes(context -> {
+                    String islandId = StringArgumentType.getString(context, "id");
+                    Optional<Island> islandOptional = NeoSkiesAPI.getIsland(UUID.fromString(islandId));
+                    return getIslandData(context.getSource(), islandOptional.orElse(null));
+                })
+              )
             )
+          )
         );
     }
 
@@ -73,17 +75,17 @@ public class IslandDataCommand {
         }
 
         MapBuilder.StringMap map = new MapBuilder.StringMap()
-            .put("id", island.getIslandId().toString())
-            .put("owner", island.owner.name)
-            .put("members", members.toString())
-            .putAny("balance", island.getWallet().balance())
-            .putAny("has_nether", island.hasNether)
-            .putAny("has_end", island.hasEnd)
-            .putAny("spawn_pos", island.spawnPos)
-            .putAny("visit_pos", island.visitsPos)
-            .putAny("radius", island.radius)
-            .putAny("locked", island.locked)
-            .putAny("created", island.getCreated().toEpochMilli());
+          .put("id", island.getIslandId().toString())
+          .put("owner", island.owner.name)
+          .put("members", members.toString())
+          .putAny("balance", island.getWallet().balance())
+          .putAny("has_nether", island.hasNether)
+          .putAny("has_end", island.hasEnd)
+          .putAny("spawn_pos", island.spawnPos)
+          .putAny("visit_pos", island.visitsPos)
+          .putAny("radius", island.radius)
+          .putAny("locked", island.locked)
+          .putAny("created", island.getCreated().toEpochMilli());
         source.sendFeedback(() -> Texts.of("message.neoskies.island_data", map.build()), false);
         return 1;
     }

@@ -2,6 +2,7 @@ package com.awakenedredstone.neoskies.logic;
 
 import com.awakenedredstone.neoskies.api.events.IslandEvents;
 import com.awakenedredstone.neoskies.util.Texts;
+import com.awakenedredstone.neoskies.util.Worlds;
 import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -14,14 +15,14 @@ public class Hub {
     public boolean hasProtection = false;
     //public PositionSongPlayer songPlayer = null;
 
-    public void visit(PlayerEntity player) {
+    public void visit(ServerPlayerEntity player) {
         visit(player, false);
     }
 
-    public void visit(PlayerEntity player, boolean silent) {
+    public void visit(ServerPlayerEntity player, boolean silent) {
         var world = IslandLogic.getServer().getOverworld();
         if (!silent) player.sendMessage(Texts.prefixed("message.neoskies.hub_visit"));
-        FabricDimensions.teleport(player, world, new TeleportTarget(this.pos, new Vec3d(0, 0, 0), 0, 0));
+        Worlds.teleport(player, world, this.pos, 0, 0);
         IslandEvents.ON_HUB_VISIT.invoker().invoke(player, world);
     }
 

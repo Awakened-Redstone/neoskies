@@ -1,3 +1,23 @@
+[//]: # (A skyblock mod with customizable islands, advanced island protection and support for expansion mods.)
+
+[//]: # ()
+[//]: # (NeoSkies provides it's own API and registries for other mods to add content and features and integrate with the island system.)
+
+[//]: # ()
+[//]: # (Each island have their own settings, those settings allow the owner to decide how other players can interact with the island, such as allowing interaction with doors, redstone, containers, etc.)
+
+[//]: # ()
+[//]: # (The mod uses the Common Economy API for currency, each island has it's account, that is shared between all island members.)
+
+[//]: # ()
+[//]: # (The mod is still in development and will change over time.)
+
+[//]: # ()
+[//]: # (This mod is a fork of Skylands, and the current island system and island templates are &#40;mostly&#41; from the original mod.)
+
+[//]: # ()
+[//]: # (Please provide feedback on the [discord server]&#40;https://discord.gg/MTqsjwMpN2&#41;, it helps a lot to continue developing the mod)
+
 ## About
 <!-- modrinth_exclude.start -->
 <img align="right" width="128" src="src/main/resources/assets/neoskies/icon.png">

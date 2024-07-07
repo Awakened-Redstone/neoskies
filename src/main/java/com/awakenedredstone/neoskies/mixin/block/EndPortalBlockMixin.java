@@ -3,43 +3,41 @@ package com.awakenedredstone.neoskies.mixin.block;
 import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
-import net.minecraft.block.BlockState;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.block.EndPortalBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.Optional;
 
 @Mixin(EndPortalBlock.class)
 public class EndPortalBlockMixin {
 
-    @Inject(method = "onEntityCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;moveToWorld(Lnet/minecraft/server/world/ServerWorld;)Lnet/minecraft/entity/Entity;"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-    public void resourceKey(BlockState state, World world, BlockPos pos, Entity entity, CallbackInfo ci) {
+    @ModifyVariable(method = "onEntityCollision", at = @At(value = "STORE"), ordinal = 0)
+    public RegistryKey<World> resourceKey(RegistryKey<World> original, @Local(argsOnly = true) World world) {
         if (NeoSkiesAPI.isIsland(world)) {
-            if (!IslandLogic.getConfig().enableEndIsland) {
-                ci.cancel();
-                return;
-            }
             Optional<Island> island = NeoSkiesAPI.getIsland(world);
-            if (island.isPresent()) {
-                ServerWorld targetWorld;
-                if (NeoSkiesAPI.isEnd(world.getRegistryKey())) {
-                    targetWorld = island.get().getOverworld();
+            if (!IslandLogic.getConfig().enableEndIsland) {
+                if (island.isPresent()) {
+                    return island.get().getOverworldKey();
                 } else {
-                    targetWorld = island.get().getEnd();
+                    return world.getRegistryKey();
                 }
-                if (targetWorld != null) {
-                    entity.moveToWorld(targetWorld);
+            }
+            if (island.isPresent()) {
+                RegistryKey<World> targetWorld;
+                if (NeoSkiesAPI.isEnd(world.getRegistryKey())) {
+                    targetWorld = island.get().getOverworldKey();
+                } else {
+                    targetWorld = island.get().getEndKey();
                 }
-                ci.cancel();
+                return targetWorld;
             }
         }
+
+        return original;
     }
 }

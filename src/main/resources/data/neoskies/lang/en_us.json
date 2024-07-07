@@ -125,7 +125,7 @@
   "island_settings.neoskies.ride/others.description": "<dark_gray>Allows players to ride mobs",
   "island_settings.neoskies.leash/entity.description":  "<dark_gray>Allows players to leash entities",
   "island_settings.neoskies.shear/entity.description": "<dark_gray>Allows players to shear entities",
-  "island_settings.neoskies.bucket/passive.description": "<white>Allow players to bucket passive mobs",
+  "island_settings.neoskies.bucket/passive.description": "<dark_gray>Allow players to bucket passive mobs",
   "island_settings.neoskies.harvest.description":  "<dark_gray>Allows players to harvest crops",
 
   "island_settings/selected": "<green>> %level%",

@@ -127,7 +127,6 @@ public class NeoSkiesCommands {
                         .putAny("current", integer)
                         .build()));
                   }, (timeTaken, scannedBlocks) -> {
-                      Map.Entry<Identifier, Integer> i = scannedBlocks.entrySet().stream().findFirst().get();
                       source.sendMessage(Texts.of("Scanned %total% blocks in %time%", new MapBuilder.StringMap()
                         .putAny("total", UnitConvertions.readableNumber(scannedBlocks.values().stream().mapToInt(value -> value).sum()))
                         .putAny("time", UnitConvertions.formatTimings(timeTaken))
@@ -140,6 +139,7 @@ public class NeoSkiesCommands {
               })
             )
           ).then(CommandManager.literal("list")
+            .requires(Permissions.require("neoskies.admin.island.list", 4))
             .executes(context -> {
                 LinedStringBuilder builder = new LinedStringBuilder();
                 List<Island> islands = IslandLogic.getInstance().islands.stuck;

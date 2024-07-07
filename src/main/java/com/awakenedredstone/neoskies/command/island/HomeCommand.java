@@ -1,6 +1,5 @@
 package com.awakenedredstone.neoskies.command.island;
 
-import com.awakenedredstone.neoskies.NeoSkies;
 import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
@@ -41,22 +40,5 @@ public class HomeCommand {
                 island.visitAsMember(player);
             }
         }, () -> player.sendMessage(Texts.prefixed("message.neoskies.home.no_island")));
-    }
-
-    static void run(ServerPlayerEntity visitor, String islandOwner) {
-        IslandLogic.getInstance().islands.getByPlayer(islandOwner).ifPresentOrElse(island -> {
-            if (visitor.getWorld().getRegistryKey().getValue().equals(NeoSkies.id(island.owner.uuid.toString())) && !IslandLogic.getConfig().allowVisitCurrentIsland) {
-                visitor.sendMessage(Texts.prefixed("message.neoskies.visit_home.fail", map -> map.put("owner", islandOwner)));
-            } else {
-                if (island.isMember(visitor)) {
-                    visitor.sendMessage(Texts.prefixed("message.neoskies.visit_home.success", map -> map.put("owner", islandOwner)));
-                    island.visitAsMember(visitor);
-                } else {
-                    visitor.sendMessage(Texts.prefixed("message.neoskies.visit_home.not_member"));
-                }
-            }
-        }, () -> {
-            visitor.sendMessage(Texts.prefixed("message.neoskies.visit_home.no_island"));
-        });
     }
 }

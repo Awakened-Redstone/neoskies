@@ -39,7 +39,7 @@ public class NeoSkiesIslandSettings {
     public static final IslandSettings USE_LODESTONE = register("use/lodestone", Items.LODESTONE);
     public static final IslandSettings USE_REDSTONE = register("use/redstone", Items.REDSTONE);
     public static final IslandSettings USE_RESPAWN_ANCHOR = register("use/respawn_anchor", Items.RESPAWN_ANCHOR);
-    public static final IslandSettings USE_SIGNS = register("use/signs", Items.SPAWNER);
+    public static final IslandSettings USE_SIGNS = register("use/signs", Items.OAK_SIGN);
     public static final IslandSettings USE_SPAWNER = register("use/spawner", Items.SPAWNER);
     public static final IslandSettings USE_TNT = register("use/tnt", Items.TNT);
 
@@ -51,7 +51,7 @@ public class NeoSkiesIslandSettings {
     public static final IslandSettings HARVEST = register("harvest", Items.SWEET_BERRIES);
 
     public static final IslandSettings RIDE_MINECARTS = register("ride/minecarts", Items.MINECART);
-    public static final IslandSettings RIDE_BOATS = register("ride/boats", Items.MINECART);
+    public static final IslandSettings RIDE_BOATS = register("ride/boats", Items.OAK_BOAT);
     public static final IslandSettings RIDE_OTHERS = register("ride/others", Items.SADDLE);
     public static final IslandSettings LEASH_ENTITY = register("leash/entity", Items.LEAD);
     public static final IslandSettings SHEAR_ENTITY = register("shear/entity", Items.SHEARS);

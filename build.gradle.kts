@@ -1,6 +1,7 @@
 import java.io.File
 import com.modrinth.minotaur.dependencies.ModDependency
 
+//region Setup
 plugins {
     id("signing")
     id("maven-publish")
@@ -8,15 +9,16 @@ plugins {
     id("com.modrinth.minotaur") version "2.+"
 }
 
-val CHANGELOG: String =
-    if (file("CHANGELOG.md").exists()) {
-        file("CHANGELOG.md").readText()
-    } else {
-        "No changelog provided"
-    }
+loom {
+    accessWidenerPath.set(file("src/main/resources/neoskies.accesswidener"))
+    splitEnvironmentSourceSets()
 
-fun file(path: String): File {
-    return rootProject.file(path)
+    mods {
+        create("neoskies") {
+            sourceSet(sourceSets.main.get())
+            sourceSet(sourceSets.getByName("client"))
+        }
+    }
 }
 
 sourceSets {
@@ -30,37 +32,48 @@ sourceSets {
         compileClasspath += sourceSets.main.get().compileClasspath
         runtimeClasspath += sourceSets.main.get().runtimeClasspath
     }
+
+    create("testmodClient") {
+        compileClasspath += main.get().compileClasspath
+        runtimeClasspath += main.get().runtimeClasspath
+
+        compileClasspath += sourceSets.getByName("client").compileClasspath
+        runtimeClasspath += sourceSets.getByName("client").runtimeClasspath
+
+        compileClasspath += sourceSets.getByName("testmod").compileClasspath
+        runtimeClasspath += sourceSets.getByName("testmod").runtimeClasspath
+    }
 }
 
 loom {
-    accessWidenerPath.set(file("src/main/resources/neoskies.accesswidener"))
-
     runs {
         create("datagenServer") {
             server()
-            name = "Data Generation"
+            name("Data Generation")
             vmArg("-Dfabric-api.datagen")
             vmArg("-Dfabric-api.datagen.output-dir=${file("src/main/generated")}")
             vmArg("-Dfabric-api.datagen.modid=neoskies")
-
-            //ideConfigGenerated = true
-            runDir = "build/datagen"
+            runDir("build/datagen")
+            ideConfigGenerated(true)
         }
-
         create("testmodServer") {
             server()
-            name = "Testmod Server"
+            name("Testmod Server")
+            ideConfigGenerated(true)
             source(sourceSets.getByName("testmod"))
         }
-
         create("testmodClient") {
             client()
-            name = "Testmod Client"
+            name("Testmod Client")
             runDir("run_client")
-            source(sourceSets.getByName("testmod"))
+            //TODO: Generate dev world
+            programArgs("--quickPlaySingleplayer \"world\"")
+            ideConfigGenerated(true)
+            source(sourceSets.getByName("testmodClient"))
         }
     }
 }
+//endregion
 
 var archivesBaseName: String = property("archives_base_name").toString()
 base {
@@ -76,6 +89,7 @@ repositories {
 	maven("https://oss.sonatype.org/content/repositories/snapshots")
 	maven("https://maven.ladysnake.org/releases")
     maven("https://maven.isxander.dev/releases")
+    maven("https://maven.deftu.dev/snapshots")
     maven("https://jitpack.io")
     maven {
         name = "Modrinth"
@@ -122,11 +136,30 @@ dependencies {
     include(api("blue.endless:jankson:${property("jankson_version")}") as Any)
     //endregion
 
+    //region Client
+    "clientImplementation"("dev.deftu:dearimguimc-1.20.6-fabric:0.1.0") {
+        exclude(group = "net.fabricmc.fabric-api")
+    }
+    listOf(
+        "binding",
+        "lwjgl3",
+        "natives-windows",
+        "natives-linux",
+        "natives-macos"
+    ).forEach { module ->
+        val version = "1.86.11"
+        implementation("io.github.spair:imgui-java-$module:$version") {
+            exclude(group = "org.lwjgl")
+        }
+    }
+    //endregion
+
     // region Tests
     "testmodImplementation"(sourceSets.main.get().output)
     //endregion
 }
 
+//region Misc
 tasks.processResources {
     val map = mapOf(
         "version" to version
@@ -156,7 +189,9 @@ tasks.jar {
         rename { "${it}_${property("archivesBaseName")}" }
     }
 }
+//endregion
 
+//region Publishing
 publishing {
     repositories {
         maven {
@@ -179,6 +214,17 @@ publishing {
 signing {
     useGpgCmd()
     sign(publishing.publications["main"])
+}
+
+val CHANGELOG: String =
+    if (file("CHANGELOG.md").exists()) {
+        file("CHANGELOG.md").readText()
+    } else {
+        "No changelog provided"
+    }
+
+fun file(path: String): File {
+    return rootProject.file(path)
 }
 
 modrinth {
@@ -212,3 +258,4 @@ modrinth {
         ModDependency("placeholder-api", "embedded")
     )
 }
+//endregion

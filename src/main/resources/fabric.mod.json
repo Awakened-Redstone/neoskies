@@ -20,10 +20,18 @@
     ],
     "cardinal-components": [
         "com.awakenedredstone.neoskies.data.NeoSkiesComponents"
+    ],
+
+    "client": [
+      "com.awakenedredstone.neoskies.NeoSkiesClient"
     ]
   },
   "mixins": [
-    "neoskies.mixins.json"
+    "neoskies.mixins.json",
+    {
+      "config": "neoskies.client.mixins.json",
+      "environment": "client"
+    }
   ],
   "custom": {
     "cardinal-components": [

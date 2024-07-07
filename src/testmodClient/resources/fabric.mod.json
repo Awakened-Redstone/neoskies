@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "neoskies-test-client",
+  "version": "${version}",
+  "name": "NeoSkies TestMod (Client Edition)",
+  "description": "The testmod for NeoSkies (client edition) | Also includes devtools",
+  "authors": [
+    "Awakened Redstone"
+  ],
+  "license": "LGPL-3.0",
+  "environment": "client",
+  "mixins": [
+    "neoskies.test.client.mixins.json"
+  ],
+  "entrypoints": {
+    "client": [
+      "com.awakenedredstone.neoskies.test.NeoSkiesTestClientMain"
+    ],
+    "imgui": [
+      "com.awakenedredstone.neoskies.test.DebugDearImGuiEntrypoint"
+    ]
+  }
+}
