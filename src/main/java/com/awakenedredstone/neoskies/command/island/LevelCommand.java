@@ -109,7 +109,7 @@ public class LevelCommand {
               .hideDefaultTooltip()
               .addLoreLine(Text.empty())
               //TODO: multiline
-              .addLoreLine(Texts.loreBase("gui.level.view.item_description", placeholders -> {
+              .addLoreLine(Texts.loreBase("gui.neoskies.level.item.description", placeholders -> {
                   placeholders.put("points", String.valueOf(points * count));
                   placeholders.put("count", String.valueOf(count));
               }));
@@ -123,7 +123,10 @@ public class LevelCommand {
         });
 
         SimpleGui gui = PagedGui.of(player, elements);
-        gui.setTitle(Texts.of("Island points"));
+        gui.setTitle(Texts.of("gui.neoskies.level.title", map -> {
+            map.put("points", String.valueOf(island.getPoints()));
+            map.put("level", String.valueOf(island.getLevel()));
+        }));
         gui.open();
 
         source.sendFeedback(() -> Texts.of(sum.get() + " points"), false);

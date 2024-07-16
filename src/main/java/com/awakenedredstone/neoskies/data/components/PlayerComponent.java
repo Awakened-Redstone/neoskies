@@ -1,4 +1,4 @@
-package com.awakenedredstone.neoskies.data;
+package com.awakenedredstone.neoskies.data.components;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;

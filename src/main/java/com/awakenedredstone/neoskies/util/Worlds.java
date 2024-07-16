@@ -29,7 +29,7 @@ public class Worlds {
         player.stopRiding();
 
         if (NeoSkiesAPI.isIsland(player.getWorld())) {
-            Optional<Island> islandOptional = NeoSkiesAPI.getIsland(player.getWorld());
+            Optional<Island> islandOptional = NeoSkiesAPI.getOptionalIsland(player.getWorld());
             if (islandOptional.isPresent()) {
                 Island island = islandOptional.get();
                 if (island.isMember(player)) {

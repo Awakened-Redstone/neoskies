@@ -12,6 +12,7 @@ import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.logic.protection.NeoSkiesProtectionProvider;
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesIslandSettings;
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesPermissionLevels;
+import com.awakenedredstone.neoskies.logic.registry.NeoSkiesRegister;
 import com.awakenedredstone.neoskies.util.LinedStringBuilder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -38,11 +39,10 @@ public class NeoSkies implements ModInitializer {
     //TODO: Add scan cooldown, and disable it outside of the island.
     @Override
     public void onInitialize() {
-        CommonProtection.register(NeoSkies.id("neoskies"), new NeoSkiesProtectionProvider());
-
+        NeoSkiesRegister.init();
         NeoSkiesIslandSettings.init();
         NeoSkiesPermissionLevels.init();
-        EventListeners.registerEvents();
+        EventListeners.listenForEvents();
         NeoSkiesCommands.init();
         FontManager.init();
 
@@ -50,12 +50,11 @@ public class NeoSkies implements ModInitializer {
         IslandLogic.getRankingConfig().load();
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            LinedStringBuilder message = new LinedStringBuilder()
-                .appendLine("  You are using an alpha build of NeoSkies, it may have bugs and performance issues!")
-                .appendLine("  Feature will get added and changed in the future.")
-                .appendLine("  Please report bugs and suggest changes at the project github page: https://github.com/Awakened-Redstone/neoskies/issues")
-                .appendLine("  Discuss about the mod at the discord server: https://discord.gg/MTqsjwMpN2");
-            LOGGER.warn("\n{}", message.toString());
+            LOGGER.warn(new LinedStringBuilder().appendLine()
+              .appendLine("  You are using an alpha build of NeoSkies, it may have bugs and performance issues!")
+              .appendLine("  Feature WILL be added, removed and changed!")
+              .appendLine("  Please report bugs and suggest changes at the project github page: https://github.com/Awakened-Redstone/neoskies/issues")
+              .appendLine("  Discuss about the mod in the discord server: https://discord.gg/MTqsjwMpN2").toString());
         });
     }
 

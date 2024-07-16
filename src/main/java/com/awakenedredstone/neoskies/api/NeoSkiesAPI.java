@@ -9,12 +9,11 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
 public class NeoSkiesAPI {
-    public static final IslandLogic NEO_SKIES_LOGIC = IslandLogic.getInstance();
-
     public static boolean isHub(World world) {
         return world.getRegistryKey() == World.OVERWORLD;
     }
@@ -48,28 +47,40 @@ public class NeoSkiesAPI {
     }
 
     public static Optional<Island> getIslandByPlayer(PlayerEntity player) {
-        return NEO_SKIES_LOGIC.islands.getFromMember(player);
+        return IslandLogic.getInstance().islands.getFromMember(player);
     }
 
     public static Optional<Island> getIslandByPlayer(String playerName) {
-        return NEO_SKIES_LOGIC.islands.getByPlayer(playerName);
+        return IslandLogic.getInstance().islands.getByPlayer(playerName);
     }
 
     public static Optional<Island> getIslandByPlayer(UUID playerUuid) {
-        return NEO_SKIES_LOGIC.islands.getByPlayer(playerUuid);
+        return IslandLogic.getInstance().islands.getByPlayer(playerUuid);
     }
 
-    public static Optional<Island> getIsland(UUID islandId) {
-        return NEO_SKIES_LOGIC.islands.get(islandId);
+    public static Island getIsland(UUID islandId) throws NoSuchElementException {
+        return getOptionalIsland(islandId).orElseThrow();
     }
 
-    public static Optional<Island> getIsland(World world) {
-        return getIsland(world.getRegistryKey());
+    public static Optional<Island> getOptionalIsland(UUID islandId) {
+        return IslandLogic.getInstance().islands.get(islandId);
     }
 
-    public static Optional<Island> getIsland(RegistryKey<World> registryKey) {
+    public static Island getIsland(World world) throws NoSuchElementException {
+        return getOptionalIsland(world).orElseThrow();
+    }
+
+    public static Optional<Island> getOptionalIsland(World world) {
+        return getOptionalIsland(world.getRegistryKey());
+    }
+
+    public static Island getIsland(RegistryKey<World> registryKey) throws NoSuchElementException {
+        return getOptionalIsland(registryKey).orElseThrow();
+    }
+
+    public static Optional<Island> getOptionalIsland(RegistryKey<World> registryKey) {
         if (NeoSkiesAPI.isIsland(registryKey)) {
-            return NEO_SKIES_LOGIC.islands.getByPlayer(UUID.fromString(registryKey.getValue().getPath()));
+            return IslandLogic.getInstance().islands.getByPlayer(UUID.fromString(registryKey.getValue().getPath()));
         }
         return Optional.empty();
     }

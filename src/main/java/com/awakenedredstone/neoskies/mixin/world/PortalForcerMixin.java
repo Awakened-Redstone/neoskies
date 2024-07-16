@@ -24,7 +24,7 @@ public class PortalForcerMixin {
     @Inject(method = "createPortal", at = @At("HEAD"), cancellable = true)
     private void fixPortals(BlockPos pos, Direction.Axis axis, CallbackInfoReturnable<Optional<BlockLocating.Rectangle>> cir) {
         if (NeoSkiesAPI.isIsland(world)) {
-            Island island = NeoSkiesAPI.getIsland(world).get();
+            Island island = NeoSkiesAPI.getOptionalIsland(world).get();
             if (!island.isWithinBorder(pos) || NeoSkiesAPI.isEnd(world.getRegistryKey())) {
                 cir.setReturnValue(Optional.empty());
             }

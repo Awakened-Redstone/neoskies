@@ -30,14 +30,14 @@ public class BallanceCommand {
                     .then(literal("get")
                         .executes(context -> {
                             String islandId = StringArgumentType.getString(context, "island");
-                            return getBalance(context.getSource(), NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null));
+                            return getBalance(context.getSource(), NeoSkiesAPI.getOptionalIsland(UUID.fromString(islandId)).orElse(null));
                         })
                     ).then(literal("set")
                         .then(argument("amount", LongArgumentType.longArg())
                             .executes(context -> {
                                 String islandId = StringArgumentType.getString(context, "island");
                                 long amount = LongArgumentType.getLong(context, "amount");
-                                return setBalance(context.getSource(), NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null), amount);
+                                return setBalance(context.getSource(), NeoSkiesAPI.getOptionalIsland(UUID.fromString(islandId)).orElse(null), amount);
                             })
                         )
                     ).then(literal("add")
@@ -45,7 +45,7 @@ public class BallanceCommand {
                             .executes(context -> {
                                 String islandId = StringArgumentType.getString(context, "island");
                                 long amount = LongArgumentType.getLong(context, "amount");
-                                return addBalance(context.getSource(), NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null), amount);
+                                return addBalance(context.getSource(), NeoSkiesAPI.getOptionalIsland(UUID.fromString(islandId)).orElse(null), amount);
                             })
                         )
                     ).then(literal("remove")
@@ -53,7 +53,7 @@ public class BallanceCommand {
                             .executes(context -> {
                                 String islandId = StringArgumentType.getString(context, "island");
                                 long amount = LongArgumentType.getLong(context, "amount");
-                                return removeBalance(context.getSource(), NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null), amount);
+                                return removeBalance(context.getSource(), NeoSkiesAPI.getOptionalIsland(UUID.fromString(islandId)).orElse(null), amount);
                             })
                         )
                     )

@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DebugImGuiRenderer implements ImGuiRenderer {
     private static final ImPlotContext IMPLOT_CONTEXT;
-    public static final ImBoolean OPEN = new ImBoolean(true);
+    public static final ImBoolean OPEN = new ImBoolean(false);
     private static final Map<String, Text> MESSAGES = new HashMap<>();
 
     static {

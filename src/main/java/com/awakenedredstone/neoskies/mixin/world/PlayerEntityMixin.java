@@ -35,7 +35,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     private void increaseTravelMotionStats(Vec3d movementInput, CallbackInfo ci) {
         if (((PlayerEntity) (Object) this) instanceof ServerPlayerEntity serverPlayer && NeoSkiesAPI.isIsland(getWorld()) && !lastPos.equals(getPos()) && getWorld() != null) {
             WorldBorder defaultWorldBorder = getWorld().getWorldBorder();
-            Island island = NeoSkiesAPI.getIsland(getWorld()).get();
+            Island island = NeoSkiesAPI.getOptionalIsland(getWorld()).get();
             if (island.radius <= 0) {
                 if (lastSize != -1) {
                     WorldBorder border = new WorldBorder();

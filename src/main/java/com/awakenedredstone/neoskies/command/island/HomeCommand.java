@@ -31,7 +31,7 @@ public class HomeCommand {
 
     static void run(ServerPlayerEntity player) {
         IslandLogic.getInstance().islands.getByPlayer(player).ifPresentOrElse(island -> {
-            Optional<Island> currentIsland = NeoSkiesAPI.getIsland(player.getWorld());
+            Optional<Island> currentIsland = NeoSkiesAPI.getOptionalIsland(player.getWorld());
             boolean isHome = currentIsland.isPresent() && currentIsland.get().equals(island);
             if (isHome && !IslandLogic.getConfig().allowVisitCurrentIsland) {
                 player.sendMessage(Texts.prefixed("message.neoskies.home.fail"));

@@ -134,6 +134,7 @@ dependencies {
     //endregion
     // region Non mod dependencies
     include(api("blue.endless:jankson:${property("jankson_version")}") as Any)
+    include(api("com.ezylang:EvalEx:3.3.0") as Any)
     //endregion
 
     //region Client

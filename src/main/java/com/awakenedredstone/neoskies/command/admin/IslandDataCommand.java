@@ -50,7 +50,7 @@ public class IslandDataCommand {
                 .suggests(CommandUtils.ISLAND_SUGGESTIONS)
                 .executes(context -> {
                     String islandId = StringArgumentType.getString(context, "id");
-                    Optional<Island> islandOptional = NeoSkiesAPI.getIsland(UUID.fromString(islandId));
+                    Optional<Island> islandOptional = NeoSkiesAPI.getOptionalIsland(UUID.fromString(islandId));
                     return getIslandData(context.getSource(), islandOptional.orElse(null));
                 })
               )

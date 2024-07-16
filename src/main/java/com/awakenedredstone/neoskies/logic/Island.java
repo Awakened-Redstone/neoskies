@@ -12,6 +12,11 @@ import com.awakenedredstone.neoskies.util.Constants;
 import com.awakenedredstone.neoskies.util.Players;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.awakenedredstone.neoskies.util.Worlds;
+import com.ezylang.evalex.EvaluationException;
+import com.ezylang.evalex.Expression;
+import com.ezylang.evalex.data.EvaluationValue;
+import com.ezylang.evalex.parser.ParseException;
+import com.google.common.collect.ImmutableList;
 import eu.pb4.common.economy.api.EconomyAccount;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,6 +40,7 @@ import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.gen.chunk.FlatChunkGenerator;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.nucleoid.fantasy.Fantasy;
 import xyz.nucleoid.fantasy.RuntimeWorldConfig;
@@ -64,6 +70,7 @@ public class Island {
     public Vec3d visitsPos = IslandLogic.getConfig().defaultIslandLocation;
     protected Map<Identifier, Integer> blocks = new LinkedHashMap<>();
     private long points = 0;
+    private long level = 0;
     public boolean hasNether = false;
     public boolean hasEnd = false;
 
@@ -145,6 +152,7 @@ public class Island {
         });
 
         island.points = nbt.getLong("points");
+        island.level = nbt.getLong("level");
         NbtCompound blocksNbt = nbt.getCompound("blocks");
         blocksNbt.getKeys().forEach(key -> {
             int amount = blocksNbt.getInt(key);
@@ -221,11 +229,10 @@ public class Island {
         nbt.put("settings", settingsNbt);
 
         nbt.putLong("points", this.points);
+        nbt.putLong("level", this.level);
         NbtCompound blocksNbt = new NbtCompound();
         this.blocks.forEach((block, amount) -> blocksNbt.putInt(block.toString(), amount));
         nbt.put("blocks", blocksNbt);
-
-        //nbt.put("game_rules", getOverworld().getGameRules().toNbt());
 
         return nbt;
     }
@@ -238,8 +245,20 @@ public class Island {
         return blocks;
     }
 
+    void setPoints(long points) {
+        this.points = points;
+    }
+
     public long getPoints() {
         return points;
+    }
+
+    void setLevel(long level) {
+        this.level = level;
+    }
+
+    public long getLevel() {
+        return level;
     }
 
     public boolean isScanning() {
@@ -252,6 +271,10 @@ public class Island {
 
     public void setScanning(boolean scanning) {
         this.scanning = scanning;
+    }
+
+    public List<Member> getAllMembers() {
+        return ImmutableList.<Member>builder().addAll(members).add(owner).build();
     }
 
     public boolean isMember(PlayerEntity player) {
@@ -407,13 +430,35 @@ public class Island {
         return getEnd().getRegistryKey();
     }
 
-    public void updateBlocks(@Nullable Map<Identifier, Integer> blocks) {
-        if (blocks != null) this.blocks = blocks;
-        this.points = 0;
-        this.blocks.forEach((block, integer) -> {
-            int points = IslandLogic.getRankingConfig().getPoints(block);
-            this.points += (long) integer * points;
-        });
+    public void updateBlocks(@NotNull Map<Identifier, Integer> blocks) throws EvaluationException, ParseException {
+        Map<Identifier, Integer> blocksCopy = this.blocks;
+        long pointsCopy = this.points;
+        long levelCopy = this.level;
+
+        try {
+            this.blocks = blocks;
+            this.points = 0;
+            this.blocks.forEach((block, integer) -> {
+                int points = IslandLogic.getRankingConfig().getPoints(block);
+                this.points += (long) integer * points;
+            });
+
+            Expression expression = new Expression(IslandLogic.getRankingConfig().formula, Constants.EXPRESSION_PARSER).and("points", points);
+            EvaluationValue evaluationValue = expression.evaluate();
+
+            if (!evaluationValue.isNumberValue()) {
+                throw new IllegalArgumentException("Level formula must be a numeric formula!");
+            }
+
+            this.level = evaluationValue.getNumberValue().intValue();
+        } catch (Throwable e) {
+            this.blocks = blocksCopy;
+            this.points = pointsCopy;
+            this.level = levelCopy;
+
+            NeoSkies.LOGGER.error("Failed to update island point data, reverting to last state", e);
+            throw e;
+        }
     }
 
     public void visit(ServerPlayerEntity player, Vec3d pos) {

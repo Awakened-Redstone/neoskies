@@ -31,7 +31,6 @@ public class IslandSettingsGui {
     private final Consumer<SlotGuiInterface> simpleUpdateGui;
     private int page = 0;
 
-    private final CBGuiElement filler = new CBGuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE).setName(Text.empty()).hideTooltip().build();
     private final CBGuiElement nextPage = new CBGuiElementBuilder(Items.LIME_STAINED_GLASS_PANE).setName(Texts.of("neoskies.page.next")).setCallback((index, type, action, gui) -> offsetPage(1, gui)).build();
     private final CBGuiElement prevPage = new CBGuiElementBuilder(Items.RED_STAINED_GLASS_PANE).setName(Texts.of("neoskies.page.previous")).setCallback((index, type, action, gui) -> offsetPage(-1, gui)).build();
 
@@ -42,7 +41,7 @@ public class IslandSettingsGui {
         this.entries = new ArrayList<>(island.getSettings().values());
 
         updateGui = gui -> {
-            UIUtils.fillGui(gui, filler);
+            UIUtils.fillGui(gui);
 
             gui.setTitle(Texts.of("gui.neoskies.island_settings"));
 
@@ -83,7 +82,7 @@ public class IslandSettingsGui {
 
     public SimpleGui buildGui(ServerPlayerEntity player) {
         CBSimpleGuiBuilder builder = new CBSimpleGuiBuilder(ScreenHandlerType.GENERIC_9X6, false);
-        UIUtils.fillGui(builder, filler);
+        UIUtils.fillGui(builder);
 
         builder.setOnOpen(updateGui::accept);
         builder.setOnClick(simpleUpdateGui::accept);

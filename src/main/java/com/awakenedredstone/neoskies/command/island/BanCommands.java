@@ -87,7 +87,7 @@ public class BanCommands {
                         player.sendMessage(Texts.prefixed("message.neoskies.ban_player.success", map -> map.put("player", banned.getName().getString())));
                         banned.sendMessage(Texts.prefixed("message.neoskies.ban_player.ban", map -> map.put("owner", island.owner.name)));
 
-                        NeoSkiesAPI.getIsland(banned.getWorld()).ifPresent(isl -> {
+                        NeoSkiesAPI.getOptionalIsland(banned.getWorld()).ifPresent(isl -> {
                             if (isl.owner.uuid.equals(island.owner.uuid)) {
                                 IslandLogic.getInstance().hub.visit(banned);
                             }

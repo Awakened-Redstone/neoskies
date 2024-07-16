@@ -34,7 +34,7 @@ public class MainConfig extends Config {
     @Comment("The maximum amount of islands a player can create")
     public int islandLimit = -1;
 
-    @Comment("Whenever it should clear the player data when they reset their island")
+    @Comment("Whenever it should clear the player data when they clear their island")
     public boolean resetPlayerWithIsland = false;
 
     @Comment("The default island location")

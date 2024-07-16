@@ -39,6 +39,8 @@ public class IslandRankingConfig extends Config {
     @Comment("The default amount of points a block that isn't in the list gets")
     public int defaultValue = 1;
 
+    public String formula = "points / 100";
+
     @PredicateConstraint("pointConstraint")
     @Comment("The value of each block for the island ranking, tags are allowed")
     public Map<TagEntry, Integer> points = new LinkedHashMap<>();

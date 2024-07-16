@@ -26,7 +26,7 @@ public class PlayerConnectEvent {
             }
         });
 
-        NeoSkiesAPI.getIsland(player.getWorld()).ifPresent(island -> {
+        NeoSkiesAPI.getOptionalIsland(player.getWorld()).ifPresent(island -> {
             if (!island.isMember(player) && island.isBanned(player)) {
                 player.sendMessage(Texts.prefixed("message.neoskies.ban_player.ban", map -> map.put("owner", island.owner.name)));
                 IslandLogic.getInstance().hub.visit(player);

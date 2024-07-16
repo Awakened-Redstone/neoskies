@@ -26,7 +26,7 @@ public class WorldProtection {
             if (Permissions.check(player, "neoskies.admin.protection.bypass", 4)) return true;
             else NeoSkies.PROTECTION_BYPASS.remove(player);
         }
-        Optional<Island> island = NeoSkiesAPI.getIsland(world);
+        Optional<Island> island = NeoSkiesAPI.getOptionalIsland(world);
         if (island.isPresent() && !island.get().isMember(player)) {
             return false;
         }
@@ -50,7 +50,7 @@ public class WorldProtection {
                 NeoSkies.PROTECTION_BYPASS.remove(player);
             }
         }
-        Optional<Island> island = NeoSkiesAPI.getIsland(world);
+        Optional<Island> island = NeoSkiesAPI.getOptionalIsland(world);
         if (island.isPresent()) {
             if (!island.get().isWithinBorder(pos)) {
                 return false;
@@ -86,7 +86,7 @@ public class WorldProtection {
             }
         }
 
-        Optional<Island> island = NeoSkiesAPI.getIsland(world);
+        Optional<Island> island = NeoSkiesAPI.getOptionalIsland(world);
         if (island.isPresent()) {
             if (!island.get().isWithinBorder(pos)) {
                 return false;
@@ -112,7 +112,7 @@ public class WorldProtection {
             }
         }
 
-        Optional<Island> island = NeoSkiesAPI.getIsland(world);
+        Optional<Island> island = NeoSkiesAPI.getOptionalIsland(world);
         if (island.isPresent()) {
             if (island.get().isInteractionAllowed(setting.getIdentifier(), getPlayerPermissionLevel(world, player))) {
                 return true;
@@ -127,7 +127,7 @@ public class WorldProtection {
     }
 
     public static @NotNull PermissionLevel getPlayerPermissionLevel(@NotNull World world, @NotNull PlayerEntity player) {
-        Optional<Island> island = NeoSkiesAPI.getIsland(world);
+        Optional<Island> island = NeoSkiesAPI.getOptionalIsland(world);
         if (island.isPresent() && island.get().isMember(player)) {
             if (island.get().owner.uuid == player.getUuid()) {
                 return NeoSkiesPermissionLevels.OWNER;
@@ -141,7 +141,7 @@ public class WorldProtection {
     }
 
     public static boolean isWithinIsland(@NotNull World world, @NotNull BlockPos pos) {
-        Optional<Island> island = NeoSkiesAPI.getIsland(world);
+        Optional<Island> island = NeoSkiesAPI.getOptionalIsland(world);
 
         if (NeoSkiesAPI.isHub(world)) {
             return true;

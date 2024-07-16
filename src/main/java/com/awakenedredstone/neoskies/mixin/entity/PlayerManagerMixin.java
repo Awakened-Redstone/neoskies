@@ -64,7 +64,7 @@ public abstract class PlayerManagerMixin implements ExtendedPlayerManager {
     @Inject(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getWorld(Lnet/minecraft/registry/RegistryKey;)Lnet/minecraft/server/world/ServerWorld;", shift = At.Shift.BEFORE))
     private void loadIsland(ClientConnection connection, ServerPlayerEntity player, ConnectedClientData clientData, CallbackInfo ci, @Local RegistryKey<World> registryKey) {
         if (NeoSkiesAPI.isIsland(registryKey)) {
-            Optional<Island> islandOptional = NeoSkiesAPI.getIsland(registryKey);
+            Optional<Island> islandOptional = NeoSkiesAPI.getOptionalIsland(registryKey);
             if (islandOptional.isPresent()) {
                 Island island = islandOptional.get();
 
@@ -89,7 +89,7 @@ public abstract class PlayerManagerMixin implements ExtendedPlayerManager {
     @ModifyExpressionValue(method = "respawnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerPlayerEntity;getSpawnPointPosition()Lnet/minecraft/util/math/BlockPos;"))
     private BlockPos neoskies$respawnOnIsland(BlockPos original, ServerPlayerEntity player) {
         if (NeoSkiesAPI.isIsland(player.getWorld())) {
-            Optional<Island> islandOptional = NeoSkiesAPI.getIsland(player.getWorld());
+            Optional<Island> islandOptional = NeoSkiesAPI.getOptionalIsland(player.getWorld());
             if (islandOptional.isPresent()) {
                 Island island = islandOptional.get();
                 if (island.isMember(player)) {
@@ -106,7 +106,7 @@ public abstract class PlayerManagerMixin implements ExtendedPlayerManager {
     private RegistryKey<World> neoskies$fixRespawnDimension(RegistryKey<World> original, ServerPlayerEntity player) {
         World playerWorld = player.getWorld();
         if (NeoSkiesAPI.isIsland(playerWorld)) {
-            return NeoSkiesAPI.getIsland(playerWorld).get().getOverworldKey();
+            return NeoSkiesAPI.getOptionalIsland(playerWorld).get().getOverworldKey();
         }
         return IslandLogic.getServer().getOverworld().getRegistryKey();
     }

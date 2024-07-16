@@ -19,7 +19,7 @@ public class EndPortalBlockMixin {
     @ModifyVariable(method = "onEntityCollision", at = @At(value = "STORE"), ordinal = 0)
     public RegistryKey<World> resourceKey(RegistryKey<World> original, @Local(argsOnly = true) World world) {
         if (NeoSkiesAPI.isIsland(world)) {
-            Optional<Island> island = NeoSkiesAPI.getIsland(world);
+            Optional<Island> island = NeoSkiesAPI.getOptionalIsland(world);
             if (!IslandLogic.getConfig().enableEndIsland) {
                 if (island.isPresent()) {
                     return island.get().getOverworldKey();

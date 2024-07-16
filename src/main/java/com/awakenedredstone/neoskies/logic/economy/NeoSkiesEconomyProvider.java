@@ -27,7 +27,7 @@ public class NeoSkiesEconomyProvider implements EconomyProvider {
 
     @Override
     public @Nullable EconomyAccount getAccount(MinecraftServer server, GameProfile profile, String accountId) {
-        Optional<Island> islandOptional = NeoSkiesAPI.getIsland(profile.getId());
+        Optional<Island> islandOptional = NeoSkiesAPI.getOptionalIsland(profile.getId());
         if (islandOptional.isPresent()) {
             Island island = islandOptional.get();
             return getAccountFromIsland(island);
@@ -59,7 +59,7 @@ public class NeoSkiesEconomyProvider implements EconomyProvider {
 
     @Override
     public @Nullable String defaultAccount(MinecraftServer server, GameProfile profile, EconomyCurrency currency) {
-        Optional<Island> islandOptional = NeoSkiesAPI.getIsland(profile.getId());
+        Optional<Island> islandOptional = NeoSkiesAPI.getOptionalIsland(profile.getId());
         if (islandOptional.isPresent()) {
             Island island = islandOptional.get();
             return island.getIslandIdentifier().toString();

@@ -11,12 +11,6 @@ ij_continuation_indent_size = 2
 
 trim_trailing_whitespace = true
 
-[*.json]
-indent_size = 2
-
-[*.toml]
-tab_width = 2
-
-[*.yml]
+[{*.yml,*.xml,*.json,*.json5,*.toml}]
 tab_width = 2
 indent_size = 2

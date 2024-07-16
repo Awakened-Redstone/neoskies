@@ -1,4 +1,4 @@
-package com.awakenedredstone.neoskies.data;
+package com.awakenedredstone.neoskies.data.components;
 
 import com.awakenedredstone.neoskies.NeoSkies;
 import org.ladysnake.cca.api.v3.component.ComponentKey;

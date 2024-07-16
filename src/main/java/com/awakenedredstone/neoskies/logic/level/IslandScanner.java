@@ -3,10 +3,15 @@ package com.awakenedredstone.neoskies.logic.level;
 import com.awakenedredstone.neoskies.duck.ExtendedChunk;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
+import com.awakenedredstone.neoskies.logic.Member;
 import com.awakenedredstone.neoskies.mixin.accessor.RegionBasedStorageAccessor;
+import com.awakenedredstone.neoskies.util.Texts;
+import com.ezylang.evalex.EvaluationException;
+import com.ezylang.evalex.parser.ParseException;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
@@ -289,6 +294,7 @@ public class IslandScanner implements AutoCloseable {
             throw new RuntimeException(e);
         } finally {
             poiStorage.close();
+            futures.clear();
         }
 
         long end = System.nanoTime() / 1000;
@@ -297,9 +303,18 @@ public class IslandScanner implements AutoCloseable {
         entries.sort(Comparator.<Map.Entry<Identifier, Integer>>comparingInt(Map.Entry::getValue).reversed());
         blocks.clear();
         entries.forEach(blockEntry -> blocks.put(blockEntry.getKey(), blockEntry.getValue()));
-        setup.finishListener.finish(end - start, new LinkedHashMap<>(blocks));
+        IslandLogic.runOnNextTick(() -> setup.finishListener.finish(end - start, new LinkedHashMap<>(blocks)));
 
-        island.updateBlocks(blocks);
+        try {
+            island.updateBlocks(blocks);
+        } catch (EvaluationException | ParseException e) {
+            for (Member member : island.getAllMembers()) {
+                ServerPlayerEntity player = IslandLogic.getServer().getPlayerManager().getPlayer(member.uuid);
+                if (player != null) {
+                    player.sendMessage(Texts.of("commands.neoskies.level.scan.error.update"));
+                }
+            }
+        }
     }
 
     private static void scanChunk(Chunk chunk, Map<Identifier, Integer> blocks) {

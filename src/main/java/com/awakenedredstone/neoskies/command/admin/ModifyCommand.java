@@ -8,10 +8,8 @@ import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -35,7 +33,7 @@ public class ModifyCommand {
                   .executes(context -> {
                       String islandId = StringArgumentType.getString(context, "island");
                       int size = IntegerArgumentType.getInteger(context, "size");
-                      return modifyIslandSize(context.getSource(), NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null), size);
+                      return modifyIslandSize(context.getSource(), NeoSkiesAPI.getOptionalIsland(UUID.fromString(islandId)).orElse(null), size);
                   })
                 )
               )

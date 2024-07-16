@@ -1,6 +1,7 @@
 package com.awakenedredstone.neoskies.logic;
 
 import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
+import com.awakenedredstone.neoskies.data.BlockGeneratorLoader;
 import com.awakenedredstone.neoskies.event.GenericEntityDamageEvent;
 import com.awakenedredstone.neoskies.event.PlayerConnectEvent;
 import com.awakenedredstone.neoskies.event.PlayerEvents;
@@ -14,6 +15,7 @@ import com.awakenedredstone.neoskies.util.Worlds;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Ownable;
@@ -23,6 +25,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -37,7 +40,9 @@ import xyz.nucleoid.stimuli.event.entity.EntityUseEvent;
 import java.util.Map;
 
 public class EventListeners {
-    public static void registerEvents() {
+    public static void listenForEvents() {
+        protectionEvents();
+
         ServerLifecycleEvents.SERVER_STARTING.register(ServerEventListener::onStart);
         ServerLifecycleEvents.SERVER_STOPPED.register(ServerEventListener::onStop);
         ServerTickEvents.END_SERVER_TICK.register(ServerEventListener::onTick);
@@ -46,47 +51,19 @@ public class EventListeners {
 
         PlayerEvents.TICK.register(player -> {
             if (player.getY() < player.getWorld().getBottomY() - IslandLogic.getConfig().safeVoidBlocksBelow) {
-                if ((IslandLogic.getConfig().safeVoid && NeoSkiesAPI.getIsland(player.getWorld()).isPresent()) || NeoSkiesAPI.isHub(player.getWorld())) {
+                if ((IslandLogic.getConfig().safeVoid && NeoSkiesAPI.getOptionalIsland(player.getWorld()).isPresent()) || NeoSkiesAPI.isHub(player.getWorld())) {
                     player.server.execute(() -> Worlds.returnToIslandSpawn(player, IslandLogic.getConfig().safeVoidFallDamage || !NeoSkiesAPI.isHub(player.getWorld())));
                 }
             }
         });
 
-        /*Stimuli.global().listen(BlockUseEvent.EVENT, (player, hand, hitResult) -> {
-            World world = player.getWorld();
-            ItemStack stack = player.getStackInHand(hand);
-            if (!stack.isEmpty() && player.isSneaking()) {
-                return ActionResult.PASS;
-            }
+        ResourceManagerHelper resourceManagerHelper = ResourceManagerHelper.get(ResourceType.SERVER_DATA);
+        resourceManagerHelper.registerReloadListener(BlockGeneratorLoader.INSTANCE);
+    }
 
-            BlockPos pos = hitResult.getBlockPos();
-            BlockState state = world.getBlockState(pos);
-
-            IslandSettings settings = null;
-
-            for (Map.Entry<TagKey<Block>, IslandSettings> entry : NeoSkiesIslandSettings.getRuleBlockTags().entrySet()) {
-                if (state.isIn(entry.getKey())) {
-                    settings = entry.getValue();
-                    break;
-                }
-            }
-
-            if (settings == null) {
-                return ActionResult.PASS;
-            }
-
-            if (!WorldProtection.canModify(world, pos, player, settings)) {
-                ServerUtils.protectionWarning(player, settings.getTranslationKey());
-                int slot = hand == Hand.MAIN_HAND ? player.getInventory().selectedSlot : 40;
-                player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(ScreenHandlerSlotUpdateS2CPacket.UPDATE_PLAYER_INVENTORY_SYNC_ID, 0, slot, stack));
-                return ActionResult.FAIL;
-            }
-
-            return ActionResult.PASS;
-        });*/
-
+    private static void protectionEvents() {
         Stimuli.global().listen(BlockPlaceEvent.BEFORE, (player, world, pos, state, context) -> {
-            BlockPos blockPos = context.getBlockPos().offset(context.getSide());
+            BlockPos blockPos = context.getBlockPos();
             if (!WorldProtection.canModify(world, blockPos, player, NeoSkiesIslandSettings.PLACE_BLOCKS)) {
                 ServerUtils.protectionWarning(player, NeoSkiesIslandSettings.PLACE_BLOCKS);
                 int slot = context.getHand() == Hand.MAIN_HAND ? player.getInventory().selectedSlot : 40;

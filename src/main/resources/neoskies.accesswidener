@@ -24,3 +24,5 @@ accessible field net/minecraft/world/WorldSaveHandler playerDataDir Ljava/io/Fil
 accessible field net/minecraft/server/MinecraftServer saveHandler Lnet/minecraft/world/WorldSaveHandler;
 accessible field net/minecraft/world/storage/StorageIoWorker storage Lnet/minecraft/world/storage/RegionBasedStorage;
 accessible field net/minecraft/world/storage/RegionFile sectorData Ljava/nio/IntBuffer;
+accessible field net/minecraft/state/State owner Ljava/lang/Object;
+accessible field net/minecraft/state/State codec Lcom/mojang/serialization/MapCodec;

@@ -1,4 +1,4 @@
-package com.awakenedredstone.neoskies.data;
+package com.awakenedredstone.neoskies.data.components;
 
 import com.awakenedredstone.neoskies.logic.IslandLogic;
 import net.minecraft.nbt.NbtCompound;

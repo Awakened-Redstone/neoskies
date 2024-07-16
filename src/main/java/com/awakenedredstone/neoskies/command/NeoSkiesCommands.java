@@ -4,7 +4,10 @@ import com.awakenedredstone.neoskies.NeoSkies;
 import com.awakenedredstone.neoskies.api.NeoSkiesAPI;
 import com.awakenedredstone.neoskies.command.admin.*;
 import com.awakenedredstone.neoskies.command.island.*;
+import com.awakenedredstone.neoskies.command.island.LevelCommand;
 import com.awakenedredstone.neoskies.command.utils.CommandUtils;
+import com.awakenedredstone.neoskies.gui.CobbleGenGui;
+import com.awakenedredstone.neoskies.logic.AdminLevelCommand;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.LinedStringBuilder;
@@ -20,10 +23,8 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,7 +34,6 @@ import static com.awakenedredstone.neoskies.command.utils.CommandUtils.registerA
 import static net.minecraft.server.command.CommandManager.argument;
 
 public class NeoSkiesCommands {
-
     public static void init() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> NeoSkiesCommands.register(dispatcher));
     }
@@ -66,6 +66,7 @@ public class NeoSkiesCommands {
         BallanceCommand.init(dispatcher);
         IslandDataCommand.init(dispatcher);
         ModifyCommand.init(dispatcher);
+        AdminLevelCommand.init(dispatcher);
 
         registerAdmin(dispatcher, adminNode()
           .then(CommandManager.literal("reload")
@@ -98,46 +99,6 @@ public class NeoSkiesCommands {
                 }
                 return 1;
             })
-          ).then(CommandManager.literal("scan").requires(Permissions.require("neoskies.admin.modify", 4))
-            .then(argument("island", StringArgumentType.word())
-              .suggests(CommandUtils.ISLAND_SUGGESTIONS)
-              .executes(context -> {
-                  ServerCommandSource source = context.getSource();
-                  String islandId = StringArgumentType.getString(context, "island");
-                  Island island = NeoSkiesAPI.getIsland(UUID.fromString(islandId)).orElse(null);
-
-                  if (island == null) {
-                      source.sendError(Texts.of("Tried to scan an island that doesn't exist"));
-                      return 0;
-                  }
-
-                  if (island.isScanning()) {
-                      source.sendError(Texts.of("Can not queue a scan for an island that is already scanning!"));
-                  }
-
-                  source.sendFeedback(() -> Texts.of("Scan queued"), false);
-
-                  AtomicInteger total = new AtomicInteger();
-                  IslandLogic.getInstance().islandScanner.queueScan(island, integer -> {
-                      source.sendMessage(Texts.of("Scanning %total% chunks", new MapBuilder.StringMap().putAny("total", integer).build()));
-                      total.set(integer);
-                  }, integer -> {
-                      source.sendMessage(Texts.of("Scanned %current%/%total% chunks", new MapBuilder.StringMap()
-                        .putAny("total", total.get())
-                        .putAny("current", integer)
-                        .build()));
-                  }, (timeTaken, scannedBlocks) -> {
-                      source.sendMessage(Texts.of("Scanned %total% blocks in %time%", new MapBuilder.StringMap()
-                        .putAny("total", UnitConvertions.readableNumber(scannedBlocks.values().stream().mapToInt(value -> value).sum()))
-                        .putAny("time", UnitConvertions.formatTimings(timeTaken))
-                        .build()));
-                  }, () -> {
-                      source.sendError(Texts.of("Island scan failed"));
-                  });
-
-                  return 1;
-              })
-            )
           ).then(CommandManager.literal("list")
             .requires(Permissions.require("neoskies.admin.island.list", 4))
             .executes(context -> {
@@ -149,6 +110,18 @@ public class NeoSkiesCommands {
 
                 context.getSource().sendFeedback(() -> Text.literal(builder.toString()), false);
                 return islands.size();
+            })
+          ).then(CommandManager.literal("cobble")
+            .executes(context -> {
+                ServerCommandSource source = context.getSource();
+                if (!source.isExecutedByPlayer()) {
+                    source.sendError(Texts.of("This command must be executed by a player!"));
+                    return 0;
+                }
+
+                new CobbleGenGui(source.getPlayer()).open();
+
+                return 0;
             })
           )
         );

@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
@@ -41,13 +40,13 @@ public abstract class EntityMixin {
     @ModifyVariable(method = "tickPortal", at = @At("STORE"), ordinal = 0)
     public RegistryKey<World> tickPortal_modifyRegistryKey(RegistryKey<World> instance) {
         if (NeoSkiesAPI.isIsland(world) && !NeoSkiesAPI.isNether(world.getRegistryKey())) {
-            Optional<Island> island = NeoSkiesAPI.getIsland(world);
+            Optional<Island> island = NeoSkiesAPI.getOptionalIsland(world);
             if (island.isPresent()) {
                 return island.get().getNether().getRegistryKey();
             }
         }
         if (NeoSkiesAPI.isIsland(world) && NeoSkiesAPI.isNether(world.getRegistryKey())) {
-            Optional<Island> island = NeoSkiesAPI.getIsland(world);
+            Optional<Island> island = NeoSkiesAPI.getOptionalIsland(world);
             if (island.isPresent()) {
                 return island.get().getOverworld().getRegistryKey();
             }
@@ -68,7 +67,7 @@ public abstract class EntityMixin {
     @Inject(method = "getTeleportTarget", at = @At(value = "RETURN", ordinal = 0), cancellable = true)
     public void fixEndTeleportTarget(ServerWorld destination, CallbackInfoReturnable<TeleportTarget> cir) {
         if (NeoSkiesAPI.isIsland(world)) {
-            Island island = NeoSkiesAPI.getIsland(world).get();
+            Island island = NeoSkiesAPI.getOptionalIsland(world).get();
             Vec3d spawnPos = island.spawnPos;
             cir.setReturnValue(new TeleportTarget(spawnPos, getVelocity(), getYaw(), getPitch()));
         }
@@ -78,7 +77,7 @@ public abstract class EntityMixin {
     @Inject(method = "getTeleportTarget", at = @At(value = "RETURN", ordinal = 2), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
     public void teleportProtection(ServerWorld destination, CallbackInfoReturnable<TeleportTarget> cir, boolean bl, WorldBorder worldBorder, double d, BlockPos blockPos2) {
         if (NeoSkiesAPI.isIsland(world)) {
-            Island island = NeoSkiesAPI.getIsland(world).get();
+            Island island = NeoSkiesAPI.getOptionalIsland(world).get();
             if (!island.isWithinBorder(blockPos2)) {
                 Vec3d spawnPos = island.spawnPos;
                 cir.setReturnValue(new TeleportTarget(spawnPos, getVelocity(), getYaw(), getPitch()));

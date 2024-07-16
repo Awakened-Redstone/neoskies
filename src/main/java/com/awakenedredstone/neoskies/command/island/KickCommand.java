@@ -41,7 +41,7 @@ public class KickCommand {
                 if (island.isMember(kicked)) {
                     player.sendMessage(Texts.prefixed("message.neoskies.kick_visitor.member"));
                 } else {
-                    NeoSkiesAPI.getIsland(kicked.getWorld()).ifPresent(isl -> {
+                    NeoSkiesAPI.getOptionalIsland(kicked.getWorld()).ifPresent(isl -> {
                         if (isl.owner.uuid.equals(island.owner.uuid)) {
                             player.sendMessage(Texts.prefixed("message.neoskies.kick_visitor.success", map -> map.put("player", kicked.getName().getString())));
 
