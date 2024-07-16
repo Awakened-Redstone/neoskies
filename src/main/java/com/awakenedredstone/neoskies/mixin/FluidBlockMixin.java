@@ -1,13 +1,10 @@
 package com.awakenedredstone.neoskies.mixin;
 
 import com.awakenedredstone.neoskies.data.BlockGeneratorLoader;
-import com.awakenedredstone.neoskies.logic.IslandLogic;
-import com.awakenedredstone.neoskies.util.Texts;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.FlowableFluid;
-import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -37,20 +34,9 @@ public abstract class FluidBlockMixin {
     private void receiveNeighborFluids(World world, BlockPos pos, BlockState state, CallbackInfoReturnable<Boolean> cir) {
         Identifier sourceFluidId = Registries.FLUID.getId(world.getFluidState(pos).getFluid());
 
-        for (Direction direction : FLOW_DIRECTIONS) {
-            BlockPos blockPos = pos.offset(direction.getOpposite());
-            FluidState fluidState = world.getFluidState(blockPos);
-            if (fluidState.isEmpty()) {
-                continue;
-            }
-            Identifier targetFluidId = Registries.FLUID.getId(fluidState.getFluid());
-
-            BlockGeneratorLoader.BlockGenerator generator = BlockGeneratorLoader.INSTANCE.getGenerator(sourceFluidId, targetFluidId);
-            if (generator != null) {
-                generator.setBlock((ServerWorld) world, pos);
-                this.playExtinguishSound(world, pos);
-                cir.setReturnValue(false);
-            }
+        if (BlockGeneratorLoader.INSTANCE.generate(sourceFluidId, world, pos)) {
+            //this.playExtinguishSound(world, pos);
+            cir.setReturnValue(false);
         }
     }
 }

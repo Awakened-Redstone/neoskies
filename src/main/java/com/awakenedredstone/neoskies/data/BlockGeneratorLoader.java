@@ -1,9 +1,9 @@
 package com.awakenedredstone.neoskies.data;
 
 import com.awakenedredstone.neoskies.NeoSkies;
-import com.awakenedredstone.neoskies.logic.IslandLogic;
-import com.awakenedredstone.neoskies.util.Texts;
+import com.awakenedredstone.neoskies.mixin.accessor.TagEntryAccessor;
 import com.awakenedredstone.neoskies.util.WeightedRandom;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,27 +14,30 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockTypes;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.component.type.NbtComponent;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.State;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +50,8 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
 
     public static final BlockGeneratorLoader INSTANCE = new BlockGeneratorLoader();
 
-    private Map<Identifier, List<BlockGenerator>> generatorMap = ImmutableMap.of();
+    private final Map<Identifier, List<BlockGenerator>> cache = new HashMap<>();
+    private Map<TagEntry, List<BlockGenerator>> generatorMap = ImmutableMap.of();
 
     public BlockGeneratorLoader() {
         super(GSON, "block_gen");
@@ -55,7 +59,7 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
 
     @Override
     protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
-        Map<Identifier, List<BlockGenerator>> generatorMapBuilder = new HashMap<>();
+        Map<TagEntry, List<BlockGenerator>> generatorMapBuilder = new HashMap<>();
         prepared.forEach((identifier, jsonElement) -> {
             DataResult<BlockGenerator> dataResult = BlockGenerator.CODEC.parse(JsonOps.INSTANCE, jsonElement);
             Optional<BlockGenerator> generator = dataResult.result();
@@ -79,7 +83,9 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
             }
         });
         generatorMap = ImmutableMap.copyOf(generatorMapBuilder);
+        System.out.println(generatorMap.size());
         generatorMapBuilder.clear();
+        cache.clear();
     }
 
     @Override
@@ -87,15 +93,43 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
         return NeoSkies.id("block_gen");
     }
 
-    public BlockGenerator getGenerator(Identifier source, Identifier target) {
-        return generatorMap.getOrDefault(source, EMPTY).stream().filter(gen -> gen.target.equals(target)).findFirst().orElse(null);
+    public boolean generate(Identifier source, World world, BlockPos pos) {
+        cache.computeIfAbsent(source, id -> {
+            List<BlockGenerator> generators = new ArrayList<>();
+
+            for (Map.Entry<TagEntry, List<BlockGenerator>> entry : generatorMap.entrySet()) {
+                TagEntry tagEntry = entry.getKey();
+                List<BlockGenerator> value = entry.getValue();
+
+                TagEntryAccessor accessor = (TagEntryAccessor) tagEntry;
+
+                FluidState defaultState = Registries.FLUID.get(id).getDefaultState();
+                TagKey<Fluid> tagKey = TagKey.of(RegistryKeys.FLUID, accessor.getId());
+                if ((accessor.isTag() && defaultState.getRegistryEntry().isIn(tagKey)) || accessor.getId().equals(id)) {
+                    generators.addAll(value);
+                }
+            }
+
+            List<BlockGenerator> out = generators.isEmpty() ? EMPTY : List.copyOf(generators);
+            generators.clear();
+            return out;
+        });
+
+        for (BlockGenerator generator : cache.get(source)) {
+            BlockPos blockPos = generator.target.test(world, pos);
+            if (blockPos != null) {
+                return generator.setBlock((ServerWorld) world, pos);
+            }
+        }
+
+        return false;
     }
 
-    public record BlockGenerator(Identifier source, Identifier target, List<GenSet> generates) {
+    public record BlockGenerator(TagEntry source, Target target, List<GenSet> generates) {
         public static final Codec<BlockGenerator> CODEC = RecordCodecBuilder.create(instance ->
           instance.group(
-            Identifier.CODEC.fieldOf("source").forGetter(BlockGenerator::source),
-            Identifier.CODEC.fieldOf("target").forGetter(BlockGenerator::target),
+            TagEntry.CODEC.fieldOf("source").forGetter(BlockGenerator::source),
+            Codec.lazyInitialized(() -> Codec.withAlternative(Target.FluidTarget.getCodec(), Target.BlockTarget.getCodec())).fieldOf("target").forGetter(BlockGenerator::target),
             GenSet.CODEC.listOf().fieldOf("generates").forGetter(BlockGenerator::generates)
           ).apply(instance, BlockGenerator::new)
         );
@@ -145,6 +179,89 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
                 return true;
             }
             return false;
+        }
+
+        public static abstract class Target {
+            @Nullable
+            public abstract BlockPos test(World world, BlockPos pos);
+
+            public static class FluidTarget extends Target {
+                public static final Codec<FluidTarget> CODEC = Identifier.CODEC.comapFlatMap(id -> DataResult.success(new FluidTarget(id)), FluidTarget::getFluid);
+
+                private final Identifier fluid;
+
+                public FluidTarget(Identifier fluid) {
+                    this.fluid = fluid;
+                }
+
+                public static Codec<Target> getCodec() {
+                    return (Codec<Target>) (Codec<? extends Target>) CODEC;
+                }
+
+                private Identifier getFluid() {
+                    return fluid;
+                }
+
+                @Override
+                public BlockPos test(World world, BlockPos pos) {
+                    for (Direction direction : FluidBlock.FLOW_DIRECTIONS) {
+                        BlockPos blockPos = pos.offset(direction.getOpposite());
+                        FluidState fluidState = world.getFluidState(blockPos);
+                        if (fluidState.isEmpty()) {
+                            continue;
+                        }
+
+                        if (Registries.FLUID.getId(fluidState.getFluid()).equals(fluid)) {
+                            return blockPos;
+                        }
+                    }
+
+                    return null;
+                }
+            }
+
+            public static class BlockTarget extends Target {
+                public static final Codec<BlockTarget> CODEC = RecordCodecBuilder.create(instance ->
+                  instance.group(
+                    Identifier.CODEC.fieldOf("surface").forGetter(BlockTarget::getSurface),
+                    Identifier.CODEC.fieldOf("touching").forGetter(BlockTarget::getTouching)
+                  ).apply(instance, BlockTarget::new)
+                );
+
+                public final Identifier surface;
+                public final Identifier touching;
+
+                public BlockTarget(@NotNull Identifier surface, @NotNull Identifier touching) {
+                    this.surface = surface;
+                    this.touching = touching;
+                }
+
+                public static Codec<Target> getCodec() {
+                    return (Codec<Target>) (Codec<? extends Target>) CODEC;
+                }
+
+                public Identifier getSurface() {
+                    return surface;
+                }
+
+                public Identifier getTouching() {
+                    return touching;
+                }
+
+                @Override
+                public BlockPos test(World world, BlockPos pos) {
+                    boolean bl = world.getBlockState(pos.down()).isOf(Registries.BLOCK.get(surface));
+
+                    for (Direction direction : FluidBlock.FLOW_DIRECTIONS) {
+                        BlockPos blockPos = pos.offset(direction.getOpposite());
+
+                        if (!bl || !world.getBlockState(blockPos).isOf(Registries.BLOCK.get(touching))) continue;
+                        return blockPos;
+                    }
+
+                    return null;
+                }
+            }
         }
 
         public static final class GenSet {
