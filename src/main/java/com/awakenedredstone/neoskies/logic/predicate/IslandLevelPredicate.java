@@ -12,11 +12,12 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.StringIdentifiable;
 
-public record IslandLevelPredicate(int amount, Type type) implements LootCondition {
+public record IslandLevelPredicate(int amount, Type type, boolean islandOnly) implements LootCondition {
     public static final MapCodec<IslandLevelPredicate> CODEC = RecordCodecBuilder.mapCodec(instance ->
       instance.group(
         Codec.INT.fieldOf("amount").forGetter(IslandLevelPredicate::amount),
-        StringIdentifiable.createCodec(Type::values).optionalFieldOf("type", Type.LEVEL).forGetter(IslandLevelPredicate::type)
+        StringIdentifiable.createCodec(Type::values).optionalFieldOf("type", Type.LEVEL).forGetter(IslandLevelPredicate::type),
+        Codec.BOOL.optionalFieldOf("islandOnly", true).forGetter(IslandLevelPredicate::islandOnly)
       ).apply(instance, IslandLevelPredicate::new)
     );
 
