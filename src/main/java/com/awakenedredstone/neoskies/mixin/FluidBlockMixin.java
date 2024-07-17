@@ -35,7 +35,7 @@ public abstract class FluidBlockMixin {
         Identifier sourceFluidId = Registries.FLUID.getId(world.getFluidState(pos).getFluid());
 
         if (BlockGeneratorLoader.INSTANCE.generate(sourceFluidId, world, pos)) {
-            //this.playExtinguishSound(world, pos);
+            this.playExtinguishSound(world, pos);
             cir.setReturnValue(false);
         }
     }
