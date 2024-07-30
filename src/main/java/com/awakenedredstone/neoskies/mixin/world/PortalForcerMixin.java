@@ -18,7 +18,6 @@ import java.util.Optional;
 
 @Mixin(PortalForcer.class)
 public class PortalForcerMixin {
-
     @Shadow @Final private ServerWorld world;
 
     @Inject(method = "createPortal", at = @At("HEAD"), cancellable = true)

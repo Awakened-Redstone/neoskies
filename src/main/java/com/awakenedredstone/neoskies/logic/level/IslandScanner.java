@@ -37,8 +37,21 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.IntBuffer;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -179,6 +192,7 @@ public class IslandScanner implements AutoCloseable {
             }
         };
 
+        //TODO: make threads scan regions instead of a single chunk
         List<CompletableFuture<Void>> futures = Collections.synchronizedList(new ArrayList<>());
         for (Map.Entry<ServerWorld, List<Long>> entry : toScan.entrySet()) {
             List<Long> positions = entry.getValue();

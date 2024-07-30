@@ -75,7 +75,6 @@ public class IslandLogic {
     public void close() {
         IslandLogic.instance = null;
         this.scheduler.close();
-
     }
 
     public static MinecraftServer getServer() {

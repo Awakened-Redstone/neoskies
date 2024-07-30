@@ -26,12 +26,8 @@ import java.util.Map;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
-
-    @Shadow
-    public abstract ActionResult useOnBlock(ItemUsageContext context);
-
-    @Shadow
-    public abstract Item getItem();
+    @Shadow public abstract ActionResult useOnBlock(ItemUsageContext context);
+    @Shadow public abstract Item getItem();
 
     @Inject(method = "useOnBlock", at = @At("HEAD"), cancellable = true)
     private void useOnBlock(ItemUsageContext context, CallbackInfoReturnable<ActionResult> cir) {

@@ -3,8 +3,9 @@ import com.modrinth.minotaur.dependencies.ModDependency
 
 //region Setup
 plugins {
-    id("signing")
-    id("maven-publish")
+    signing
+    checkstyle
+    `maven-publish`
     id("fabric-loom") version "1.6-SNAPSHOT"
     id("com.modrinth.minotaur") version "2.+"
 }
@@ -129,7 +130,7 @@ dependencies {
     //endregion
     //endregion
     // region Others
-    modImplementation(include("maven.modrinth:particleanimationlib:0.0.2+1.20") as Any)
+    modImplementation(include("maven.modrinth:apel:0.1.0+1.20.6") as Any)
     modImplementation(include("me.lucko:fabric-permissions-api:${property("fabric_permission_api")}") as Any)
     //endregion
     // region Non mod dependencies
@@ -160,6 +161,11 @@ dependencies {
     //endregion
 }
 
+checkstyle {
+    configFile = rootProject.file("checkstyle.xml")
+    toolVersion = "10.12.4"
+}
+
 //region Misc
 tasks.processResources {
     val map = mapOf(
@@ -187,7 +193,7 @@ java {
 
 tasks.jar {
     from("LICENSE") {
-        rename { "${it}_${property("archivesBaseName")}" }
+        rename { "${it}_${archivesBaseName}" }
     }
 }
 //endregion

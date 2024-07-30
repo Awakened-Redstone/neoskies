@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractFireBlock.class)
 public class FireBlockMixin {
-
     @Inject(method = "isOverworldOrNether", at = @At("HEAD"), cancellable = true)
     private static void isOverworldOrNether(World world, CallbackInfoReturnable<Boolean> cir) {
         if (world.getRegistryKey().getValue().getNamespace().equals(Constants.NAMESPACE) || world.getRegistryKey().getValue().getNamespace().equals(Constants.NAMESPACE_NETHER)) {

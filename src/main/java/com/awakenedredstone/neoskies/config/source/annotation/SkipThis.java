@@ -7,5 +7,4 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SkipThis {
-}
+public @interface SkipThis { }

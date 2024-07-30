@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PotionEntity.class)
 public abstract class PotionEntityMixin extends ThrownItemEntity {
-
     public PotionEntityMixin(EntityType<? extends ThrownItemEntity> entityType, World world) {
         super(entityType, world);
     }

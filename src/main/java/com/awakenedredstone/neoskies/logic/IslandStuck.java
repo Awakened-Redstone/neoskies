@@ -119,8 +119,11 @@ public class IslandStuck {
 
     public Optional<Island> getFromMember(PlayerEntity player) {
         for (var island : this.stuck) {
-            if (island.owner.uuid.equals(player.getUuid())) return Optional.of(island);
-            else if (island.isMember(player)) return Optional.of(island);
+            if (island.owner.uuid.equals(player.getUuid())) {
+                return Optional.of(island);
+            } else if (island.isMember(player)) {
+                return Optional.of(island);
+            }
         }
         return Optional.empty();
     }

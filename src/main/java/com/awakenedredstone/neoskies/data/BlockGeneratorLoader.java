@@ -1,9 +1,9 @@
 package com.awakenedredstone.neoskies.data;
 
 import com.awakenedredstone.neoskies.NeoSkies;
+import com.awakenedredstone.neoskies.logic.registry.NeoSkiesRegister;
 import com.awakenedredstone.neoskies.mixin.accessor.TagEntryAccessor;
 import com.awakenedredstone.neoskies.util.WeightedRandom;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,7 +14,10 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
@@ -22,7 +25,7 @@ import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
-import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
@@ -41,7 +44,12 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 public class BlockGeneratorLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
     public static final Logger LOGGER = LoggerFactory.getLogger("BlockGenLoader");
@@ -134,18 +142,20 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
           ).apply(instance, BlockGenerator::new)
         );
 
-        public BlockState getBlock(ServerWorld world) {
+        public BlockState getBlock(ServerWorld world, BlockPos pos) {
             for (GenSet generate : generates) {
                 if (generate.predicate.isPresent()) {
-                    LootContextParameterSet.Builder parameters = new LootContextParameterSet.Builder(world);
+                    LootContextParameterSet parameters = new LootContextParameterSet.Builder(world)
+                      .add(LootContextParameters.ORIGIN, pos.toCenterPos())
+                      .build(NeoSkiesRegister.LootContext.POS);
 
-                    LootContext.Builder context = new LootContext.Builder(parameters.build(LootContextTypes.EMPTY));
-                    if (!generate.predicate.get().test(context.build(Optional.empty()))) {
+                    LootContext context = new LootContext.Builder(parameters).build(Optional.empty());
+                    if (!generate.predicate.get().test(context)) {
                         continue;
                     }
                 }
 
-                GenData randomData = generate.getRandomData(world);
+                GenData randomData = generate.getRandomData(world, pos);
                 NeoSkies.LOGGER.info(randomData.nbt.toString());
                 return randomData.state();
             }
@@ -155,15 +165,17 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
         public boolean setBlock(ServerWorld world, BlockPos pos) {
             for (GenSet generate : generates) {
                 if (generate.predicate.isPresent()) {
-                    LootContextParameterSet.Builder parameters = new LootContextParameterSet.Builder(world);
+                    LootContextParameterSet parameters = new LootContextParameterSet.Builder(world)
+                      .add(LootContextParameters.ORIGIN, pos.toCenterPos())
+                      .build(NeoSkiesRegister.LootContext.POS);
 
-                    LootContext.Builder context = new LootContext.Builder(parameters.build(LootContextTypes.EMPTY));
-                    if (!generate.predicate.get().test(context.build(Optional.empty()))) {
+                    LootContext context = new LootContext.Builder(parameters).build(Optional.empty());
+                    if (!generate.predicate.get().test(context)) {
                         continue;
                     }
                 }
 
-                GenData randomData = generate.getRandomData(world);
+                GenData randomData = generate.getRandomData(world, pos);
 
                 BlockEntity blockEntity;
                 BlockState blockState = Block.postProcessState(randomData.state(), world, pos);
@@ -182,15 +194,14 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
         }
 
         public static abstract class Target {
-            @Nullable
-            public abstract BlockPos test(World world, BlockPos pos);
+            public abstract @Nullable BlockPos test(World world, BlockPos pos);
 
             public static class FluidTarget extends Target {
-                public static final Codec<FluidTarget> CODEC = Identifier.CODEC.comapFlatMap(id -> DataResult.success(new FluidTarget(id)), FluidTarget::getFluid);
+                public static final Codec<FluidTarget> CODEC = TagEntry.CODEC.comapFlatMap(id -> DataResult.success(new FluidTarget(id)), FluidTarget::getFluid);
 
-                private final Identifier fluid;
+                private final TagEntry fluid;
 
-                public FluidTarget(Identifier fluid) {
+                public FluidTarget(TagEntry fluid) {
                     this.fluid = fluid;
                 }
 
@@ -198,7 +209,7 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
                     return (Codec<Target>) (Codec<? extends Target>) CODEC;
                 }
 
-                private Identifier getFluid() {
+                public TagEntry getFluid() {
                     return fluid;
                 }
 
@@ -211,7 +222,10 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
                             continue;
                         }
 
-                        if (Registries.FLUID.getId(fluidState.getFluid()).equals(fluid)) {
+                        TagEntryAccessor accessor = (TagEntryAccessor) fluid;
+
+                        TagKey<Fluid> tagKey = TagKey.of(RegistryKeys.FLUID, accessor.getId());
+                        if ((accessor.isTag() && fluidState.getRegistryEntry().isIn(tagKey)) || accessor.getId().equals(Registries.FLUID.getId(fluidState.getFluid()))) {
                             return blockPos;
                         }
                     }
@@ -293,13 +307,15 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
                 return weightedRandom;
             }
 
-            public GenData getRandomData(ServerWorld world) {
+            public GenData getRandomData(ServerWorld world, BlockPos pos) {
                 for (GenData block : blocks) {
                     if (block.predicate.isPresent()) {
-                        LootContextParameterSet.Builder parameters = new LootContextParameterSet.Builder(world);
+                        LootContextParameterSet parameters = new LootContextParameterSet.Builder(world)
+                          .add(LootContextParameters.ORIGIN, pos.toCenterPos())
+                          .build(NeoSkiesRegister.LootContext.POS);
 
-                        LootContext.Builder context = new LootContext.Builder(parameters.build(LootContextTypes.EMPTY));
-                        if (!block.predicate.get().test(context.build(Optional.empty()))) {
+                        LootContext context = new LootContext.Builder(parameters).build(Optional.empty());
+                        if (!block.predicate.get().test(context)) {
                             continue;
                         }
                     }

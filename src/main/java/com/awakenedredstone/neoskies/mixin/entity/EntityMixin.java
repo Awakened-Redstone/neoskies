@@ -24,18 +24,10 @@ import java.util.Optional;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {
-
-    @Shadow
-    private World world;
-
-    @Shadow
-    public abstract Vec3d getVelocity();
-
-    @Shadow
-    public abstract float getYaw();
-
-    @Shadow
-    public abstract float getPitch();
+    @Shadow private World world;
+    @Shadow public abstract Vec3d getVelocity();
+    @Shadow public abstract float getYaw();
+    @Shadow public abstract float getPitch();
 
     @ModifyVariable(method = "tickPortal", at = @At("STORE"), ordinal = 0)
     public RegistryKey<World> tickPortal_modifyRegistryKey(RegistryKey<World> instance) {
@@ -89,5 +81,4 @@ public abstract class EntityMixin {
     public RegistryKey<World> moveToWorld_redirectRegistryKey(RegistryKey<World> world) {
         return Worlds.redirect(world);
     }
-
 }

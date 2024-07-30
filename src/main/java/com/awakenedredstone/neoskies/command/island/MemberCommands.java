@@ -12,14 +12,15 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.requiresIsland;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.command.argument.EntityArgumentType.player;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class MemberCommands {
-
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node().then(literal("members")
             .then(literal("invite").requires(requiresIsland("neoskies.command.members.invite", true))

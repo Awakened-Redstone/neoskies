@@ -18,7 +18,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.adminNode;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.assertIsland;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.registerAdmin;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 

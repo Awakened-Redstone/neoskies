@@ -16,13 +16,14 @@ import net.minecraft.util.math.Vec3d;
 
 import java.util.Optional;
 
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.requiresIsland;
 import static net.minecraft.command.argument.BlockPosArgumentType.blockPos;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class SettingCommands {
-
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node()
             .then(literal("settings")
@@ -77,7 +78,6 @@ public class SettingCommands {
                 player.sendMessage(Texts.prefixed("message.neoskies.settings.lock"));
                 island.locked = true;
             }
-
         }, () -> player.sendMessage(Texts.prefixed("message.neoskies.settings.no_island")));
     }
 
@@ -86,7 +86,6 @@ public class SettingCommands {
             island.spawnPos = new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
             String posText = pos.getX() + " " + pos.getY() + " " + pos.getZ();
             player.sendMessage(Texts.prefixed("message.neoskies.settings.spawn_pos_change", map -> map.put("pos", posText)));
-
         }, () -> player.sendMessage(Texts.prefixed("message.neoskies.settings.no_island")));
     }
 
@@ -95,7 +94,6 @@ public class SettingCommands {
             island.visitsPos = new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
             String posText = pos.getX() + " " + pos.getY() + " " + pos.getZ();
             player.sendMessage(Texts.prefixed("message.neoskies.settings.visits_pos_change", map -> map.put("pos", posText)));
-
         }, () -> player.sendMessage(Texts.prefixed("message.neoskies.settings.no_island")));
     }
 

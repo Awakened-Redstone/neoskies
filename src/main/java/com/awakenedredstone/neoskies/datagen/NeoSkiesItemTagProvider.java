@@ -12,7 +12,12 @@ import net.minecraft.registry.tag.ItemTags;
 
 import java.util.concurrent.CompletableFuture;
 
-import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesItemTags.*;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesItemTags.CONTAINERS;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesItemTags.LEAD;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesItemTags.LODESTONE;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesItemTags.MINECART;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesItemTags.PLACE;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesItemTags.SPAWNER;
 
 public class NeoSkiesItemTagProvider extends FabricTagProvider.ItemTagProvider {
     public NeoSkiesItemTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {

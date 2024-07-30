@@ -7,6 +7,15 @@ end_of_line = lf
 insert_final_newline = true
 tab_width = 4
 indent_size = 4
+ij_any_block_brace_style = end_of_line
+ij_any_class_brace_style = end_of_line
+ij_any_method_brace_style = end_of_line
+ij_any_lambda_brace_style = end_of_line
+ij_any_if_brace_force = if_multiline
+ij_java_doc_keep_empty_throws_tag = false
+ij_any_while_brace_force = always
+ij_any_for_brace_force = always
+ij_any_do_while_brace_force = always
 ij_continuation_indent_size = 2
 
 trim_trailing_whitespace = true

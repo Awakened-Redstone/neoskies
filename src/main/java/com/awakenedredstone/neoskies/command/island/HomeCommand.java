@@ -10,11 +10,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.Optional;
 
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.requiresIsland;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class HomeCommand {
-
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node()
             .then(literal("home").requires(requiresIsland("neoskies.teleport.home", true))

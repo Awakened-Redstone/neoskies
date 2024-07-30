@@ -21,7 +21,6 @@ import java.util.List;
 @ApiStatus.Experimental
 @Deprecated
 public class FontManager implements SimpleSynchronousResourceReloadListener {
-
     public static final FontManager INSTANCE = new FontManager();
 
     public List<FontProvider> fontProviders = null;

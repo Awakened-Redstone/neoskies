@@ -14,7 +14,6 @@ import com.awakenedredstone.neoskies.util.WorldProtection;
 
 @Mixin(PistonBlock.class)
 public class PistonBlockMixin {
-
     @Inject(method = "isMovable", at = @At("HEAD"), cancellable = true)
     private static void isMovable(BlockState state, World world, BlockPos pos, Direction direction, boolean canBreak, Direction pistonDir, CallbackInfoReturnable<Boolean> cir) {
         if ((!WorldProtection.isWithinIsland(world, pos.offset(direction)) || !WorldProtection.isWithinIsland(world, pos)) && !(state.getBlock() instanceof AirBlock)) {

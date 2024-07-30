@@ -83,7 +83,9 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             return MathHelper.lerp(scaleDown(0, scale, x), in, scale);
         } else if (z > islandRadius) {
             return MathHelper.lerp(scaleDown(0, scale, z), in, scale);
-        } else return in;
+        } else {
+            return in;
+        }
     }
 
     @Unique
@@ -92,5 +94,4 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         double t = (delta - start) / (end - start);
         return -1 * t * (t - 2);
     }
-
 }

@@ -39,6 +39,7 @@ public class IslandRankingConfig extends Config {
     @Comment("The default amount of points a block that isn't in the list gets")
     public int defaultValue = 1;
 
+    @Comment("The formula used by for the level calculation, use \"points\" (without quotes) to use the island points on the math")
     public String formula = "points / 100";
 
     @PredicateConstraint("pointConstraint")

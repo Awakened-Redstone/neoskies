@@ -10,7 +10,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Deprecated
 public class FontProvider {
@@ -129,5 +133,4 @@ public class FontProvider {
             "accent=" + ascent + ", " +
             "chars=" + chars + ']';
     }
-
 }

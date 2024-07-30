@@ -14,8 +14,8 @@ import xyz.nucleoid.stimuli.event.StimulusEvent;
  * <li>{@link ActionResult#SUCCESS} cancels further processing and damages the entity.
  * <li>{@link ActionResult#FAIL} cancels further processing and does not damage the entity.
  * <li>{@link ActionResult#PASS} moves on to the next listener.</ul>
- * <p>
- * If all listeners return {@link ActionResult#PASS}, the entity is damaged as per normal behavior.
+ *
+ * <p>If all listeners return {@link ActionResult#PASS}, the entity is damaged as per normal behavior.
  */
 public interface GenericEntityDamageEvent {
     StimulusEvent<GenericEntityDamageEvent> EVENT = StimulusEvent.create(GenericEntityDamageEvent.class, ctx -> (entity, source, amount) -> {

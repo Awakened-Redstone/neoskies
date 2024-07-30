@@ -21,7 +21,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 
 import java.util.Optional;
@@ -108,8 +107,11 @@ public class MenuCommand {
                     .addLoreLine(Texts.loreBase(Texts.of("text.neoskies.protection_bypass", map -> map.put("value", String.valueOf(overrideMode)))))
                     .setCallback((index, type, action, gui) -> {
                         gui.getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
-                        if (overrideMode) protectionBypass.remove(player);
-                        else protectionBypass.add(player);
+                        if (overrideMode) {
+                            protectionBypass.remove(player);
+                        } else {
+                            protectionBypass.add(player);
+                        }
                         ref.dirty = true;
                     }).build());
             }

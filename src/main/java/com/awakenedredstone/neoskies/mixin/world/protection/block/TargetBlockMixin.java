@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TargetBlock.class)
 public class TargetBlockMixin {
-
     @Inject(method = "onProjectileHit", at = @At("HEAD"), cancellable = true)
     private void useOnBlock(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile, CallbackInfo ci) {
         if (!world.isClient()) {

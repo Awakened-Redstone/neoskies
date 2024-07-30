@@ -10,7 +10,6 @@ import net.minecraft.text.Text;
 import java.util.Map;
 
 public class DynamicPlaceholders {
-
     public static Text parseText(String inputText, Map<String, Text> placeholders) {
         return parseText(Text.literal(inputText), placeholders);
     }

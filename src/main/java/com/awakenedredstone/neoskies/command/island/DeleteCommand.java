@@ -11,13 +11,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.mustBeIslandOwner;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class DeleteCommand {
-
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node()
             .then(literal("delete")
@@ -37,7 +38,6 @@ public class DeleteCommand {
     }
 
     static void run(ServerPlayerEntity player, String confirmWord) {
-
         if (confirmWord.equals("CONFIRM")) {
             IslandStuck islands = IslandLogic.getInstance().islands;
 
@@ -52,7 +52,6 @@ public class DeleteCommand {
                 } else {
                     player.sendMessage(Texts.prefixed("message.neoskies.island_delete.too_often"));
                 }
-
             }, () -> {
                 player.sendMessage(Texts.prefixed("message.neoskies.island_delete.fail"));
             });
@@ -74,7 +73,6 @@ public class DeleteCommand {
             } else {
                 player.sendMessage(Texts.prefixed("message.neoskies.island_delete.too_often"));
             }
-
         }, () -> {
             player.sendMessage(Texts.prefixed("message.neoskies.island_delete.fail"));
         });

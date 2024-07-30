@@ -45,7 +45,6 @@ import java.util.function.Supplier;
 
 @Mixin(ServerWorld.class)
 public abstract class ServerWorldMixin extends World implements StructureWorldAccess {
-
     @Mutable @Shadow @Final private List<SpecialSpawner> spawners;
 
     protected ServerWorldMixin(MutableWorldProperties properties, RegistryKey<World> registryRef, DynamicRegistryManager registryManager, RegistryEntry<DimensionType> dimensionEntry, Supplier<Profiler> profiler, boolean isClient, boolean debugWorld, long biomeAccess, int maxChainedNeighborUpdates) {
@@ -86,5 +85,4 @@ public abstract class ServerWorldMixin extends World implements StructureWorldAc
             ci.cancel();
         }
     }
-
 }

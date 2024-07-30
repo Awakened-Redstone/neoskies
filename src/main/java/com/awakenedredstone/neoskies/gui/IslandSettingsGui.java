@@ -15,7 +15,6 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +32,6 @@ public class IslandSettingsGui {
 
     private final CBGuiElement nextPage = new CBGuiElementBuilder(Items.LIME_STAINED_GLASS_PANE).setName(Texts.of("neoskies.page.next")).setCallback((index, type, action, gui) -> offsetPage(1, gui)).build();
     private final CBGuiElement prevPage = new CBGuiElementBuilder(Items.RED_STAINED_GLASS_PANE).setName(Texts.of("neoskies.page.previous")).setCallback((index, type, action, gui) -> offsetPage(-1, gui)).build();
-
 
     public IslandSettingsGui(Island island, @Nullable GuiInterface parent) {
         this.island = island;
@@ -63,7 +61,9 @@ public class IslandSettingsGui {
                         if (parent != null) {
                             parent.close();
                             parent.open();
-                        } else gui.close();
+                        } else {
+                            gui.close();
+                        }
                     });
             gui.setSlot(gui.getSize() - 1, close);
         };

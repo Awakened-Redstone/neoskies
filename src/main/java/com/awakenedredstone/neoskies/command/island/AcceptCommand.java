@@ -5,17 +5,12 @@ import com.awakenedredstone.neoskies.util.Players;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.ArgumentBuilder;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import net.minecraft.command.argument.BlockPosArgumentType;
-import net.minecraft.command.argument.BlockStateArgumentType;
-import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.command.SetBlockCommand;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.requiresIsland;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -63,6 +58,5 @@ public class AcceptCommand {
             invite.get().accept(player);
             player.sendMessage(Texts.prefixed("message.neoskies.accept.success", map -> map.put("owner", ownerName)));
         }
-
     }
 }

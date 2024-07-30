@@ -8,11 +8,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.requiresNoIsland;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class CreateCommand {
-
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node()
             .then(literal("create")

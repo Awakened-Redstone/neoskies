@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SculkSensorBlockEntity.VibrationCallback.class)
 public class SculkSensorBlockEntityMixin {
-
     @Inject(method = "accept", at = @At("HEAD"), cancellable = true)
     private void accept(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance, CallbackInfo ci) {
         if (!world.isClient()) {

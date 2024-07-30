@@ -28,9 +28,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class CBGuiElementBuilder extends GuiElementBuilder {
-
     /**
-     * Constructs a CBGuiElementBuilder with the default options
+     * Constructs a CBGuiElementBuilder with the default options.
      */
     public CBGuiElementBuilder() {
     }
@@ -56,7 +55,7 @@ public class CBGuiElementBuilder extends GuiElementBuilder {
     }
 
     /**
-     * Constructs a CBGuiElementBuilder with the specified ItemStack
+     * Constructs a CBGuiElementBuilder with the specified ItemStack.
      *
      * @param stack  the item stack to use
      */
@@ -234,7 +233,7 @@ public class CBGuiElementBuilder extends GuiElementBuilder {
     }
 
     /**
-     * Hides tooltip completely, making it never show
+     * Hides tooltip completely, making it never show.
      * @return this element builder
      */
     public CBGuiElementBuilder hideTooltip() {
@@ -315,7 +314,6 @@ public class CBGuiElementBuilder extends GuiElementBuilder {
                     profile = tmp.profile();
                 }
             }
-
         }
         this.itemStack.set(DataComponentTypes.PROFILE, new ProfileComponent(profile));
         return this;

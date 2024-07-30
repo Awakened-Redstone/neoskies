@@ -184,7 +184,6 @@ public abstract class PagedGui extends SimpleGui {
     }
 
     public static class FromList extends PagedGui {
-
         protected final List<GuiElementInterface> list;
         @Nullable
         private final IntFunction<GuiElementInterface> navbar;

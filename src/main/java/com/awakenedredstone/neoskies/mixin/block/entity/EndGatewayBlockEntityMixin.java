@@ -7,7 +7,6 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(EndGatewayBlockEntity.class)
 public class EndGatewayBlockEntityMixin {
@@ -15,5 +14,4 @@ public class EndGatewayBlockEntityMixin {
     private static RegistryKey<World> tryTeleportingEntity_redirectRegistryKey(RegistryKey<World> world) {
         return Worlds.redirect(world);
     }
-
 }

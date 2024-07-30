@@ -11,13 +11,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.adminNode;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.registerAdmin;
 import static net.minecraft.command.argument.BlockPosArgumentType.blockPos;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class HubCommands {
-
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node()
           .then(literal("hub")
@@ -49,9 +51,7 @@ public class HubCommands {
                   return 1;
               })
             )/*.then(literal("settings").requires(Permissions.require("neoskies.admin.hub.settings", 4))
-              .executes(context -> {
-
-              })
+              .executes(context -> { })
             )*/
           )
         );

@@ -3,8 +3,6 @@ package com.awakenedredstone.neoskies.util;
 import com.awakenedredstone.neoskies.NeoSkies;
 import com.ezylang.evalex.config.ExpressionConfiguration;
 
-import java.util.Locale;
-
 public class Constants {
     public static final String NAMESPACE = NeoSkies.MOD_ID;
     public static final String NAMESPACE_NETHER = NeoSkies.MOD_ID + "_nether";

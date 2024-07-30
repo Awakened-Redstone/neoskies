@@ -15,7 +15,6 @@ import java.util.Optional;
 
 @Mixin(EndPortalBlock.class)
 public class EndPortalBlockMixin {
-
     @ModifyVariable(method = "onEntityCollision", at = @At(value = "STORE"), ordinal = 0)
     public RegistryKey<World> resourceKey(RegistryKey<World> original, @Local(argsOnly = true) World world) {
         if (NeoSkiesAPI.isIsland(world)) {

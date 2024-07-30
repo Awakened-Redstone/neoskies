@@ -6,7 +6,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.util.Hand;
@@ -17,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class TestBlock extends SimplePolymerBlock {
-    public static EnumProperty<State> TEST_STATE = EnumProperty.of("test_state", State.class);
+    public static final EnumProperty<State> TEST_STATE = EnumProperty.of("test_state", State.class);
 
     public TestBlock(Settings settings) {
         super(settings, Blocks.RED_CONCRETE);
@@ -30,7 +29,7 @@ public class TestBlock extends SimplePolymerBlock {
     }
 
     @Override
-    public BlockState getPolymerBlockState(BlockState state, ServerPlayerEntity player) {
+    public BlockState getPolymerBlockState(BlockState state) {
         return (
           switch (state.get(TEST_STATE)) {
               case NOT_WORKING -> Blocks.RED_CONCRETE;

@@ -9,7 +9,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 @SuppressWarnings("unused")
 public class PlayerConnectEvent {
-
     public static void onJoin(MinecraftServer server, ServerPlayerEntity player) {
         IslandLogic.getInstance().islands.getByPlayer(player).ifPresent(island -> island.owner.name = player.getName().getString());
 
@@ -34,7 +33,5 @@ public class PlayerConnectEvent {
         });
     }
 
-    public static void onLeave(MinecraftServer server, ServerPlayerEntity player) {
-
-    }
+    public static void onLeave(MinecraftServer server, ServerPlayerEntity player) { }
 }

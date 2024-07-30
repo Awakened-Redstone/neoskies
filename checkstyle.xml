@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+<module name="Checker">
+  <property name="charset" value="UTF-8"/>
+  <property name="fileExtensions" value="java"/>
+  <property name="localeLanguage" value="en"/>
+  <property name="localeCountry" value="US"/>
+  <property name="tabWidth" value="4"/>
+
+  <module name="NewlineAtEndOfFile"/>
+
+  <!-- Disallow trailing whitespace -->
+  <module name="RegexpSingleline">
+    <property name="format" value="\s+$"/>
+    <property name="message" value="Trailing whitespace"/>
+  </module>
+
+  <!-- Empty braces must be single line, separated by a single space -->
+  <module name="RegexpMultiline">
+    <property name="format" value="\{[\t ]*\r?\n\}"/>
+    <property name="message" value="Empty braces must be single line"/>
+  </module>
+  <!--<module name="RegexpSingleline">
+    <property name="format" value="\{[\t ]{2,}\}"/>
+    <property name="message" value="Empty braces must be separated by one space"/>
+  </module>
+  <module name="RegexpSingleline">
+    <property name="format" value="\{\}"/>
+    <property name="message" value="Empty braces must be separated by one space"/>
+  </module>-->
+
+  <!-- Disallow blank after { -->
+  <module name="RegexpMultiline">
+    <property name="format" value="\{[\t ]*\r?\n[\t ]*\r?\n"/>
+    <property name="message" value="Blank line after '{'"/>
+  </module>
+
+  <!-- Disallow blank before } -->
+  <module name="RegexpMultiline">
+    <property name="format" value="\n[\t ]*\r?\n[\t ]*\}"/>
+    <property name="message" value="Blank line before '}'"/>
+  </module>
+
+  <module name="TreeWalker">
+    <!-- Allow "//CHECKSTYLE.OFF: <InspectionName>" and "//CHECKSTYLE.ON: <InspectionName>" pairs to toggle some inspections -->
+    <module name="SuppressionCommentFilter">
+      <property name="offCommentFormat" value="CHECKSTYLE.OFF\: ([\w\|]+)"/>
+      <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
+      <property name="checkFormat" value="$1"/>
+    </module>
+
+    <!-- Configure imports -->
+    <module name="AvoidStarImport"/>
+    <module name="IllegalImport"/>
+    <module name="RedundantImport"/>
+    <module name="UnusedImports"/>
+
+    <!-- Ensures braces are at the end of a line -->
+    <module name="LeftCurly"/>
+    <module name="RightCurly"/>
+
+    <!-- Single line statements -->
+    <module name="NeedBraces">
+      <property name="tokens" value="LITERAL_FOR,LITERAL_WHILE,LITERAL_ELSE,LITERAL_DO"/>
+      <property name="allowSingleLineStatement" value="false"/>
+    </module>
+    <module name="NeedBraces">
+      <property name="tokens" value="LITERAL_IF"/>
+      <property name="allowSingleLineStatement" value="true"/>
+    </module>
+
+    <module name="EmptyLineSeparator">
+      <property name="allowNoEmptyLineBetweenFields" value="true"/>
+      <property name="allowMultipleEmptyLines" value="false"/>
+      <!-- exclude  METHOD_DEF and VARIABLE_DEF -->
+      <property name="tokens" value="PACKAGE_DEF,IMPORT,STATIC_IMPORT,CLASS_DEF,INTERFACE_DEF,ENUM_DEF,STATIC_INIT,INSTANCE_INIT,CTOR_DEF"/>
+    </module>
+
+    <!-- Require space indentation -->
+    <module name="RegexpSinglelineJava">
+      <property name="format" value="^\t+"/>
+      <property name="message" value="Non-space indentation"/>
+    </module>
+    <module name="EmptyCatchBlock">
+      <property name="exceptionVariableName" value="ignored"/>
+    </module>
+    <module name="MissingOverride"/>
+    <module name="OuterTypeFilename"/>
+    <module name="PackageDeclaration"/>
+
+    <!-- Javadocs -->
+    <module name="InvalidJavadocPosition"/>
+    <module name="JavadocParagraph"/>
+    <module name="JavadocStyle"/>
+    <module name="AtclauseOrder">
+      <property name="tagOrder" value="@param,@return,@throws,@deprecated"/>
+    </module>
+  </module>
+</module>

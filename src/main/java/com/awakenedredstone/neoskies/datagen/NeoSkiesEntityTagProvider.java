@@ -8,7 +8,13 @@ import net.minecraft.registry.RegistryWrapper;
 
 import java.util.concurrent.CompletableFuture;
 
-import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesEntityTags.*;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesEntityTags.ARMOR_STAND;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesEntityTags.BOATS;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesEntityTags.BREAK;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesEntityTags.ITEM_FRAME;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesEntityTags.LEASH_KNOT;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesEntityTags.MINECARTS;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesEntityTags.RIDEABLE;
 
 public class NeoSkiesEntityTagProvider extends FabricTagProvider.EntityTypeTagProvider {
     public NeoSkiesEntityTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {

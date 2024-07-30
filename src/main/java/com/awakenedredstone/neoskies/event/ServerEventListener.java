@@ -5,7 +5,6 @@ import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.util.PreInitData;
 import com.awakenedredstone.neoskies.util.Texts;
-import eu.pb4.common.economy.api.CommonEconomy;
 import eu.pb4.placeholders.api.PlaceholderResult;
 import eu.pb4.placeholders.api.Placeholders;
 import net.minecraft.server.MinecraftServer;
@@ -15,7 +14,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public class ServerEventListener {
-
     public static void onTick(MinecraftServer server) {
         IslandLogic.getInstance().onTick(server);
     }

@@ -16,16 +16,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 
 public class WorldProtection {
-
     /**
      * @deprecated Please use {@link WorldProtection#canModify(World, PlayerEntity, IslandSettings)}
      **/
     @Deprecated
     public static boolean canModify(@NotNull World world, @NotNull PlayerEntity player) {
         if (NeoSkies.PROTECTION_BYPASS.contains(player)) {
-            if (Permissions.check(player, "neoskies.admin.protection.bypass", 4)) return true;
-            else NeoSkies.PROTECTION_BYPASS.remove(player);
+            if (Permissions.check(player, "neoskies.admin.protection.bypass", 4)) {
+                return true;
+            } else {
+                NeoSkies.PROTECTION_BYPASS.remove(player);
+            }
         }
+
         Optional<Island> island = NeoSkiesAPI.getOptionalIsland(world);
         if (island.isPresent() && !island.get().isMember(player)) {
             return false;
@@ -131,8 +134,7 @@ public class WorldProtection {
         if (island.isPresent() && island.get().isMember(player)) {
             if (island.get().owner.uuid == player.getUuid()) {
                 return NeoSkiesPermissionLevels.OWNER;
-            }
-            else {
+            } else {
                 return NeoSkiesPermissionLevels.MEMBER;
             }
         }

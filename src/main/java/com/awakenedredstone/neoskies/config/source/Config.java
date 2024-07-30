@@ -44,7 +44,7 @@ public abstract class Config {
 
     /**
      * Load the config represented by this wrapper from
-     * its associated file, or create it if it does not exist
+     * its associated file, or create it if it does not exist.
      */
     public void load() {
         if (!configExists()) {
@@ -68,7 +68,6 @@ public abstract class Config {
 
                 field.set(this, newValue);
             }
-
         } catch (IOException | SyntaxError | IllegalAccessException e) {
             NeoSkies.LOGGER.warn("Could not load config!", e);
         } finally {

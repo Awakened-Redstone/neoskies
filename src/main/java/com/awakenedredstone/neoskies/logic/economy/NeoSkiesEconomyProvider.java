@@ -11,7 +11,12 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 public class NeoSkiesEconomyProvider implements EconomyProvider {
     private final Map<UUID, EconomyAccount> accounts = new HashMap<>();

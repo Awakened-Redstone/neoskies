@@ -5,7 +5,11 @@ import com.awakenedredstone.neoskies.gui.PagedGui;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
 import com.awakenedredstone.neoskies.mixin.accessor.FluidBlockAccessor;
-import com.awakenedredstone.neoskies.util.*;
+import com.awakenedredstone.neoskies.util.FontUtils;
+import com.awakenedredstone.neoskies.util.LinedStringBuilder;
+import com.awakenedredstone.neoskies.util.MapBuilder;
+import com.awakenedredstone.neoskies.util.Texts;
+import com.awakenedredstone.neoskies.util.UnitConvertions;
 import com.mojang.brigadier.CommandDispatcher;
 import eu.pb4.polymer.virtualentity.api.ElementHolder;
 import eu.pb4.polymer.virtualentity.api.attachment.ChunkAttachment;
@@ -17,9 +21,7 @@ import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
 import net.minecraft.block.Block;
-import net.minecraft.block.FluidBlock;
 import net.minecraft.entity.decoration.Brightness;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -37,11 +39,20 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.awakenedredstone.neoskies.command.utils.CommandUtils.*;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.assertIsland;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.assertPlayer;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
+import static com.awakenedredstone.neoskies.command.utils.CommandUtils.requiresIsland;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class LevelCommand {

@@ -6,19 +6,15 @@ import com.awakenedredstone.neoskies.util.Texts;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import me.lucko.fabric.api.permissions.v0.Permissions;
-import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
-import static net.minecraft.command.argument.EntityArgumentType.player;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class VisitCommand {
-
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node()
             .then(literal("visit")
@@ -59,7 +55,6 @@ public class VisitCommand {
                     visitor.sendMessage(Texts.prefixed("message.neoskies.island_visit.no_visits", map -> map.put("owner", owner)));
                 }
             }
-
         }, () -> visitor.sendMessage(Texts.prefixed("message.neoskies.island_visit.no_island", map -> map.put("owner", owner))));
     }
 }

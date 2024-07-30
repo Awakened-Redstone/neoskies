@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class ServerUtils {
-
     public static void protectionWarning(PlayerEntity player, String key) {
         if (IslandLogic.getConfig().showProtectionMessages) {
             actionbarPrefixed(player, "island_protection." + key);

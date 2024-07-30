@@ -3,12 +3,9 @@ package com.awakenedredstone.neoskies.logic;
 import com.awakenedredstone.neoskies.api.events.IslandEvents;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.awakenedredstone.neoskies.util.Worlds;
-import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.TeleportTarget;
 
 public class Hub {
     public Vec3d pos = new Vec3d(0, 80, 0);

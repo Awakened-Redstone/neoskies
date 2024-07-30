@@ -14,7 +14,7 @@ public @interface RangeConstraint {
     boolean maxInclusive() default true;
 
     /**
-     * Defines if -1 can be accepted along with the min and max
+     * Defines if -1 can be accepted along with the min and max.
      */
     boolean allowMinusOne() default false;
 }

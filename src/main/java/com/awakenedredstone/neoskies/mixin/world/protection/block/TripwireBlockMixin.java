@@ -32,7 +32,6 @@ public class TripwireBlockMixin {
             }
 
             if (!WorldProtection.canModify(world, pos, player, NeoSkiesIslandSettings.USE_REDSTONE)) {
-
                 ci.cancel();
             }
         }

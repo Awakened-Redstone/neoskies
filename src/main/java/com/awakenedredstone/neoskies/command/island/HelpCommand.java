@@ -5,36 +5,25 @@ import com.awakenedredstone.neoskies.util.Texts;
 import com.google.common.collect.Iterables;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Language;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.node;
 import static com.awakenedredstone.neoskies.command.utils.CommandUtils.register;
 import static net.minecraft.server.command.CommandManager.literal;
 
 public class HelpCommand {
-
     public static void init(CommandDispatcher<ServerCommandSource> dispatcher) {
         register(dispatcher, node()
             .then(literal("help")
                 .requires(Permissions.require("neoskies.command.help", true))
                 .executes(context -> {
                     HelpCommand.run(context.getSource(), dispatcher);
-                    ServerPlayerEntity player = context.getSource().getPlayer();
-                    if (player != null) {
-
-                    }
                     return 1;
                 })
             )

@@ -1,6 +1,9 @@
 {
-  "source": "minecraft:flowing_lava",
-  "target": "#minecraft:water",
+  "source": "#minecraft:lava",
+  "target": {
+    "surface": "minecraft:soul_soil",
+    "touching": "minecraft:blue_ice"
+  },
   "generates": [
     {
       "blocks": [

@@ -13,7 +13,26 @@ import net.minecraft.util.Identifier;
 
 import java.util.concurrent.CompletableFuture;
 
-import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.*;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.ANVIL;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.BEACON;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.BREWING_STAND;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.COMPOSTER;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.CONTAINERS;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.CONTAINERS_WITH_ITEM;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.COPPER_BLOCKS;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.DOORS;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.DRAGON_EGG;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.EXTINGUISHABLE;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.HARVEST;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.LECTERN;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.LODESTONE;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.OTHERS;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.REDSTONE;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.RESPAWN_ANCHOR;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.SIGNS;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.SPAWNER;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.UNWAXED_COPPER_BLOCKS;
+import static com.awakenedredstone.neoskies.logic.tags.NeoSkiesBlockTags.WAXED_COPPER_BLOCKS;
 
 public class NeoSkiesBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     public NeoSkiesBlockTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {

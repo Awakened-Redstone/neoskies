@@ -2,7 +2,6 @@ package com.awakenedredstone.neoskies.util;
 
 import com.awakenedredstone.neoskies.logic.IslandLogic;
 import eu.pb4.placeholders.api.ParserContext;
-import eu.pb4.placeholders.api.TextParserUtils;
 import eu.pb4.placeholders.api.parsers.NodeParser;
 import eu.pb4.placeholders.api.parsers.ParserBuilder;
 import net.minecraft.text.MutableText;
@@ -30,7 +29,9 @@ public class Texts {
     public static String getTextString(Text text) {
         if (text.getContent() instanceof TranslatableTextContent tanslatable) {
             return Localization.text(text, ServerLanguage.getLanguage(IslandLogic.getConfig().language)).getString();
-        } else return text.getString();
+        } else {
+            return text.getString();
+        }
     }
 
     public static MutableText prefixed(String prefixKey, Text key, Map<String, Text> placeholders) {

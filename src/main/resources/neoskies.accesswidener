@@ -26,3 +26,4 @@ accessible field net/minecraft/world/storage/StorageIoWorker storage Lnet/minecr
 accessible field net/minecraft/world/storage/RegionFile sectorData Ljava/nio/IntBuffer;
 accessible field net/minecraft/state/State owner Ljava/lang/Object;
 accessible field net/minecraft/state/State codec Lcom/mojang/serialization/MapCodec;
+accessible method net/minecraft/loot/context/LootContextTypes register (Ljava/lang/String;Ljava/util/function/Consumer;)Lnet/minecraft/loot/context/LootContextType;
