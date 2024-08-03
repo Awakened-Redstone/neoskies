@@ -158,12 +158,8 @@ dependencies {
 
     // region Tests
     "testmodImplementation"(sourceSets.main.get().output)
+    checkstyle(project(":checkstyle-rules"))
     //endregion
-}
-
-checkstyle {
-    configFile = rootProject.file("checkstyle.xml")
-    toolVersion = "10.12.4"
 }
 
 //region Misc
@@ -195,6 +191,16 @@ tasks.jar {
     from("LICENSE") {
         rename { "${it}_${archivesBaseName}" }
     }
+}
+
+checkstyle {
+    configFile = rootProject.file("checkstyle.xml")
+    toolVersion = "10.17.0"
+}
+
+tasks.register<ValidateCheckstyleTask>("validateCheckstyle") {
+    group = "verification" // Optional: Add the task to a group
+    description = "Validates the Checkstyle configuration file."
 }
 //endregion
 

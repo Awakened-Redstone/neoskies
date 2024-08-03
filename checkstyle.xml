@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.2//EN" "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 <module name="Checker">
+<!--  <property name="checkstyle.packages" value="com.awakenedredstone.checkstyle"/>-->
   <property name="charset" value="UTF-8"/>
   <property name="fileExtensions" value="java"/>
   <property name="localeLanguage" value="en"/>
@@ -14,20 +15,6 @@
     <property name="format" value="\s+$"/>
     <property name="message" value="Trailing whitespace"/>
   </module>
-
-  <!-- Empty braces must be single line, separated by a single space -->
-  <module name="RegexpMultiline">
-    <property name="format" value="\{[\t ]*\r?\n\}"/>
-    <property name="message" value="Empty braces must be single line"/>
-  </module>
-  <!--<module name="RegexpSingleline">
-    <property name="format" value="\{[\t ]{2,}\}"/>
-    <property name="message" value="Empty braces must be separated by one space"/>
-  </module>
-  <module name="RegexpSingleline">
-    <property name="format" value="\{\}"/>
-    <property name="message" value="Empty braces must be separated by one space"/>
-  </module>-->
 
   <!-- Disallow blank after { -->
   <module name="RegexpMultiline">
@@ -48,6 +35,12 @@
       <property name="onCommentFormat" value="CHECKSTYLE.ON\: ([\w\|]+)"/>
       <property name="checkFormat" value="$1"/>
     </module>
+
+    <!-- Check translation strings on methods named "translatable" -->
+    <module name="com.awakenedredstone.checkstyle.TranslatableStringCheck" />
+
+    <!-- Empty braces must be single line, separated by a single space" -->
+    <module name="com.awakenedredstone.checkstyle.SameLineEmptyBlockCheck" />
 
     <!-- Configure imports -->
     <module name="AvoidStarImport"/>
@@ -87,6 +80,12 @@
     <module name="MissingOverride"/>
     <module name="OuterTypeFilename"/>
     <module name="PackageDeclaration"/>
+
+    <!-- Disallow functionless empty blocks -->
+    <module name="EmptyBlock">
+      <property name="option" value="text"/>
+      <property name="tokens" value="LITERAL_WHILE,LITERAL_TRY,LITERAL_FINALLY,LITERAL_DO,LITERAL_IF,LITERAL_ELSE,LITERAL_FOR,INSTANCE_INIT,STATIC_INIT,LITERAL_SWITCH,LITERAL_SYNCHRONIZED,LITERAL_CASE,LITERAL_DEFAULT,ARRAY_INIT"/>
+    </module>
 
     <!-- Javadocs -->
     <module name="InvalidJavadocPosition"/>

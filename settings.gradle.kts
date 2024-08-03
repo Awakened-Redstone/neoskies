@@ -5,3 +5,5 @@ pluginManagement {
 		maven("https://maven.fabricmc.net")
 	}
 }
+
+include("checkstyle-rules")
