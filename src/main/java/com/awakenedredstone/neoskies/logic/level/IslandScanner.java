@@ -188,8 +188,7 @@ public class IslandScanner implements AutoCloseable {
 
         PointOfInterestStorage poiStorage = new PointOfInterestStorage(new StorageKey("", null, ""), null, null, false, null, null) {
             @Override
-            public void initForPalette(ChunkSectionPos sectionPos, ChunkSection chunkSection) {
-            }
+            public void initForPalette(ChunkSectionPos sectionPos, ChunkSection chunkSection) { }
         };
 
         //TODO: make threads scan regions instead of a single chunk
@@ -325,7 +324,7 @@ public class IslandScanner implements AutoCloseable {
             for (Member member : island.getAllMembers()) {
                 ServerPlayerEntity player = IslandLogic.getServer().getPlayerManager().getPlayer(member.uuid);
                 if (player != null) {
-                    player.sendMessage(Texts.of("commands.neoskies.level.scan.error.update"));
+                    player.sendMessage(Texts.translatable("commands.neoskies.level.scan.error.update"));
                 }
             }
         }
@@ -344,7 +343,7 @@ public class IslandScanner implements AutoCloseable {
         }
     }
 
-    private record ScanSetup(Island island, Consumer<Integer> readyListener, Consumer<Integer> progressListener, ScanFinishListener finishListener, Runnable errorListener) {}
+    private record ScanSetup(Island island, Consumer<Integer> readyListener, Consumer<Integer> progressListener, ScanFinishListener finishListener, Runnable errorListener) { }
 
     @FunctionalInterface
     public interface ScanFinishListener {

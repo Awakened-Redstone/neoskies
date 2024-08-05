@@ -56,7 +56,7 @@ public class IslandSettings {
         CBGuiElementBuilder builder = icon.getBuilder();
         builder.hideDefaultTooltip()
           .setLore(buildLore(island))
-          .setName(Texts.of("island_settings." + identifier.toTranslationKey()))
+          .setName(Texts.translatable("island_settings." + identifier.toTranslationKey()))
           .setCallback((index, type, action, gui) -> {
               switch (type) {
                   case MOUSE_LEFT -> {
@@ -86,15 +86,15 @@ public class IslandSettings {
         Collections.reverse(levels);
 
         for (Integer level : levels) {
-            Text levelText = Texts.of("island_settings/level." + level);
+            Text levelText = Texts.translatable("island_settings.level." + level);
             Map<String, Text> placeholders = new MapBuilder<String, Text>()
               .put("level", levelText)
               .build();
 
             if (value == level) {
-                lore.add(Text.empty().setStyle(Style.EMPTY.withItalic(false)).append(Texts.of(Text.translatable("island_settings/selected"), placeholders)));
+                lore.add(Text.empty().setStyle(Style.EMPTY.withItalic(false)).append(Texts.of(Text.translatable("island_settings.selected"), placeholders)));
             } else {
-                lore.add(Text.empty().setStyle(Style.EMPTY.withItalic(false)).append(Texts.of(Text.translatable("island_settings/unselected"), placeholders)));
+                lore.add(Text.empty().setStyle(Style.EMPTY.withItalic(false)).append(Texts.of(Text.translatable("island_settings.unselected"), placeholders)));
             }
         }
 

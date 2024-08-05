@@ -31,7 +31,7 @@ public class ServerEventListener {
 
     //TODO: Add placeholders
     private static void registerPlaceholders() {
-        String missing = Texts.of("neoskies.island.placeholders.missing_island").getString();
+        String missing = Texts.translatable("neoskies.island.placeholders.missing_island").getString();
         PlaceholderResult invalid = PlaceholderResult.invalid(missing);
 
         Placeholders.register(NeoSkies.id("locked"), (context, argument) -> {
@@ -56,7 +56,7 @@ public class ServerEventListener {
 
         Placeholders.register(NeoSkies.id("scanning"), (context, argument) -> {
             Optional<Island> islandOptional = IslandLogic.getInstance().islands.getByPlayer(context.player());
-            return islandOptional.map(island -> PlaceholderResult.value(Texts.of(island.isScanning() ? "neoskies.island.scanning" : "neoskies.island.not_scanning"))).orElse(invalid);
+            return islandOptional.map(island -> PlaceholderResult.value(Texts.translatable(island.isScanning() ? "neoskies.island.scanning" : "neoskies.island.not_scanning"))).orElse(invalid);
         });
 
         Placeholders.register(NeoSkies.id("raw/scanning"), (context, argument) -> {

@@ -19,7 +19,7 @@ import com.awakenedredstone.neoskies.command.island.MemberCommands;
 import com.awakenedredstone.neoskies.command.island.MenuCommand;
 import com.awakenedredstone.neoskies.command.island.SettingCommands;
 import com.awakenedredstone.neoskies.command.island.VisitCommand;
-import com.awakenedredstone.neoskies.gui.CobbleGenGui;
+import com.awakenedredstone.neoskies.gui.blockgen.BlockGenManageScreen;
 import com.awakenedredstone.neoskies.logic.AdminLevelCommand;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
@@ -122,11 +122,11 @@ public class NeoSkiesCommands {
             .executes(context -> {
                 ServerCommandSource source = context.getSource();
                 if (!source.isExecutedByPlayer()) {
-                    source.sendError(Texts.of("This command must be executed by a player!"));
+                    source.sendError(Texts.translatable("commands.neoskies.error.player_only"));
                     return 0;
                 }
 
-                new CobbleGenGui(source.getPlayer()).open();
+                new BlockGenManageScreen(source.getPlayer()).open();
 
                 return 0;
             })

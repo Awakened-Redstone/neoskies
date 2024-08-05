@@ -30,8 +30,8 @@ public class IslandSettingsGui {
     private final Consumer<SlotGuiInterface> simpleUpdateGui;
     private int page = 0;
 
-    private final CBGuiElement nextPage = new CBGuiElementBuilder(Items.LIME_STAINED_GLASS_PANE).setName(Texts.of("neoskies.page.next")).setCallback((index, type, action, gui) -> offsetPage(1, gui)).build();
-    private final CBGuiElement prevPage = new CBGuiElementBuilder(Items.RED_STAINED_GLASS_PANE).setName(Texts.of("neoskies.page.previous")).setCallback((index, type, action, gui) -> offsetPage(-1, gui)).build();
+    private final CBGuiElement nextPage = new CBGuiElementBuilder(Items.LIME_STAINED_GLASS_PANE).setName(Texts.translatable("neoskies.page.next")).setCallback((index, type, action, gui) -> offsetPage(1, gui)).build();
+    private final CBGuiElement prevPage = new CBGuiElementBuilder(Items.RED_STAINED_GLASS_PANE).setName(Texts.translatable("neoskies.page.previous")).setCallback((index, type, action, gui) -> offsetPage(-1, gui)).build();
 
     public IslandSettingsGui(Island island, @Nullable GuiInterface parent) {
         this.island = island;
@@ -41,7 +41,7 @@ public class IslandSettingsGui {
         updateGui = gui -> {
             UIUtils.fillGui(gui);
 
-            gui.setTitle(Texts.of("gui.neoskies.island_settings"));
+            gui.setTitle(Texts.translatable("gui.neoskies.island_settings"));
 
             int slot = 10;
             int offset = page * 28;
@@ -55,7 +55,7 @@ public class IslandSettingsGui {
             if (page > 0) gui.setSlot(gui.getSize() - 9, prevPage);
 
             CBGuiElementBuilder close = new CBGuiElementBuilder(Items.BARRIER)
-                    .setName(Texts.of("gui.neoskies.close"))
+                    .setName(Texts.translatable("gui.neoskies.close"))
                     .setCallback((index, type, action, gui1) -> {
                         gui.getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
                         if (parent != null) {

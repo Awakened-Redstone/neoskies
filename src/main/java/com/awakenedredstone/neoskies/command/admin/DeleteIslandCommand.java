@@ -24,9 +24,9 @@ public class DeleteIslandCommand {
 
                         if (island.isPresent()) {
                             IslandLogic.getInstance().islands.delete(playerName);
-                            context.getSource().sendFeedback(() -> Texts.of("message.neoskies.force_delete.success", map -> map.put("player", playerName)), true);
+                            context.getSource().sendFeedback(() -> Texts.translatable("message.neoskies.force_delete.success", map -> map.put("player", playerName)), true);
                         } else {
-                            context.getSource().sendFeedback(() -> Texts.of("message.neoskies.force_delete.fail", map -> map.put("player", playerName)), true);
+                            context.getSource().sendFeedback(() -> Texts.translatable("message.neoskies.force_delete.fail", map -> map.put("player", playerName)), true);
                         }
 
                         return 1;

@@ -41,7 +41,7 @@ public record IslandLevelPredicate(int amount, Type type, boolean islandOnly) im
         return false;
     }
 
-    enum Type implements StringIdentifiable {
+    public enum Type implements StringIdentifiable {
         LEVEL,
         POINTS;
 

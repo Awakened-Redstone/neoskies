@@ -55,7 +55,7 @@ public class MenuCommand {
         int permissionLevel = player.getPermissionLevel();
 
         CBSimpleGuiBuilder guiBuilder = new CBSimpleGuiBuilder(ScreenHandlerType.GENERIC_9X3, false);
-        guiBuilder.setTitle(Texts.of("gui.neoskies.menu"));
+        guiBuilder.setTitle(Texts.translatable("gui.neoskies.menu"));
 
         var ref = new Object() {
             boolean dirty = false;
@@ -64,7 +64,7 @@ public class MenuCommand {
             Optional<Island> islandOptional = NeoSkiesAPI.getIslandByPlayer(player);
             UIUtils.fillGui(slotHolder, new CBGuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE).setName(Text.empty()).hideTooltip().build());
             if (Permissions.check(player, "neoskies.teleport.hub", true)) {
-                slotHolder.setSlot(10, new CBGuiElementBuilder(Items.BEACON).setName(Texts.of("item_name.neoskies.hub"))
+                slotHolder.setSlot(10, new CBGuiElementBuilder(Items.BEACON).setName(Texts.translatable("item_name.neoskies.hub"))
                     .setCallback((index, type, action, gui) -> {
                         //gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.3f, 1);
                         IslandLogic.getInstance().hub.visit(player);
@@ -74,7 +74,7 @@ public class MenuCommand {
             }
             if (islandOptional.isPresent()) {
                 if (Permissions.check(player, "neoskies.teleport.home", true)) {
-                    slotHolder.setSlot(11, new CBGuiElementBuilder(Items.GRASS_BLOCK).setName(Texts.of("item_name.neoskies.home"))
+                    slotHolder.setSlot(11, new CBGuiElementBuilder(Items.GRASS_BLOCK).setName(Texts.translatable("item_name.neoskies.home"))
                         .setCallback((index, type, action, gui) -> {
                             //gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.3f, 1);
                             HomeCommand.run(player);
@@ -83,7 +83,7 @@ public class MenuCommand {
                         .build());
                 }
                 if (Permissions.check(player, "neoskies.island.settings", true)) {
-                    slotHolder.setSlot(12, new CBGuiElementBuilder(Items.REDSTONE).setName(Texts.of("item_name.neoskies.island_settings"))
+                    slotHolder.setSlot(12, new CBGuiElementBuilder(Items.REDSTONE).setName(Texts.translatable("item_name.neoskies.island_settings"))
                         .setCallback((index, type, action, gui) -> {
                             gui.getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
                             new IslandSettingsGui(islandOptional.get(), gui).openGui(player);
@@ -91,7 +91,7 @@ public class MenuCommand {
                         .build());
                 }
             } else if (Permissions.check(player, "neoskies.island.create", true)) {
-                slotHolder.setSlot(11, new CBGuiElementBuilder(Items.OAK_SAPLING).setName(Texts.of("item_name.neoskies.create"))
+                slotHolder.setSlot(11, new CBGuiElementBuilder(Items.OAK_SAPLING).setName(Texts.translatable("item_name.neoskies.create"))
                     .setCallback((index, type, action, gui) -> {
                         gui.getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
                         CreateCommand.run(player);
@@ -103,8 +103,8 @@ public class MenuCommand {
                 Set<PlayerEntity> protectionBypass = NeoSkies.PROTECTION_BYPASS;
                 boolean overrideMode = protectionBypass.contains(player);
                 Item item = overrideMode ? Items.OAK_CHEST_BOAT : Items.OAK_BOAT;
-                slotHolder.setSlot(slotHolder.getSize() - 2, new CBGuiElementBuilder(item).setName(Texts.of("item_name.neoskies.protection_bypass"))
-                    .addLoreLine(Texts.loreBase(Texts.of("text.neoskies.protection_bypass", map -> map.put("value", String.valueOf(overrideMode)))))
+                slotHolder.setSlot(slotHolder.getSize() - 2, new CBGuiElementBuilder(item).setName(Texts.translatable("item_name.neoskies.protection_bypass"))
+                    .addLoreLine(Texts.loreBase(Texts.translatable("text.neoskies.protection_bypass", map -> map.put("value", String.valueOf(overrideMode)))))
                     .setCallback((index, type, action, gui) -> {
                         gui.getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
                         if (overrideMode) {

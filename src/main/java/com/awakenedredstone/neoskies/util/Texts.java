@@ -66,7 +66,7 @@ public class Texts {
 
     public static MutableText prefixed(String prefixKey, String key, Map<String, String> placeholders) {
         Text prefix = of(Text.translatable(prefixKey));
-        Text text = of(key, placeholders);
+        Text text = translatable(key, placeholders);
 
         return Text.empty().append(prefix).append(text);
     }
@@ -94,14 +94,22 @@ public class Texts {
         return prefixed(key, EMPTY_STRING_MAP);
     }
 
-    public static MutableText of(String key, Map<String, String> placeholders1) {
+    public static MutableText literal(String key) {
+        return of(Text.literal(key));
+    }
+
+    public static MutableText translatable(String key) {
+        return of(Text.translatable(key));
+    }
+
+    public static MutableText translatable(String key, Map<String, String> placeholders1) {
         Map<String, Text> placeholders = new HashMap<>();
         placeholders1.forEach((k, v) -> placeholders.put(k, Text.literal(v)));
 
         return of(Text.translatable(key), placeholders);
     }
 
-    public static MutableText of(String key, Consumer<Map<String, String>> builder) {
+    public static MutableText translatable(String key, Consumer<Map<String, String>> builder) {
         Map<String, String> placeholders1 = new HashMap<>();
         builder.accept(placeholders1);
 
@@ -109,10 +117,6 @@ public class Texts {
         placeholders1.forEach((k, v) -> placeholders.put(k, Text.literal(v)));
 
         return of(Text.translatable(key), placeholders);
-    }
-
-    public static MutableText of(String key) {
-        return of(key, EMPTY_STRING_MAP);
     }
 
     public static MutableText of(Text key, Map<String, Text> placeholders) {
@@ -140,10 +144,14 @@ public class Texts {
     }
 
     public static MutableText loreBase(String text) {
-        return loreBase(Texts.of(text));
+        return loreBase(Texts.translatable(text));
     }
 
     public static MutableText loreBase(String text, Consumer<Map<String, String>> builder) {
+        return loreBase(Texts.translatable(text, builder));
+    }
+
+    public static MutableText loreBase(Text text, Consumer<Map<String, Text>> builder) {
         return loreBase(Texts.of(text, builder));
     }
 }

@@ -74,8 +74,7 @@ public class DebugImGuiRenderer implements ImGuiRenderer {
                                 samples[i] = (float) toMiB(MEMORY.get(Math.max(0, MEMORY.size() - bufferLength) + i));
                             }
                             samples2[i] = (float) i;
-                        } catch (Throwable ignored) {
-                        }
+                        } catch (Throwable ignored) { }
                     }
 
                     if (ImGui.button("Clear")) {
@@ -201,31 +200,31 @@ public class DebugImGuiRenderer implements ImGuiRenderer {
 
             if (ImGui.collapsingHeader("Island scan")) {
                 if (!MESSAGES.containsKey("island.scan.status")) {
-                    MESSAGES.put("island.scan.status", Texts.of("Not scanning"));
+                    MESSAGES.put("island.scan.status", Texts.literal("Not scanning"));
                 }
                 ImGui.text(MESSAGES.get("island.scan.status").getString());
                 if (ImGui.button("Scan")) {
                     if (selectedIsland.isScanning()) {
-                        MESSAGES.put("island.scan.status", Texts.of("Can not queue a scan for an island that is already scanning"));
+                        MESSAGES.put("island.scan.status", Texts.translatable("commands.neoskies.level.scan.error.busy"));
                     } else {
-                        MESSAGES.put("island.scan.status", Texts.of("Scan queued"));
+                        MESSAGES.put("island.scan.status", Texts.translatable("commands.neoskies.level.scan.queued"));
 
                         AtomicInteger total = new AtomicInteger();
                         IslandLogic.getInstance().islandScanner.queueScan(selectedIsland, integer -> {
-                            MESSAGES.put("island.scan.status", Texts.of("Scanning %total% chunks", new MapBuilder.StringMap().putAny("total", integer).build()));
+                            MESSAGES.put("island.scan.status", Texts.translatable("commands.neoskies.level.scan.total", new MapBuilder.StringMap().putAny("total", integer).build()));
                             total.set(integer);
                         }, integer -> {
-                            MESSAGES.put("island.scan.status", Texts.of("Scanned %current%/%total% chunks", new MapBuilder.StringMap()
+                            MESSAGES.put("island.scan.status", Texts.translatable("commands.neoskies.level.scan.progress", new MapBuilder.StringMap()
                               .putAny("total", total.get())
                               .putAny("current", integer)
                               .build()));
                         }, (timeTaken, scannedBlocks) -> {
-                            MESSAGES.put("island.scan.status", Texts.of("Scanned %total% blocks in %time%", new MapBuilder.StringMap()
+                            MESSAGES.put("island.scan.status", Texts.translatable("commands.neoskies.level.scan.finished", new MapBuilder.StringMap()
                               .putAny("total", UnitConvertions.readableNumber(scannedBlocks.values().stream().mapToInt(value -> value).sum()))
                               .putAny("time", UnitConvertions.formatTimings(timeTaken))
                               .build()));
                         }, () -> {
-                            MESSAGES.put("island.scan.status", Texts.of("Island scan failed"));
+                            MESSAGES.put("island.scan.status", Texts.translatable("commands.neoskies.level.scan.error"));
                         });
                     }
                 }

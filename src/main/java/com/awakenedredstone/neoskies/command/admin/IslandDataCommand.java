@@ -61,7 +61,7 @@ public class IslandDataCommand {
 
     private static int getIslandData(ServerCommandSource source, @Nullable Island island) {
         if (island == null) {
-            source.sendError(Texts.of("message.neoskies.error.island_not_found"));
+            source.sendError(Texts.translatable("message.neoskies.error.island_not_found"));
             return 0;
         }
 
@@ -86,7 +86,7 @@ public class IslandDataCommand {
           .putAny("radius", island.radius)
           .putAny("locked", island.locked)
           .putAny("created", island.getCreated().toEpochMilli());
-        source.sendFeedback(() -> Texts.of("message.neoskies.island_data", map.build()), false);
+        source.sendFeedback(() -> Texts.translatable("message.neoskies.island_data", map.build()), false);
         return 1;
     }
 }

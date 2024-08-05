@@ -31,7 +31,7 @@ public class CommandUtils {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean assertIsland(ServerCommandSource source, @Nullable Island island) {
         if (island == null) {
-            source.sendError(Texts.of("message.neoskies.error.island_not_found"));
+            source.sendError(Texts.translatable("message.neoskies.error.island_not_found"));
             return false;
         }
         return true;
@@ -40,7 +40,7 @@ public class CommandUtils {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean assertPlayer(ServerCommandSource source) {
         if (!source.isExecutedByPlayer()) {
-            source.sendError(Texts.of("message.neoskies.error.player_olny"));
+            source.sendError(Texts.translatable("message.neoskies.error.player_olny"));
             return false;
         }
         return true;

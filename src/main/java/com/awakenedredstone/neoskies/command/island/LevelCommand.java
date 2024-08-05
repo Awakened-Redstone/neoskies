@@ -77,7 +77,7 @@ public class LevelCommand {
                   builder.append(top5.getFirst().owner.name).append(": ").append(top5.getFirst().getPoints());
                   builder.appendLine(top5.getLast().owner.name).append(": ").append(top5.getLast().getPoints());
 
-                  context.getSource().sendMessage(Texts.of(builder.toString()));
+                  context.getSource().sendMessage(Texts.literal(builder.toString()));
                   return 0;
               })
             )
@@ -94,7 +94,7 @@ public class LevelCommand {
         Island island = NeoSkiesAPI.getIslandByPlayer(player).orElse(null);
         if (!assertIsland(source, island)) return 0;
         if (island.isScanning()) {
-            source.sendError(Texts.of("message.neoskies.island.error.scanning"));
+            source.sendError(Texts.translatable("message.neoskies.island.error.scanning"));
             return 0;
         }
 
@@ -134,13 +134,13 @@ public class LevelCommand {
         });
 
         SimpleGui gui = PagedGui.of(player, elements);
-        gui.setTitle(Texts.of("gui.neoskies.level.title", map -> {
+        gui.setTitle(Texts.translatable("gui.neoskies.level.title", map -> {
             map.put("points", String.valueOf(island.getPoints()));
             map.put("level", String.valueOf(island.getLevel()));
         }));
         gui.open();
 
-        source.sendFeedback(() -> Texts.of(sum.get() + " points"), false);
+        source.sendFeedback(() -> Texts.translatable(sum.get() + " points"), false);
 
         return sum.get();
     }
@@ -152,7 +152,7 @@ public class LevelCommand {
         Island island = NeoSkiesAPI.getIslandByPlayer(player).orElse(null);
         if (!assertIsland(source, island)) return 0;
         if (island.isScanning()) {
-            source.sendError(Texts.of("message.neoskies.island.error.scanning"));
+            source.sendError(Texts.translatable("message.neoskies.island.error.scanning"));
             return 0;
         }
 
@@ -171,10 +171,10 @@ public class LevelCommand {
         new ChunkAttachment(holder, (WorldChunk) world.getChunk(blockPos), pos, true);
         Identifier scanCloseTaskId = Identifier.of(island.getIslandId().toString(), "close_scan_screen");
 
-        MutableText text = Texts.of("message.neoskies.island.level.scan.background").copy();
+        MutableText text = Texts.translatable("message.neoskies.island.level.scan.background").copy();
 
-        Text startScanText = Texts.of("message.neoskies.island.level.scan.start");
-        Text cancelText = Texts.of("message.neoskies.island.level.scan.cancel");
+        Text startScanText = Texts.translatable("message.neoskies.island.level.scan.start");
+        Text cancelText = Texts.translatable("message.neoskies.island.level.scan.cancel");
 
         TextDisplayElement textDisplay = new TextDisplayElement();
         textDisplay.setText(text);
@@ -209,10 +209,10 @@ public class LevelCommand {
 
         //TODO: Fix all 100 bugs this thing has
         //TODO: Make this readable
-        TextDisplayElement display = createDisplay(Texts.of(""), yaw, new Vec3d(0, 0, 0));
+        TextDisplayElement display = createDisplay(Texts.literal(""), yaw, new Vec3d(0, 0, 0));
         VirtualElement.InteractionHandler startScan = createHandler((interactor, hand) -> {
             if (island.isScanning()) {
-                source.sendError(Texts.of("message.neoskies.island.error.scanning"));
+                source.sendError(Texts.translatable("message.neoskies.island.error.scanning"));
                 return;
             }
 
@@ -223,18 +223,18 @@ public class LevelCommand {
             IslandLogic.getScheduler().scheduleDelayed(scanCloseTaskId, IslandLogic.getServer(), 0, () -> {});
 
             display.setTranslation(new Vec3d(0, 0.25 * (lines / 2d) + 0.0625 + 0.5, 0).toVector3f());
-            display.setText(Texts.of("message.neoskies.island.level.scan.preparing"));
+            display.setText(Texts.translatable("message.neoskies.island.level.scan.preparing"));
 
             AtomicInteger toScan = new AtomicInteger();
             IslandLogic.getInstance().islandScanner.queueScan(island, total -> {
                 toScan.set(total);
-                display.setText(Texts.of("message.neoskies.island.level.scan.progress", new MapBuilder.StringMap()
+                display.setText(Texts.translatable("message.neoskies.island.level.scan.progress", new MapBuilder.StringMap()
                   .putAny("progress", 0)
                   .putAny("total", UnitConvertions.readableNumber(total))
                   .build()));
             }, current -> {
                 int total = toScan.get();
-                Text progress = Texts.of("message.neoskies.island.level.scan.progress", new MapBuilder.StringMap()
+                Text progress = Texts.translatable("message.neoskies.island.level.scan.progress", new MapBuilder.StringMap()
                   .putAny("progress", UnitConvertions.readableNumber(current))
                   .putAny("total", UnitConvertions.readableNumber(total))
                   .build());
@@ -243,7 +243,7 @@ public class LevelCommand {
                 IslandLogic.runOnNextTick(() -> {
                     int scanned = scannedBlocks.values().stream().mapToInt(value -> value).sum();
 
-                    source.sendFeedback(() -> Texts.of("message.neoskies.island.level.scan.time_taken", new MapBuilder.StringMap()
+                    source.sendFeedback(() -> Texts.translatable("message.neoskies.island.level.scan.time_taken", new MapBuilder.StringMap()
                       .put("time", UnitConvertions.formatTimings(timeTaken))
                       .putAny("count", UnitConvertions.readableNumber(scanned))
                       .build()), false);
@@ -266,7 +266,7 @@ public class LevelCommand {
                         blockDisplay.setBrightness(Brightness.FULL);
                         holder.addElement(blockDisplay);
                         blockDisplays.add(blockDisplay);
-                        Text amountText = Texts.of("message.neoskies.island.level.scan.block_info", new MapBuilder.StringMap()
+                        Text amountText = Texts.translatable("message.neoskies.island.level.scan.block_info", new MapBuilder.StringMap()
                           .putAny("amount", UnitConvertions.readableNumber(amount))
                           .put("block", block.getName().getString())
                           .build());
@@ -282,7 +282,7 @@ public class LevelCommand {
                         removeInteraction(ref.closeButton);
                     };
 
-                    ref.closeButton = createInteraction(Texts.of("message.neoskies.island.level.scan.close"), createHandler((player1, hand1) -> {
+                    ref.closeButton = createInteraction(Texts.translatable("message.neoskies.island.level.scan.close"), createHandler((player1, hand1) -> {
                         removeBlocksView.run();
                         closeBackground.run();
                     }), yaw);
@@ -294,7 +294,7 @@ public class LevelCommand {
                     });
                 });
             }, () -> {
-                display.setText(Texts.of("message.neoskies.island.level.scan.error"));
+                display.setText(Texts.translatable("message.neoskies.island.level.scan.error"));
             });
         });
 
@@ -321,7 +321,7 @@ public class LevelCommand {
         });
 
         IslandLogic.getScheduler().scheduleDelayed(IslandLogic.getServer(), 15, () -> {
-            message.set(createDisplay(Texts.of("message.neoskies.island.level.scan.confirm"), yaw, new Vec3d(0, 0.25 * (lines / 2d) + 0.0625 + 0.5, 0)));
+            message.set(createDisplay(Texts.translatable("message.neoskies.island.level.scan.confirm"), yaw, new Vec3d(0, 0.25 * (lines / 2d) + 0.0625 + 0.5, 0)));
             startScanPair.set(createInteraction(startScanText, startScan, yaw, new Vec3d(-2 + getTextWidth(startScanText), 0.25 * (lines / 2d) + 0.0625, 0)));
             cancalScanPair.set(createInteraction(cancelText, cancelScan, yaw, new Vec3d(2 - getTextWidth(startScanText), 0.25 * (lines / 2d) + 0.0625, 0)));
         });
@@ -334,7 +334,7 @@ public class LevelCommand {
                 closeBackground.run();
             }
         });
-        source.sendFeedback(() -> Texts.of("message.neoskies.island.level.scan.opening"), false);
+        source.sendFeedback(() -> Texts.translatable("message.neoskies.island.level.scan.opening"), false);
         return 1;
     }
 

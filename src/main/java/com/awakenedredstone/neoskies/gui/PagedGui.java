@@ -28,6 +28,7 @@ public abstract class PagedGui extends SimpleGui {
     public static SimpleGui of(ServerPlayerEntity player, List<GuiElementInterface> elements) {
         return of(player, elements, null);
     }
+
     public static SimpleGui of(ServerPlayerEntity player, List<GuiElementInterface> elements, @Nullable IntFunction<GuiElementInterface> navbar) {
         return new FromList(ScreenHandlerType.GENERIC_9X6, player, false, elements, navbar);
     }
@@ -112,9 +113,9 @@ public abstract class PagedGui extends SimpleGui {
 
     public record DisplayElement(@Nullable GuiElementInterface element, @Nullable Slot slot) {
         private static final DisplayElement FILLER = DisplayElement.of(
-            new GuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE)
-                .setName(Text.empty())
-                .hideTooltip()
+          new GuiElementBuilder(Items.BLACK_STAINED_GLASS_PANE)
+            .setName(Text.empty())
+            .hideTooltip()
         );
 
         public static DisplayElement of(GuiElementInterface element) {
@@ -132,17 +133,19 @@ public abstract class PagedGui extends SimpleGui {
         public static DisplayElement nextPage(PagedGui gui) {
             if (gui.canNextPage()) {
                 return DisplayElement.of(
-                    CommonGuiElements.nextPage().setCallback((x, y, z) -> {
-                        playClickSound(gui.player);
-                        gui.nextPage();
-                    })
+                  CommonGuiElements.nextPage().setCallback((x, y, z) -> {
+                      playClickSound(gui.player);
+                      gui.nextPage();
+                  })
                 );
             } else {
                 return DisplayElement.of(
-                    new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setName(Text.translatable("spectatorMenu.next_page").formatted(Formatting.DARK_GRAY))
-                        .hideDefaultTooltip()
-                        .setSkullOwner(SkinEncoder.encode("7e57720a4878c8bcab0e9c9c47d9e55128ccd77ba3445a54a91e3e1e1a27356e"))
+                  new GuiElementBuilder(Items.PLAYER_HEAD)
+                    //CHECKSTYLE.OFF: TranslatableStringCheck
+                    .setName(Text.translatable("spectatorMenu.next_page").formatted(Formatting.DARK_GRAY))
+                    //CHECKSTYLE.ON: TranslatableStringCheck
+                    .hideDefaultTooltip()
+                    .setSkullOwner(SkinEncoder.encode("7e57720a4878c8bcab0e9c9c47d9e55128ccd77ba3445a54a91e3e1e1a27356e"))
                 );
             }
         }
@@ -150,18 +153,20 @@ public abstract class PagedGui extends SimpleGui {
         public static DisplayElement previousPage(PagedGui gui) {
             if (gui.canPreviousPage()) {
                 return DisplayElement.of(
-                    CommonGuiElements.previousPage()
-                        .setCallback((x, y, z) -> {
-                            playClickSound(gui.player);
-                            gui.previousPage();
-                        })
+                  CommonGuiElements.previousPage()
+                    .setCallback((x, y, z) -> {
+                        playClickSound(gui.player);
+                        gui.previousPage();
+                    })
                 );
             } else {
                 return DisplayElement.of(
-                    new GuiElementBuilder(Items.PLAYER_HEAD)
-                        .setName(Text.translatable("spectatorMenu.previous_page").formatted(Formatting.DARK_GRAY))
-                        .hideDefaultTooltip()
-                        .setSkullOwner(SkinEncoder.encode("50820f76e3e041c75f76d0f301232bdf48321b534fe6a859ccb873d2981a9623"))
+                  new GuiElementBuilder(Items.PLAYER_HEAD)
+                    //CHECKSTYLE.OFF: TranslatableStringCheck
+                    .setName(Text.translatable("spectatorMenu.previous_page").formatted(Formatting.DARK_GRAY))
+                    //CHECKSTYLE.ON: TranslatableStringCheck
+                    .hideDefaultTooltip()
+                    .setSkullOwner(SkinEncoder.encode("50820f76e3e041c75f76d0f301232bdf48321b534fe6a859ccb873d2981a9623"))
                 );
             }
         }

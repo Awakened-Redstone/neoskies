@@ -48,7 +48,7 @@ public class ModifyCommand {
         if (!assertIsland(source, island)) return 0;
         island.radius = size;
 
-        source.sendFeedback(() -> Texts.of(Texts.of("message.neoskies.island.modify.size", new MapBuilder.StringMap()
+        source.sendFeedback(() -> Texts.of(Texts.translatable("message.neoskies.island.modify.size", new MapBuilder.StringMap()
           .put("player", island.owner.name)
           .putAny("size", size)
           .build())), true);

@@ -3,14 +3,32 @@
 
   "gui.neoskies.level.item.description": "<dark_gray>%points% points (%count% blocks)",
   "gui.neoskies.level.title": "Island points (%points% | Lv.%level%)",
+  "gui.neoskies.block_gen": "Block generators",
+  "gui.neoskies.block_gen.create": "Create generator",
+  "gui.neoskies.block_gen.set_id": "Generator ID",
+  "gui.neoskies.block_gen.generator": "Block generator",
+  "gui.neoskies.block_gen.generator.id": "<dark_gray>ID: %id%",
+  "gui.neoskies.block_gen.generator.type": "<dark_gray>Type: %type%",
+  "gui.neoskies.block_gen.generator.type.fluid": "cobble-like",
+  "gui.neoskies.block_gen.generator.type.block": "basalt-like",
+  "gui.neoskies.block_gen.generator.source": "<dark_gray>Source: %source%",
+  "gui.neoskies.block_gen.generator.target": "<dark_gray>Target: %target%",
+  "gui.neoskies.block_gen.edit": "Editing generator",
 
-  "commands.neoskies.admin.bypass.enable": "<green>Enabled</green> protection bypass",
-  "commands.neoskies.admin.bypass.disable": "<red>Disabled</red> protection bypass",
-  "commands.neoskies.reload": "Reloading configs!",
   "commands.neoskies.error.player_only": "<color:#ff816a>Only players can execute this!",
   "commands.neoskies.error.no_commands": "<color:#ff816a>Couldn't find any command!",
-  "commands.neoskies.level.scan.error.update": "<red>Failed to update island data, the scan data was discarded!",
   "commands.neoskies.error.missing_island": "<red>This island does not exist!",
+  "commands.neoskies.level.scan.error.update": "<red>Failed to update island data, the scan data was discarded!",
+  "commands.neoskies.level.scan.error.busy": "<red>Can not queue a scan for an island that is already scanning!",
+  "commands.neoskies.level.scan.error": "<red>Island scan failed",
+
+  "commands.neoskies.reload": "Reloading configs!",
+  "commands.neoskies.admin.bypass.enable": "<green>Enabled</green> protection bypass",
+  "commands.neoskies.admin.bypass.disable": "<red>Disabled</red> protection bypass",
+  "commands.neoskies.level.scan.queued": "Scan queued",
+  "commands.neoskies.level.scan.total": "Scanning %total% chunks",
+  "commands.neoskies.level.scan.progress": "Scanned %current%/%total% chunks",
+  "commands.neoskies.level.scan.finished": "Scanned %total% blocks in %time%",
 
   "commands.neoskies.help": "<color:#f4d402>NeoSkies</color> <grey>user commands:</grey>",
   "commands.neoskies.help.prefix": " <color:#98f9ff>/%prefix% %command%</color> → ",
@@ -131,11 +149,11 @@
   "island_settings.neoskies.bucket/passive.description": "<dark_gray>Allow players to bucket passive mobs",
   "island_settings.neoskies.harvest.description":  "<dark_gray>Allows players to harvest crops",
 
-  "island_settings/selected": "<green>> %level%",
-  "island_settings/unselected": "<dark_gray>> %level%",
-  "island_settings/level.0": "VISITOR",
-  "island_settings/level.5": "MEMBER",
-  "island_settings/level.99": "OWNER",
+  "island_settings.selected": "<green>> %level%",
+  "island_settings.unselected": "<dark_gray>> %level%",
+  "island_settings.level.0": "VISITOR",
+  "island_settings.level.5": "MEMBER",
+  "island_settings.level.99": "OWNER",
 
 
 

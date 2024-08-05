@@ -10,18 +10,23 @@ import net.minecraft.util.Formatting;
 public class CommonGuiElements {
     private static final GuiElement PURPLE_PLATE = new GuiElementBuilder(Items.PURPLE_STAINED_GLASS_PANE).hideTooltip().setName(Text.empty()).hideTooltip().build();
     private static final GuiElement WHITE_PLATE = new GuiElementBuilder(Items.WHITE_STAINED_GLASS_PANE).hideTooltip().setName(Text.empty()).hideTooltip().build();
+
     public static GuiElementBuilder nextPage() {
         return new GuiElementBuilder(Items.PLAYER_HEAD)
-            .setName(Text.translatable("spectatorMenu.next_page").formatted(Formatting.WHITE))
-            .hideDefaultTooltip()
-            .setSkullOwner("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzg2MTg1YjFkNTE5YWRlNTg1ZjE4NGMzNGYzZjNlMjBiYjY0MWRlYjg3OWU4MTM3OGU0ZWFmMjA5Mjg3In19fQ");
+          //CHECKSTYLE.OFF: TranslatableStringCheck
+          .setName(Text.translatable("spectatorMenu.next_page").formatted(Formatting.WHITE))
+          //CHECKSTYLE.ON: TranslatableStringCheck
+          .hideDefaultTooltip()
+          .setSkullOwner("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzg2MTg1YjFkNTE5YWRlNTg1ZjE4NGMzNGYzZjNlMjBiYjY0MWRlYjg3OWU4MTM3OGU0ZWFmMjA5Mjg3In19fQ");
     }
 
     public static GuiElementBuilder previousPage() {
         return new GuiElementBuilder(Items.PLAYER_HEAD)
-            .setName(Text.translatable("spectatorMenu.previous_page").formatted(Formatting.WHITE))
-            .hideDefaultTooltip()
-            .setSkullOwner("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzEwODI5OGZmMmIyNjk1MWQ2ODNlNWFkZTQ2YTQyZTkwYzJmN2M3ZGQ0MWJhYTkwOGJjNTg1MmY4YzMyZTU4MyJ9fX0");
+          //CHECKSTYLE.OFF: TranslatableStringCheck
+          .setName(Text.translatable("spectatorMenu.previous_page").formatted(Formatting.WHITE))
+          //CHECKSTYLE.ON: TranslatableStringCheck
+          .hideDefaultTooltip()
+          .setSkullOwner("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzEwODI5OGZmMmIyNjk1MWQ2ODNlNWFkZTQ2YTQyZTkwYzJmN2M3ZGQ0MWJhYTkwOGJjNTg1MmY4YzMyZTU4MyJ9fX0");
     }
 
     public static GuiElementBuilder back(Runnable runnable) {

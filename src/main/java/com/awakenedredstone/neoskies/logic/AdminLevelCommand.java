@@ -32,33 +32,33 @@ public final class AdminLevelCommand {
                     Island island = NeoSkiesAPI.getOptionalIsland(UUID.fromString(islandId)).orElse(null);
 
                     if (island == null) {
-                        source.sendError(Texts.of("Tried to scan an island that doesn't exist"));
+                        source.sendError(Texts.translatable("commands.neoskies.error.missing_island"));
                         return 0;
                     }
 
                     if (island.isScanning()) {
-                        source.sendError(Texts.of("Can not queue a scan for an island that is already scanning!"));
+                        source.sendError(Texts.translatable("commands.neoskies.level.scan.error.busy"));
                         return 0;
                     }
 
-                    source.sendFeedback(() -> Texts.of("Scan queued"), false);
+                    source.sendFeedback(() -> Texts.translatable("commands.neoskies.level.scan.queued"), false);
 
                     AtomicInteger total = new AtomicInteger();
                     IslandLogic.getInstance().islandScanner.queueScan(island, integer -> {
-                        source.sendMessage(Texts.of("Scanning %total% chunks", new MapBuilder.StringMap().putAny("total", integer).build()));
+                        source.sendMessage(Texts.translatable("commands.neoskies.level.scan.total", new MapBuilder.StringMap().putAny("total", integer).build()));
                         total.set(integer);
                     }, integer -> {
-                        source.sendMessage(Texts.of("Scanned %current%/%total% chunks", new MapBuilder.StringMap()
+                        source.sendMessage(Texts.translatable("commands.neoskies.level.scan.progress", new MapBuilder.StringMap()
                           .putAny("total", total.get())
                           .putAny("current", integer)
                           .build()));
                     }, (timeTaken, scannedBlocks) -> {
-                        source.sendMessage(Texts.of("Scanned %total% blocks in %time%", new MapBuilder.StringMap()
+                        source.sendMessage(Texts.translatable("commands.neoskies.level.scan.finished", new MapBuilder.StringMap()
                           .putAny("total", UnitConvertions.readableNumber(scannedBlocks.values().stream().mapToInt(value -> value).sum()))
                           .putAny("time", UnitConvertions.formatTimings(timeTaken))
                           .build()));
                     }, () -> {
-                        source.sendError(Texts.of("Island scan failed"));
+                        source.sendError(Texts.translatable("commands.neoskies.level.scan.error"));
                     });
 
                     return 1;
@@ -76,7 +76,7 @@ public final class AdminLevelCommand {
                         Island island = NeoSkiesAPI.getOptionalIsland(UUID.fromString(islandId)).orElse(null);
 
                         if (island == null) {
-                            source.sendError(Texts.of("commands.neoskies.error.missing_island"));
+                            source.sendError(Texts.translatable("commands.neoskies.error.missing_island"));
                             return 0;
                         }
 
@@ -93,7 +93,7 @@ public final class AdminLevelCommand {
                         Island island = NeoSkiesAPI.getOptionalIsland(UUID.fromString(islandId)).orElse(null);
 
                         if (island == null) {
-                            source.sendError(Texts.of("commands.neoskies.error.missing_island"));
+                            source.sendError(Texts.translatable("commands.neoskies.error.missing_island"));
                             return 0;
                         }
 

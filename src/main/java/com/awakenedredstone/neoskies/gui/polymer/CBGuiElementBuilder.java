@@ -31,8 +31,7 @@ public class CBGuiElementBuilder extends GuiElementBuilder {
     /**
      * Constructs a CBGuiElementBuilder with the default options.
      */
-    public CBGuiElementBuilder() {
-    }
+    public CBGuiElementBuilder() { }
 
     /**
      * Constructs a CBGuiElementBuilder with the specified Item.
@@ -74,7 +73,7 @@ public class CBGuiElementBuilder extends GuiElementBuilder {
     }
 
     @NotNull
-    public static CBGuiElementBuilder from(@NotNull CBGuiElement element) {
+    public static CBGuiElementBuilder from(@NotNull GuiElementInterface element) {
         CBGuiElementBuilder builder = from(element.getItemStack());
         builder.callback = element.getGuiCallback();
 
@@ -82,7 +81,7 @@ public class CBGuiElementBuilder extends GuiElementBuilder {
     }
 
     @NotNull
-    public static CBGuiElementBuilder fromSimple(@NotNull CBGuiElement element) {
+    public static CBGuiElementBuilder fromStack(@NotNull GuiElementInterface element) {
         return from(element.getItemStack());
     }
 

@@ -59,4 +59,8 @@ public class NeoSkies implements ModInitializer {
     public static Identifier id(String path) {
         return new Identifier(MOD_ID, path);
     }
+
+    public static Identifier generatedId(String path) {
+        return new Identifier(MOD_ID + "_generated", path);
+    }
 }

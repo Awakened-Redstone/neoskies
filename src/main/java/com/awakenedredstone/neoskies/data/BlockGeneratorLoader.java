@@ -3,6 +3,7 @@ package com.awakenedredstone.neoskies.data;
 import com.awakenedredstone.neoskies.NeoSkies;
 import com.awakenedredstone.neoskies.logic.registry.NeoSkiesRegister;
 import com.awakenedredstone.neoskies.mixin.accessor.TagEntryAccessor;
+import com.awakenedredstone.neoskies.util.LinedStringBuilder;
 import com.awakenedredstone.neoskies.util.WeightedRandom;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -60,6 +61,7 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
 
     private final Map<Identifier, List<BlockGenerator>> cache = new HashMap<>();
     private Map<TagEntry, List<BlockGenerator>> generatorMap = ImmutableMap.of();
+    private Map<Identifier, BlockGenerator> defaultGeneratorMap = ImmutableMap.of();
 
     public BlockGeneratorLoader() {
         super(GSON, "block_gen");
@@ -67,6 +69,7 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
 
     @Override
     protected void apply(Map<Identifier, JsonElement> prepared, ResourceManager manager, Profiler profiler) {
+        Map<Identifier, BlockGenerator> defaultGeneratorMapBuilder = new HashMap<>();
         Map<TagEntry, List<BlockGenerator>> generatorMapBuilder = new HashMap<>();
         prepared.forEach((identifier, jsonElement) -> {
             DataResult<BlockGenerator> dataResult = BlockGenerator.CODEC.parse(JsonOps.INSTANCE, jsonElement);
@@ -81,6 +84,8 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
                 return;
             }
             BlockGenerator blockGenerator = generator.get();
+
+            defaultGeneratorMapBuilder.put(identifier, blockGenerator);
             List<BlockGenerator> blockGenerators = generatorMapBuilder.get(blockGenerator.source);
             if (blockGenerators == null) {
                 ArrayList<BlockGenerator> list = new ArrayList<>();
@@ -91,7 +96,8 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
             }
         });
         generatorMap = ImmutableMap.copyOf(generatorMapBuilder);
-        System.out.println(generatorMap.size());
+        defaultGeneratorMap = ImmutableMap.copyOf(defaultGeneratorMapBuilder);
+        defaultGeneratorMapBuilder.clear();
         generatorMapBuilder.clear();
         cache.clear();
     }
@@ -99,6 +105,10 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
     @Override
     public Identifier getFabricId() {
         return NeoSkies.id("block_gen");
+    }
+
+    public Map<Identifier, BlockGenerator> getGenerators() {
+        return defaultGeneratorMap;
     }
 
     public boolean generate(Identifier source, World world, BlockPos pos) {
@@ -195,6 +205,8 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
 
         public static abstract class Target {
             public abstract @Nullable BlockPos test(World world, BlockPos pos);
+            public abstract @NotNull String id();
+            public abstract @NotNull String description();
 
             public static class FluidTarget extends Target {
                 public static final Codec<FluidTarget> CODEC = TagEntry.CODEC.comapFlatMap(id -> DataResult.success(new FluidTarget(id)), FluidTarget::getFluid);
@@ -207,6 +219,16 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
 
                 public static Codec<Target> getCodec() {
                     return (Codec<Target>) (Codec<? extends Target>) CODEC;
+                }
+
+                @Override
+                public @NotNull String id() {
+                    return "fluid";
+                }
+
+                @Override
+                public @NotNull String description() {
+                    return getFluid().toString();
                 }
 
                 public TagEntry getFluid() {
@@ -252,6 +274,20 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
 
                 public static Codec<Target> getCodec() {
                     return (Codec<Target>) (Codec<? extends Target>) CODEC;
+                }
+
+                @Override
+                public @NotNull String id() {
+                    return "block";
+                }
+
+                @Override
+                public @NotNull String description() {
+                    return new LinedStringBuilder()
+                      .appendLine()
+                      .append("|  Surface: ").append(surface)
+                      .appendLine("|  Touching: ").append(touching)
+                      .toString();
                 }
 
                 public Identifier getSurface() {

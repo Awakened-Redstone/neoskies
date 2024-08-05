@@ -33,7 +33,7 @@ public class HelpCommand {
     private static void run(ServerCommandSource source, CommandDispatcher<ServerCommandSource> dispatcher) {
         ParseResults<ServerCommandSource> parseResults = dispatcher.parse(IslandLogic.getConfig().commands.command, source);
         if (parseResults.getContext().getNodes().isEmpty()) {
-            source.sendError(Texts.of("commands.neoskies.error.no_commands"));
+            source.sendError(Texts.translatable("commands.neoskies.error.no_commands"));
             return;
         }
 
@@ -41,7 +41,7 @@ public class HelpCommand {
 
         CommandNode<ServerCommandSource> node = Iterables.getLast(parseResults.getContext().getNodes()).getNode();
         Collection<CommandNode<ServerCommandSource>> nodes = node.getChildren().stream().sorted().toList();
-        source.sendFeedback(() -> Texts.of("commands.neoskies.help"), false);
+        source.sendFeedback(() -> Texts.translatable("commands.neoskies.help"), false);
         sendCommands(nodes, source, "", "");
     }
 
@@ -49,12 +49,12 @@ public class HelpCommand {
         for (CommandNode<ServerCommandSource> node : nodes) {
             if (node.getChildren().isEmpty() || node.getCommand() != null) {
                 String command = node.getUsageText();
-                MutableText prefix = Texts.of("commands.neoskies.help.prefix", map -> {
+                MutableText prefix = Texts.translatable("commands.neoskies.help.prefix", map -> {
                     map.put("prefix", IslandLogic.getConfig().commands.command);
                     map.put("command", parent + command);
                 });
                 String string = "commands.description.neoskies." + parentTranslation + command;
-                Text description = Texts.of(string.replaceAll("\\.<.*>$", ""));
+                Text description = Texts.literal(string.replaceAll("\\.<.*>$", ""));
                 source.sendFeedback(() -> prefix.append(description), false);
             }
             sendCommands(node.getChildren(), source, parent + node.getUsageText() + " ", parentTranslation + node.getUsageText() + ".");

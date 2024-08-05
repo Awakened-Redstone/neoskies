@@ -64,12 +64,12 @@ public class BallanceCommand {
 
     private static @Nullable EconomyAccount getWallet(ServerCommandSource source, Island island) {
         if (island == null) {
-            source.sendError(Texts.of("message.neoskies.error.island_not_found"));
+            source.sendError(Texts.translatable("message.neoskies.error.island_not_found"));
             return null;
         }
         EconomyAccount islandWallet = NeoSkiesAPI.getIslandWallet(island);
         if (islandWallet == null) {
-            source.sendError(Texts.of("message.neoskies.error.island_wallet_not_found"));
+            source.sendError(Texts.translatable("message.neoskies.error.island_wallet_not_found"));
             return null;
         }
         return islandWallet;
@@ -78,7 +78,7 @@ public class BallanceCommand {
     private static int getBalance(ServerCommandSource source, @Nullable Island island) {
         EconomyAccount wallet = getWallet(source, island);
         if (wallet == null) return 0;
-        source.sendFeedback(() -> Texts.of("message.neoskies.balance.get", map -> new MapBuilder.StringMap()
+        source.sendFeedback(() -> Texts.translatable("message.neoskies.balance.get", map -> new MapBuilder.StringMap()
             .put("island", island.getIslandId().toString())
             .putAny("amount", wallet.balance())), true);
         return 1;
@@ -88,7 +88,7 @@ public class BallanceCommand {
         EconomyAccount wallet = getWallet(source, island);
         if (wallet == null) return 0;
         wallet.setBalance(amount);
-        source.sendFeedback(() -> Texts.of("message.neoskies.balance.set", map -> new MapBuilder.StringMap()
+        source.sendFeedback(() -> Texts.translatable("message.neoskies.balance.set", map -> new MapBuilder.StringMap()
             .put("island", island.getIslandId().toString())
             .putAny("amount", amount)), true);
         return 1;

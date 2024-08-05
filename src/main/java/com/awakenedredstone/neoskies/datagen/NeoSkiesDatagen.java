@@ -10,5 +10,6 @@ public class NeoSkiesDatagen implements DataGeneratorEntrypoint {
         pack.addProvider(NeoSkiesItemTagProvider::new);
         pack.addProvider(NeoSkiesBlockTagProvider::new);
         pack.addProvider(NeoSkiesEntityTagProvider::new);
+        pack.addProvider(NeoSkiesBlockGenProvider::new);
     }
 }

@@ -444,8 +444,7 @@ public class Marshaller implements blue.endless.jankson.api.Marshaller {
                 } else {
                     result.put(name, serialize(child), comment.value());
                 }
-            } catch (IllegalArgumentException | IllegalAccessException ignored) {
-            }
+            } catch (IllegalArgumentException | IllegalAccessException ignored) { }
         }
 
         return result;
@@ -468,8 +467,7 @@ public class Marshaller implements blue.endless.jankson.api.Marshaller {
                         }
                     }
                 }
-            } catch (IllegalAccessException ignored) {
-            }
+            } catch (IllegalAccessException ignored) { }
         }
     }
 

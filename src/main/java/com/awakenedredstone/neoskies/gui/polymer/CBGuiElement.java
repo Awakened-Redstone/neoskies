@@ -16,7 +16,7 @@ public class CBGuiElement extends eu.pb4.sgui.api.elements.GuiElement {
     }
 
     public CBGuiElementBuilder getBuilderSimple() {
-        return CBGuiElementBuilder.fromSimple(this);
+        return CBGuiElementBuilder.fromStack(this);
     }
 
     public CBGuiElement copy() {
