@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.UnaryOperator;
 
 public class CBGuiElementBuilder extends GuiElementBuilder {
     /**
@@ -210,6 +211,11 @@ public class CBGuiElementBuilder extends GuiElementBuilder {
 
     public <T> CBGuiElementBuilder setComponent(DataComponentType<T> type, @Nullable T value) {
         this.itemStack.set(type, value);
+        return this;
+    }
+
+    public <T> CBGuiElementBuilder applyComponent(DataComponentType<T> type, UnaryOperator<T> applier) {
+        this.itemStack.apply(type, null, comp -> comp != null ? applier.apply(comp) : null);
         return this;
     }
 

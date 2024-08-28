@@ -8,7 +8,10 @@ import com.awakenedredstone.neoskies.util.UIUtils;
 import eu.pb4.sgui.api.ClickType;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
@@ -20,12 +23,14 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class BlockGenManageScreen extends SimpleGui {
+public class GeneratorListScreen extends SimpleGui {
     private int page = 0;
 
-    public BlockGenManageScreen(ServerPlayerEntity player) {
+    public GeneratorListScreen(ServerPlayerEntity player) {
         super(ScreenHandlerType.GENERIC_9X6, player, false);
         setTitle(Texts.translatable("gui.neoskies.block_gen"));
 
@@ -34,14 +39,11 @@ public class BlockGenManageScreen extends SimpleGui {
         AtomicInteger slot = new AtomicInteger(10);
         int offset = page * 28;
 
-        var ref = new Object() {
-            CBGuiElement item = null;
-        };
-        ref.item = new CBGuiElementBuilder(Items.LIME_STAINED_GLASS_PANE)
+        GuiElementInterface createGenerator = new CBGuiElementBuilder(Items.LIME_STAINED_GLASS_PANE)
           .setName(Texts.translatable("gui.neoskies.block_gen.create"))
           .setCallback((index, type, action, gui) -> {
               ServerPlayerEntity guiPlayer = gui.getPlayer();
-              new BlockGenNameScreen(guiPlayer, "").open();
+              new GeneratorNameScreen(guiPlayer, "").open();
           }).build();
 
         List<Map.Entry<Identifier, BlockGeneratorLoader.BlockGenerator>> generators = BlockGeneratorLoader.INSTANCE.getGenerators().entrySet().stream().toList();
@@ -49,13 +51,23 @@ public class BlockGenManageScreen extends SimpleGui {
         for (int i = offset; i < Math.min(offset + 28, generators.size()); i++) {
             if ((slot.get() + 1) % 9 == 0 && slot.get() > 10) slot.addAndGet(2);
             Map.Entry<Identifier, BlockGeneratorLoader.BlockGenerator> entry = generators.get(i);
+            Identifier id = entry.getKey();
             BlockGeneratorLoader.BlockGenerator generator = entry.getValue();
 
+            Optional<Block> blockOrEmpty = Registries.BLOCK.getOrEmpty(id);
+            Item icon;
+            if (blockOrEmpty.isPresent()) {
+                Item item = blockOrEmpty.get().asItem();
+                icon = Objects.requireNonNullElseGet(item, () -> generator.target().icon());
+            } else {
+                icon = generator.target().icon();
+            }
+
             CBGuiElementBuilder builder = (CBGuiElementBuilder) new CBGuiElementBuilder()
-              .setItem(Items.PAPER)
+              .setItem(icon)
               .setName(Texts.translatable("gui.neoskies.block_gen.generator"))
               .addLoreLine(Texts.loreBase("gui.neoskies.block_gen.generator.id", map -> {
-                  map.put("id", entry.getKey().toString());
+                  map.put("id", id.toString());
               }))
               .addLoreLine(Texts.loreBase(Text.translatable("gui.neoskies.block_gen.generator.type"), map -> {
                   map.put("type", Texts.translatable("gui.neoskies.block_gen.generator.type." + generator.target().id()));
@@ -64,8 +76,8 @@ public class BlockGenManageScreen extends SimpleGui {
                   map.put("source", generator.source().toString());
               }))
               .setCallback(() -> {
-                  getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
-                  new BlockGenEditSetsScreen(player, entry.getKey()).open();
+                  getPlayer().playSoundToPlayer(SoundEvents.BLOCK_VAULT_EJECT_ITEM, SoundCategory.MASTER, 0.5f, 1);
+                  new GeneratorScreen(player, id).open();
               });
 
             String[] split = generator.target().description().split("\n");
@@ -80,7 +92,7 @@ public class BlockGenManageScreen extends SimpleGui {
             setSlot(slot.getAndIncrement(), builder);
         }
 
-        setSlot(slot.getAndIncrement(), ref.item);
+        setSlot(slot.getAndIncrement(), createGenerator);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.awakenedredstone.neoskies.gui.blockgen;
 
 import com.awakenedredstone.neoskies.data.BlockGeneratorLoader;
-import com.awakenedredstone.neoskies.datagen.StandardBlockGenProvider;
+import com.awakenedredstone.neoskies.gui.polymer.CBGuiElement;
 import com.awakenedredstone.neoskies.gui.polymer.CBGuiElementBuilder;
 import com.awakenedredstone.neoskies.util.Texts;
 import com.awakenedredstone.neoskies.util.UIUtils;
@@ -20,17 +20,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class BlockGenEditSetsScreen extends SimpleGui {
+public class GeneratorScreen extends SimpleGui {
     private final Identifier generatorId;
     private final BlockGeneratorLoader.BlockGenerator generator;
     private final @Nullable GuiInterface parent;
     private int page = 0;
 
-    public BlockGenEditSetsScreen(ServerPlayerEntity player, Identifier generatorId) {
+    public GeneratorScreen(ServerPlayerEntity player, Identifier generatorId) {
         this(player, generatorId, null);
     }
 
-    public BlockGenEditSetsScreen(ServerPlayerEntity player, Identifier generatorId, @Nullable GuiInterface parent) {
+    public GeneratorScreen(ServerPlayerEntity player, Identifier generatorId, @Nullable GuiInterface parent) {
         super(ScreenHandlerType.GENERIC_9X6, player, false);
         this.generatorId = generatorId;
         if (parent != null) {
@@ -46,33 +46,57 @@ public class BlockGenEditSetsScreen extends SimpleGui {
             generator = new BlockGeneratorLoader.BlockGenerator(null, null, List.of());
         }
 
-        this.generator = StandardBlockGenProvider.GeneratorBuilder.from(generator).build();
+        this.generator = generator;
 
         setTitle(Texts.translatable("gui.neoskies.block_gen.edit"));
         UIUtils.fillGui(this);
 
-        List<BlockGeneratorLoader.BlockGenerator.GenSet> generators = this.generator.generates();
+        List<BlockGeneratorLoader.BlockGenerator.GenerationGroup> groups = this.generator.generates();
 
         int offset = page * 28;
-        AtomicInteger slot = new AtomicInteger(12);
+        AtomicInteger slot = new AtomicInteger(10);
 
-        for (int i = offset; i < Math.min(offset + 28, generators.size()); i++) {
+        GuiElementInterface createGenerator = new CBGuiElementBuilder(Items.LIME_STAINED_GLASS_PANE)
+          .setName(Texts.translatable("gui.neoskies.block_gen.create"))
+          .setCallback((index, type, action, gui) -> {
+              ServerPlayerEntity guiPlayer = gui.getPlayer();
+              //new GeneratorNameScreen(guiPlayer, "").open();
+          }).build();
+
+        GuiElementInterface sourceItem = new CBGuiElementBuilder(Items.WATER_BUCKET)
+          .setName(Texts.literal("Generator source"))
+          .setCallback(() -> {
+              getPlayer().playSoundToPlayer(SoundEvents.BLOCK_VAULT_EJECT_ITEM, SoundCategory.MASTER, 0.5f, 1);
+          }).build();
+
+        GuiElementInterface targetItem = new CBGuiElementBuilder(Items.LAVA_BUCKET)
+          .setName(Texts.literal("Generator target"))
+          .setCallback(() -> {
+              getPlayer().playSoundToPlayer(SoundEvents.BLOCK_VAULT_EJECT_ITEM, SoundCategory.MASTER, 0.5f, 1);
+          }).build();
+
+        setSlot(slot.getAndIncrement(), sourceItem);
+        setSlot(slot.getAndIncrement(), targetItem);
+
+        for (int i = offset; i < Math.min(offset + 28, groups.size()); i++) {
             if ((slot.get() + 1) % 9 == 0 && slot.get() > 10) slot.addAndGet(2);
-            BlockGeneratorLoader.BlockGenerator.GenSet set = generators.get(i);
-            GuiElementInterface builder = new CBGuiElementBuilder(Items.CHEST)
-              .setName(Texts.literal("Generator set"))
+            BlockGeneratorLoader.BlockGenerator.GenerationGroup group = groups.get(i);
+            GuiElementInterface groupItem = new CBGuiElementBuilder(Items.CHEST)
+              .setName(Texts.literal("Generator group"))
               .setCallback(() -> {
                   getPlayer().playSoundToPlayer(SoundEvents.BLOCK_VAULT_EJECT_ITEM, SoundCategory.MASTER, 0.5f, 1);
-                  new BlockGenEditBlocksScreen(player, null).open();
+                  new GenerationGroupScreen(player, group.mutable(), null).open();
               }).build();
 
-            setSlot(slot.getAndIncrement(), builder);
+            setSlot(slot.getAndIncrement(), groupItem);
         }
+
+        setSlot(slot.getAndIncrement(), createGenerator);
 
         CBGuiElementBuilder close = new CBGuiElementBuilder(Items.BARRIER)
           .setName(Texts.translatable("gui.neoskies.close"))
           .setCallback((index, type, action, gui) -> {
-              gui.getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
+              gui.getPlayer().playSoundToPlayer(SoundEvents.BLOCK_VAULT_INSERT_ITEM_FAIL, SoundCategory.MASTER, 0.5f, 1);
               if (this.parent != null) {
                   this.parent.close();
                   this.parent.open();

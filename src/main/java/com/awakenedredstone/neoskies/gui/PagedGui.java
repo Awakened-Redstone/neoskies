@@ -1,9 +1,13 @@
 package com.awakenedredstone.neoskies.gui;
 
+import com.awakenedredstone.neoskies.gui.polymer.CBGuiElementBuilder;
+import com.awakenedredstone.neoskies.util.Texts;
 import eu.pb4.sgui.api.elements.GuiElementBuilder;
 import eu.pb4.sgui.api.elements.GuiElementBuilderInterface;
 import eu.pb4.sgui.api.elements.GuiElementInterface;
+import eu.pb4.sgui.api.gui.GuiInterface;
 import eu.pb4.sgui.api.gui.SimpleGui;
+import eu.pb4.sgui.virtual.inventory.VirtualScreenHandler;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.item.Items;
@@ -18,10 +22,12 @@ import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntFunction;
 
 public abstract class PagedGui extends SimpleGui {
     private static final Object2IntMap<ScreenHandlerType<?>> TYPE_TO_SIZE = new Object2IntOpenHashMap<>();
+    protected final @Nullable GuiInterface parent;
 
     protected int page = 0;
 
@@ -34,7 +40,19 @@ public abstract class PagedGui extends SimpleGui {
     }
 
     public PagedGui(ScreenHandlerType<?> type, ServerPlayerEntity player, boolean includePlayerInventorySlots) {
+        this(type, player, includePlayerInventorySlots, null);
+    }
+
+    public PagedGui(ScreenHandlerType<?> type, ServerPlayerEntity player, boolean includePlayerInventorySlots, GuiInterface parent) {
         super(type, player, includePlayerInventorySlots);
+
+        if (parent != null) {
+            this.parent = parent;
+        } else if (player.currentScreenHandler instanceof VirtualScreenHandler virtualScreenHandler) {
+            this.parent = virtualScreenHandler.getGui();
+        } else {
+             this.parent = null;
+        }
     }
 
     protected void setPage(int page) {
@@ -59,10 +77,14 @@ public abstract class PagedGui extends SimpleGui {
     }
 
     protected void updateDisplay() {
+        var internalPageSize = this.getInternalPageSize();
         var pageSize = this.getSinglePageSize();
         var offset = this.page * pageSize;
 
-        for (int i = 0; i < pageSize; i++) {
+        int slot = this.type == ScreenHandlerType.GENERIC_9X1 ? 0 : 10;
+
+        for (int i = 0; i < internalPageSize; i++) {
+            if ((slot + 1) % 9 == 0 && slot > 10) slot += 2;
             var element = this.getElement(offset + i);
 
             if (element == null) {
@@ -70,9 +92,9 @@ public abstract class PagedGui extends SimpleGui {
             }
 
             if (element.element() != null) {
-                this.setSlot(i, element.element());
+                this.setSlot(slot++, element.element());
             } else if (element.slot() != null) {
-                this.setSlotRedirect(i, element.slot());
+                this.setSlotRedirect(slot++, element.slot());
             }
         }
 
@@ -95,6 +117,10 @@ public abstract class PagedGui extends SimpleGui {
         return this.page;
     }
 
+    public final int getInternalPageSize() {
+        return 7 * (TYPE_TO_SIZE.getInt(this.type) - 1 + (this.isIncludingPlayer() ? 4 : 0));
+    }
+
     public final int getSinglePageSize() {
         return 9 * (TYPE_TO_SIZE.getInt(this.type) + (this.isIncludingPlayer() ? 4 : 0));
     }
@@ -105,10 +131,15 @@ public abstract class PagedGui extends SimpleGui {
 
     protected DisplayElement getNavElement(int id) {
         return switch (id) {
-            case 2 -> DisplayElement.previousPage(this);
-            case 6 -> DisplayElement.nextPage(this);
+            case 3 -> DisplayElement.previousPage(this);
+            case 4 -> DisplayElement.close(this);
+            case 5 -> DisplayElement.nextPage(this);
             default -> DisplayElement.filler();
         };
+    }
+
+    public @Nullable GuiInterface getParent() {
+        return this.parent;
     }
 
     public record DisplayElement(@Nullable GuiElementInterface element, @Nullable Slot slot) {
@@ -169,6 +200,20 @@ public abstract class PagedGui extends SimpleGui {
                     .setSkullOwner(SkinEncoder.encode("50820f76e3e041c75f76d0f301232bdf48321b534fe6a859ccb873d2981a9623"))
                 );
             }
+        }
+
+        public static DisplayElement close(PagedGui gui) {
+            return DisplayElement.of(
+              new CBGuiElementBuilder(Items.BARRIER)
+                .setName(Texts.translatable("gui.neoskies.close"))
+                .setCallback((index, type, action, currentGui) -> {
+                    currentGui.getPlayer().playSoundToPlayer(SoundEvents.BLOCK_VAULT_INSERT_ITEM_FAIL, SoundCategory.MASTER, 0.5f, 1);
+                    if (gui.getParent() != null) {
+                        gui.getParent().open();
+                    }
+                    currentGui.close();
+                })
+              );
         }
 
         public static DisplayElement filler() {

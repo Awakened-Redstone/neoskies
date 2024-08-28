@@ -105,7 +105,7 @@ public abstract class StandardBlockGenProvider implements DataProvider {
     public static class GeneratorBuilder {
         private final TagEntry source;
         private final BlockGeneratorLoader.BlockGenerator.Target target;
-        private final List<BlockGeneratorLoader.BlockGenerator.GenSet> generates = new ArrayList<>();
+        private final List<BlockGeneratorLoader.BlockGenerator.GenerationGroup> generates = new ArrayList<>();
 
         public GeneratorBuilder(TagEntry source, BlockGeneratorLoader.BlockGenerator.Target target) {
             this.source = source;
@@ -144,16 +144,16 @@ public abstract class StandardBlockGenProvider implements DataProvider {
         }
 
         public BlockGeneratorLoader.BlockGenerator build() {
-            if (generates.isEmpty()) {
+            /*if (generates.isEmpty()) {
                 throw new IllegalArgumentException("Tried to build an empty block generator!");
-            }
+            }*/
 
             return new BlockGeneratorLoader.BlockGenerator(source, target, generates);
         }
     }
 
     public static class SetBuilder {
-        private final List<BlockGeneratorLoader.BlockGenerator.GenData> blocks = new ArrayList<>();
+        private final List<BlockGeneratorLoader.BlockGenerator.Generation> blocks = new ArrayList<>();
         private LootCondition predicate;
 
         public SetBuilder setPredicate(LootCondition predicate) {
@@ -162,36 +162,36 @@ public abstract class StandardBlockGenProvider implements DataProvider {
         }
 
         public SetBuilder addBlock(Block block, int weight) {
-            blocks.add(new BlockGeneratorLoader.BlockGenerator.GenData(block.getDefaultState(), Optional.empty(), weight, Optional.empty()));
+            blocks.add(new BlockGeneratorLoader.BlockGenerator.Generation(block.getDefaultState(), Optional.empty(), weight, Optional.empty()));
             return this;
         }
 
         public SetBuilder addBlock(BlockState blockState, int weight) {
-            blocks.add(new BlockGeneratorLoader.BlockGenerator.GenData(blockState, Optional.empty(), weight, Optional.empty()));
+            blocks.add(new BlockGeneratorLoader.BlockGenerator.Generation(blockState, Optional.empty(), weight, Optional.empty()));
             return this;
         }
 
         public SetBuilder addBlock(@NotNull Block block, int weight, @Nullable LootCondition predicate) {
-            blocks.add(new BlockGeneratorLoader.BlockGenerator.GenData(block.getDefaultState(), Optional.empty(), weight, Optional.ofNullable(predicate)));
+            blocks.add(new BlockGeneratorLoader.BlockGenerator.Generation(block.getDefaultState(), Optional.empty(), weight, Optional.ofNullable(predicate)));
             return this;
         }
 
         public SetBuilder addBlock(@NotNull BlockState blockState, int weight, @Nullable LootCondition predicate) {
-            blocks.add(new BlockGeneratorLoader.BlockGenerator.GenData(blockState, Optional.empty(), weight, Optional.ofNullable(predicate)));
+            blocks.add(new BlockGeneratorLoader.BlockGenerator.Generation(blockState, Optional.empty(), weight, Optional.ofNullable(predicate)));
             return this;
         }
 
         public SetBuilder addBlock(@NotNull BlockState blockState, @NotNull NbtCompound nbt, int weight, @Nullable LootCondition predicate) {
-            blocks.add(new BlockGeneratorLoader.BlockGenerator.GenData(blockState, Optional.of(nbt), weight, Optional.ofNullable(predicate)));
+            blocks.add(new BlockGeneratorLoader.BlockGenerator.Generation(blockState, Optional.of(nbt), weight, Optional.ofNullable(predicate)));
             return this;
         }
 
-        private BlockGeneratorLoader.BlockGenerator.GenSet build() {
+        private BlockGeneratorLoader.BlockGenerator.GenerationGroup build() {
             if (blocks.isEmpty()) {
                 throw new IllegalArgumentException("Tried to build an empty generator set!");
             }
 
-            return new BlockGeneratorLoader.BlockGenerator.GenSet(blocks, Optional.ofNullable(predicate));
+            return new BlockGeneratorLoader.BlockGenerator.GenerationGroup(blocks, Optional.ofNullable(predicate));
         }
     }
 }

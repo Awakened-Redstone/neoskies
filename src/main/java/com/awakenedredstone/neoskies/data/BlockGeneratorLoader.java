@@ -22,6 +22,8 @@ import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionTypes;
 import net.minecraft.loot.context.LootContext;
@@ -143,17 +145,17 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
         return false;
     }
 
-    public record BlockGenerator(TagEntry source, Target target, List<GenSet> generates) {
+    public record BlockGenerator(TagEntry source, Target target, List<GenerationGroup> generates) {
         public static final Codec<BlockGenerator> CODEC = RecordCodecBuilder.create(instance ->
           instance.group(
             TagEntry.CODEC.fieldOf("source").forGetter(BlockGenerator::source),
             Codec.lazyInitialized(() -> Codec.withAlternative(Target.FluidTarget.getCodec(), Target.BlockTarget.getCodec())).fieldOf("target").forGetter(BlockGenerator::target),
-            GenSet.CODEC.listOf().fieldOf("generates").forGetter(BlockGenerator::generates)
+            GenerationGroup.CODEC.listOf().fieldOf("generates").forGetter(BlockGenerator::generates)
           ).apply(instance, BlockGenerator::new)
         );
 
         public BlockState getBlock(ServerWorld world, BlockPos pos) {
-            for (GenSet generate : generates) {
+            for (GenerationGroup generate : generates) {
                 if (generate.predicate.isPresent()) {
                     LootContextParameterSet parameters = new LootContextParameterSet.Builder(world)
                       .add(LootContextParameters.ORIGIN, pos.toCenterPos())
@@ -165,7 +167,7 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
                     }
                 }
 
-                GenData randomData = generate.getRandomData(world, pos);
+                Generation randomData = generate.getRandomData(world, pos);
                 NeoSkies.LOGGER.info(randomData.nbt.toString());
                 return randomData.state();
             }
@@ -173,7 +175,7 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
         }
 
         public boolean setBlock(ServerWorld world, BlockPos pos) {
-            for (GenSet generate : generates) {
+            for (GenerationGroup generate : generates) {
                 if (generate.predicate.isPresent()) {
                     LootContextParameterSet parameters = new LootContextParameterSet.Builder(world)
                       .add(LootContextParameters.ORIGIN, pos.toCenterPos())
@@ -185,7 +187,7 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
                     }
                 }
 
-                GenData randomData = generate.getRandomData(world, pos);
+                Generation randomData = generate.getRandomData(world, pos);
 
                 BlockEntity blockEntity;
                 BlockState blockState = Block.postProcessState(randomData.state(), world, pos);
@@ -206,6 +208,7 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
         public static abstract class Target {
             public abstract @Nullable BlockPos test(World world, BlockPos pos);
             public abstract @NotNull String id();
+            public abstract @NotNull Item icon();
             public abstract @NotNull String description();
 
             public static class FluidTarget extends Target {
@@ -224,6 +227,11 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
                 @Override
                 public @NotNull String id() {
                     return "fluid";
+                }
+
+                @Override
+                public @NotNull Item icon() {
+                    return Items.COBBLESTONE;
                 }
 
                 @Override
@@ -282,6 +290,11 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
                 }
 
                 @Override
+                public @NotNull Item icon() {
+                    return Items.BASALT;
+                }
+
+                @Override
                 public @NotNull String description() {
                     return new LinedStringBuilder()
                       .appendLine()
@@ -314,24 +327,24 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
             }
         }
 
-        public static final class GenSet {
-            public static final Codec<GenSet> CODEC = RecordCodecBuilder.create(instance ->
+        public static final class GenerationGroup {
+            public static final Codec<GenerationGroup> CODEC = RecordCodecBuilder.create(instance ->
               instance.group(
-                GenData.CODEC.listOf().fieldOf("blocks").forGetter(GenSet::blocks),
-                LootConditionTypes.CODEC.optionalFieldOf("predicate").forGetter(GenSet::predicate)
-              ).apply(instance, GenSet::new)
+                Generation.CODEC.listOf().fieldOf("blocks").forGetter(GenerationGroup::blocks),
+                LootConditionTypes.CODEC.optionalFieldOf("predicate").forGetter(GenerationGroup::predicate)
+              ).apply(instance, GenerationGroup::new)
             );
-            private final List<GenData> blocks;
+            private final List<Generation> blocks;
             private final Optional<LootCondition> predicate;
-            private final WeightedRandom<GenData> weightedRandom;
+            private final WeightedRandom<Generation> weightedRandom;
 
-            public GenSet(List<GenData> blocks, Optional<LootCondition> predicate) {
+            public GenerationGroup(List<Generation> blocks, Optional<LootCondition> predicate) {
                 this.blocks = blocks;
                 this.predicate = predicate;
                 this.weightedRandom = new WeightedRandom<>();
             }
 
-            public List<GenData> blocks() {
+            public List<Generation> blocks() {
                 return blocks;
             }
 
@@ -339,12 +352,12 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
                 return predicate;
             }
 
-            public WeightedRandom<GenData> weightedRandom() {
+            public WeightedRandom<Generation> weightedRandom() {
                 return weightedRandom;
             }
 
-            public GenData getRandomData(ServerWorld world, BlockPos pos) {
-                for (GenData block : blocks) {
+            public Generation getRandomData(ServerWorld world, BlockPos pos) {
+                for (Generation block : blocks) {
                     if (block.predicate.isPresent()) {
                         LootContextParameterSet parameters = new LootContextParameterSet.Builder(world)
                           .add(LootContextParameters.ORIGIN, pos.toCenterPos())
@@ -359,16 +372,20 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
                     weightedRandom.add(block.weight, block);
                 }
 
-                GenData genData = weightedRandom.next();
+                Generation generation = weightedRandom.next();
                 weightedRandom.clear();
-                return genData;
+                return generation;
+            }
+
+            public GenerationGroup mutable() {
+                return new GenerationGroup(new ArrayList<>(blocks), predicate);
             }
 
             @Override
             public boolean equals(Object obj) {
                 if (obj == this) return true;
                 if (obj == null || obj.getClass() != this.getClass()) return false;
-                var that = (GenSet) obj;
+                var that = (GenerationGroup) obj;
                 return Objects.equals(this.blocks, that.blocks) &&
                   Objects.equals(this.weightedRandom, that.weightedRandom);
             }
@@ -387,7 +404,7 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
             }
         }
 
-        public record GenData(BlockState state, Optional<NbtCompound> nbt, int weight, Optional<LootCondition> predicate) {
+        public record Generation(BlockState state, Optional<NbtCompound> nbt, int weight, Optional<LootCondition> predicate) {
             public static final MapCodec<BlockState> BLOCK_STATE_CODEC = Registries.BLOCK.getCodec().dispatchMap("id", state -> state.owner, owner -> {
                 BlockState state = owner.getDefaultState();
                 if (state.getEntries().isEmpty()) {
@@ -396,13 +413,13 @@ public class BlockGeneratorLoader extends JsonDataLoader implements Identifiable
                 return state.codec.codec().optionalFieldOf("properties").xmap(optional -> optional.orElse(state), Optional::of);
             }).stable();
 
-            public static final Codec<GenData> CODEC = RecordCodecBuilder.create(instance ->
+            public static final Codec<Generation> CODEC = RecordCodecBuilder.create(instance ->
               instance.group(
-                RecordCodecBuilder.of(GenData::state, BLOCK_STATE_CODEC),
-                NbtCompound.CODEC.optionalFieldOf("nbt").forGetter(GenData::nbt),
-                Codec.INT.fieldOf("weight").forGetter(GenData::weight),
-                LootConditionTypes.CODEC.optionalFieldOf("predicate").forGetter(GenData::predicate)
-              ).apply(instance, GenData::new)
+                RecordCodecBuilder.of(Generation::state, BLOCK_STATE_CODEC),
+                NbtCompound.CODEC.optionalFieldOf("nbt").forGetter(Generation::nbt),
+                Codec.INT.fieldOf("weight").forGetter(Generation::weight),
+                LootConditionTypes.CODEC.optionalFieldOf("predicate").forGetter(Generation::predicate)
+              ).apply(instance, Generation::new)
             );
         }
     }

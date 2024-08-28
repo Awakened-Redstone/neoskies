@@ -67,8 +67,8 @@ public class MenuCommand {
                 slotHolder.setSlot(10, new CBGuiElementBuilder(Items.BEACON).setName(Texts.translatable("item_name.neoskies.hub"))
                     .setCallback((index, type, action, gui) -> {
                         //gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.3f, 1);
-                        IslandLogic.getInstance().hub.visit(player);
                         gui.close();
+                        IslandLogic.getInstance().hub.visit(player);
                     })
                     .build());
             }
@@ -77,8 +77,8 @@ public class MenuCommand {
                     slotHolder.setSlot(11, new CBGuiElementBuilder(Items.GRASS_BLOCK).setName(Texts.translatable("item_name.neoskies.home"))
                         .setCallback((index, type, action, gui) -> {
                             //gui.getPlayer().playSound(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.3f, 1);
-                            HomeCommand.run(player);
                             gui.close();
+                            HomeCommand.run(player);
                         })
                         .build());
                 }

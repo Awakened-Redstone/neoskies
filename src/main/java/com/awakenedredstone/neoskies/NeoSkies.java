@@ -48,11 +48,17 @@ public class NeoSkies implements ModInitializer {
         IslandLogic.getRankingConfig().load();
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            LOGGER.warn(new LinedStringBuilder().appendLine()
-              .appendLine("  You are using an alpha build of NeoSkies, it may have bugs and performance issues!")
-              .appendLine("  Feature WILL be added, removed and changed!")
-              .appendLine("  Please report bugs and suggest changes at the project github page: https://github.com/Awakened-Redstone/neoskies/issues")
-              .appendLine("  Discuss about the mod in the discord server: https://discord.gg/MTqsjwMpN2").toString());
+            LOGGER.warn("""
+
+                You are using an alpha build of NeoSkies, it may have bugs and performance issues!
+                Feature WILL be added, removed and changed!
+                Please report bugs and suggest changes at the project github page: https://github.com/Awakened-Redstone/neoskies/issues
+                Discuss about the mod in the discord server: https://discord.gg/MTqsjwMpN2
+
+                Support the mod development at https://ko-fi.com/awakenedredstone
+                Get 25% off on your first month on a game server at BisectHosting with code Redstone
+                  https://bisecthosting.com/Redstone?r=neoskies_log
+              """);
         });
     }
 

@@ -68,7 +68,7 @@ loom {
             name("Testmod Client")
             runDir("run_client")
             //TODO: Generate dev world
-            programArgs("--quickPlaySingleplayer \"world\"")
+            programArg("--quickPlaySingleplayer \"world\"")
             ideConfigGenerated(true)
             source(sourceSets.getByName("testmodClient"))
         }

@@ -74,7 +74,7 @@ public class IslandSettings {
 
     public List<Text> buildLore(Island island) {
         List<Text> lore = new ArrayList<>();
-        lore.add(Texts.loreBase("island_settings." + identifier.toTranslationKey() + ".description"));
+        lore.add(Texts.loreBase("island_settings/description." + identifier.toTranslationKey()));
         lore.add(Text.empty());
         int value = island.getSettings().get(identifier).getPermissionLevel().getLevel();
         List<Integer> levels = new ArrayList<>();

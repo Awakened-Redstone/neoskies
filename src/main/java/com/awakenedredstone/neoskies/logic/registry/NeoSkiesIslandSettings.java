@@ -48,7 +48,7 @@ public class NeoSkiesIslandSettings {
     public static final IslandSettings INTERACT_SCULK = register("interact/sculk", Items.SCULK);
     public static final IslandSettings INTERACT_OTHER_BLOCKS = register("interact/other_blocks", Items.BELL);
 
-    public static final IslandSettings HARVEST = register("harvest", Items.SWEET_BERRIES);
+    public static final IslandSettings HARVEST = register("interact/harvest", Items.SWEET_BERRIES);
 
     public static final IslandSettings RIDE_MINECARTS = register("ride/minecarts", Items.MINECART);
     public static final IslandSettings RIDE_BOATS = register("ride/boats", Items.OAK_BOAT);

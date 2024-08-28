@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class BlockGenNameScreen extends AnvilInputGui {
+public class GeneratorNameScreen extends AnvilInputGui {
     private static final GuiElementInterface CONFLICT = new CBGuiElementBuilder(Items.RED_STAINED_GLASS_PANE)
       .setName(Texts.literal("<red>Conflicting ID"))
       .setCallback((index, type1, action, gui) -> {
@@ -46,7 +46,7 @@ public class BlockGenNameScreen extends AnvilInputGui {
      *
      * @param player                the player to serve this gui to
      */
-    public BlockGenNameScreen(ServerPlayerEntity player, String defaultId) {
+    public GeneratorNameScreen(ServerPlayerEntity player, String defaultId) {
         super(player, false);
         this.identifiers = BlockGeneratorLoader.INSTANCE.getGenerators().keySet().stream().toList();
         if (player.currentScreenHandler instanceof VirtualScreenHandler virtualScreenHandler) {
@@ -74,8 +74,8 @@ public class BlockGenNameScreen extends AnvilInputGui {
             itemOut = CBGuiElementBuilder.from(CREATE)
               .addLoreLine(Texts.loreBase(Texts.literal("<dark_gray>Creating %s:%s".formatted(NeoSkies.MOD_ID + "_generated", input))))
               .setCallback(() -> {
-                  getPlayer().playSoundToPlayer(SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.MASTER, 0.3f, 1);
-                  new BlockGenEditSetsScreen(player, NeoSkies.generatedId(input), parent).open();
+                  getPlayer().playSoundToPlayer(SoundEvents.BLOCK_VAULT_OPEN_SHUTTER, SoundCategory.MASTER, 0.3f, 1);
+                  new GeneratorScreen(player, NeoSkies.generatedId(input), parent).open();
               }).build();
         }
 

@@ -115,7 +115,7 @@ public final class NeoSkiesTestMain implements ModInitializer {
                     for (IslandSettings settings : NeoSkiesRegistries.ISLAND_SETTINGS) {
                         Language lang = Language.getInstance();
                         String translationKey = settings.getIdentifier().toTranslationKey();
-                        boolean hasTranslation = lang.hasTranslation("island_settings." + translationKey + ".description");
+                        boolean hasTranslation = lang.hasTranslation("island_settings/description." + translationKey);
                         text.append(Text.literal(translationKey));
                         text.append(Text.literal(": "));
                         Text text1 = Text.literal(hasTranslation ? "Translated" : "Untranslated").formatted(hasTranslation ? Formatting.GREEN : Formatting.RED);

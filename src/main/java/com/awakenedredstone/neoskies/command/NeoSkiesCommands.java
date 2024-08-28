@@ -19,7 +19,7 @@ import com.awakenedredstone.neoskies.command.island.MemberCommands;
 import com.awakenedredstone.neoskies.command.island.MenuCommand;
 import com.awakenedredstone.neoskies.command.island.SettingCommands;
 import com.awakenedredstone.neoskies.command.island.VisitCommand;
-import com.awakenedredstone.neoskies.gui.blockgen.BlockGenManageScreen;
+import com.awakenedredstone.neoskies.gui.blockgen.GeneratorListScreen;
 import com.awakenedredstone.neoskies.logic.AdminLevelCommand;
 import com.awakenedredstone.neoskies.logic.Island;
 import com.awakenedredstone.neoskies.logic.IslandLogic;
@@ -126,7 +126,7 @@ public class NeoSkiesCommands {
                     return 0;
                 }
 
-                new BlockGenManageScreen(source.getPlayer()).open();
+                new GeneratorListScreen(source.getPlayer()).open();
 
                 return 0;
             })
